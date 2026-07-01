@@ -1,0 +1,28 @@
+xPack Open On-Chip Debugger 0.12.0+dev-02228-ge5888bda3-dirty (2025-10-04-22:44)
+Licensed under GNU GPL v2
+For bug reports, read
+	http://openocd.org/doc/doxygen/bugs.html
+Warn : DEPRECATED: auto-selecting transport "swd". Use 'transport select swd' to suppress this message.
+Warn : Transport "swd" was already selected
+cortex_m reset_config sysresetreq
+Warn : Transport "swd" was already selected
+Warn : could not read product string for device 0x342d:0xe407: Invalid parameter
+Warn : could not read product string for device 0x249a:0x5c2f: Invalid parameter
+Info : Using CMSIS-DAPv2 interface with VID:PID=0x0d28:0x0204, serial=1666A9E8BA6988C3004E6F3D458940C3
+Info : CMSIS-DAP: SWD supported
+Info : CMSIS-DAP: Atomic commands supported
+Info : CMSIS-DAP: Test domain timer supported
+Info : CMSIS-DAP: FW Version = 2.1.0
+Info : CMSIS-DAP: Interface Initialised (SWD)
+Info : SWCLK/TCK = 0 SWDIO/TMS = 1 TDI = 0 TDO = 0 nTRST = 0 nRESET = 1
+Info : CMSIS-DAP: Interface ready
+Info : clock speed 100 kHz
+Info : SWD DPIDR 0x6ba02477
+Info : [mspm0x.cpu] Cortex-M0+ r0p1 processor detected
+Info : [mspm0x.cpu] target has 4 breakpoints, 2 watchpoints
+Info : [mspm0x.cpu] Examination succeed
+Info : [mspm0x.cpu] starting gdb server on 3333
+Info : Listening on port 3333 for gdb connections
+[mspm0x.cpu] halted due to debug-request, current mode: Thread 
+xPSR: 0x41000000 pc: 0x000079d4 msp: 0x202026a0
+shutdown command invoked

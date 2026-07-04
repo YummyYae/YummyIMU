@@ -5,7 +5,7 @@
 
 void TaskLED_Init(void);
 void TaskLED_Set(uint8_t on);
-void TaskLED_Refresh(uint8_t sensors_ok, uint8_t output_active);
+void TaskLED_UpdateSystemStatus(uint8_t started, uint8_t alarm, uint8_t ready, uint8_t output_active);
 
 #endif
 

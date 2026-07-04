@@ -28,11 +28,18 @@ typedef struct {
     GyroBiasData_t gyro_bias;
 } RuntimeConfig_t;
 
+typedef void (*GyroBiasServiceHook_t)(void *context);
+
 void RuntimeConfig_Default(RuntimeConfig_t *config);
 uint8_t RuntimeConfig_Load(RuntimeConfig_t *config);
 uint8_t RuntimeConfig_Save(const RuntimeConfig_t *config);
 
 uint8_t GyroBias_Calibrate(GyroBiasData_t *bias, uint32_t wait_ms, uint32_t record_ms);
+uint8_t GyroBias_CalibrateWithService(GyroBiasData_t *bias,
+                                      uint32_t wait_ms,
+                                      uint32_t record_ms,
+                                      GyroBiasServiceHook_t service,
+                                      void *service_context);
 void GyroBias_Apply(const GyroBiasData_t *bias);
 
 #endif

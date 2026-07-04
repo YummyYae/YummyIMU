@@ -26,9 +26,13 @@ typedef struct {
     uint8_t gyro_bias_calibrated;
     uint8_t bmi088_temperature_valid;
     uint8_t bmi270_temperature_valid;
+    uint8_t bmi088_temperature_filter_valid;
+    uint8_t bmi270_temperature_filter_valid;
     uint8_t bmi088_temp_msb;
     uint8_t bmi088_temp_lsb;
     int16_t bmi088_temp_raw;
+    float bmi088_temperature_filtered;
+    float bmi270_temperature_filtered;
     uint32_t uart_report_ticks;
     uint32_t uart_report_resume_tick;
     float bmi088_heater_pid_integral;

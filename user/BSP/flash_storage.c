@@ -363,7 +363,11 @@ void GyroBias_Apply(const GyroBiasData_t *bias)
     }
 }
 
-uint8_t GyroBias_Calibrate(GyroBiasData_t *bias, uint32_t wait_ms, uint32_t record_ms)
+uint8_t GyroBias_CalibrateWithService(GyroBiasData_t *bias,
+                                      uint32_t wait_ms,
+                                      uint32_t record_ms,
+                                      GyroBiasServiceHook_t service,
+                                      void *service_context)
 {
     double bmi088_sum[3] = {0.0, 0.0, 0.0};
     double bmi270_sum[3] = {0.0, 0.0, 0.0};
@@ -392,6 +396,10 @@ uint8_t GyroBias_Calibrate(GyroBiasData_t *bias, uint32_t wait_ms, uint32_t reco
             accepted_samples++;
         }
 
+        if (service != NULL) {
+            service(service_context);
+        }
+
         delay_ms(CONFIG_SAMPLE_MS);
     }
 
@@ -413,3 +421,7 @@ uint8_t GyroBias_Calibrate(GyroBiasData_t *bias, uint32_t wait_ms, uint32_t reco
     return 1U;
 }
 
+uint8_t GyroBias_Calibrate(GyroBiasData_t *bias, uint32_t wait_ms, uint32_t record_ms)
+{
+    return GyroBias_CalibrateWithService(bias, wait_ms, record_ms, NULL, NULL);
+}

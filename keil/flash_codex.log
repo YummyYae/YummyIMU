@@ -1,5 +1,7 @@
 Load "C:\\Users\\CTY\\Desktop\\M0\\ti\\keil\\Objects\\ncontroller.axf" 
-Info: Current state of access point is: 78042f 
-Info: Current state of access point is: 79042f 
+Info: Debug/System power-up request sent 
+Info: executing SWD power up 
+Info: Current state of access point is: 80027 
+Info: Current state of access point is: 79002f 
 Full Chip Erase Done.Programming Done.Verify OK.Application running ...
-Flash Load finished at 21:34:13
+Flash Load finished at 15:43:04

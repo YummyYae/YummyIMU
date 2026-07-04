@@ -14,6 +14,11 @@
 #define STARTUP_ALIGN_SAMPLES 300U
 #define STARTUP_ALIGN_SAMPLE_MS 1U
 #define STARTUP_SETTLE_SAMPLES 1000U
+#define BMI088_ACCEL_CHIP_ID 0x1EU
+#define BMI088_GYRO_CHIP_ID  0x0FU
+#define TEMP_TUNING_FIRMWARE 0U
+#define AUTO_CAL_TEMP_TOLERANCE_C 2.0f
+#define AUTO_CAL_LOOP_MS 10U
 
 /*
  * IMU 任务流程：
@@ -29,6 +34,61 @@ static volatile uint8_t gImuInterruptBusy;
 static volatile uint8_t gImuReportPending;
 static uint16_t gUartReportDivider;
 
+static uint8_t imu_identity_has_fault(const RuntimeState_t *state)
+{
+    if ((state->bmi088_init_error != 0U) || (state->bmi270_init_error != 0U)) {
+        return 1U;
+    }
+
+    if ((state->accel_chip_id != BMI088_ACCEL_CHIP_ID) ||
+        (state->gyro_chip_id != BMI088_GYRO_CHIP_ID) ||
+        ((state->bmi270_chip_id != BMI270_CHIP_ID_VALUE) &&
+         (state->bmi270_chip_id != BMI220_CHIP_ID_VALUE))) {
+        return 1U;
+    }
+
+    return 0U;
+}
+
+static void task_imu_delay_ms(uint32_t ms)
+{
+    DL_Common_delayCycles((CPUCLK_FREQ / 1000U) * ms);
+}
+
+static uint8_t auto_calibration_wait_ready(RuntimeState_t *state)
+{
+    uint32_t elapsed_ms = 0U;
+    char line[128];
+
+    if (imu_identity_has_fault(state) != 0U) {
+        TaskSerial_Write("ERROR:IMU_INIT_FAILED\n");
+        return 0U;
+    }
+
+    TaskSerial_Write("CAL_WAIT:AUTO_TEMP\n");
+
+    while (TaskTemperature_IsReady(state, AUTO_CAL_TEMP_TOLERANCE_C) == 0U) {
+        for (uint8_t i = 0U; i < AUTO_CAL_LOOP_MS; i++) {
+            TaskTemperature_CalibrationService(state);
+            task_imu_delay_ms(1U);
+        }
+
+        elapsed_ms += AUTO_CAL_LOOP_MS;
+        if ((elapsed_ms % 1000U) == 0U) {
+            (void) snprintf(line, sizeof(line),
+                            "CAL_WAIT:T088=%.3f,T270=%.3f\n",
+                            (state->bmi088_temperature_filter_valid != 0U) ?
+                                state->bmi088_temperature_filtered : BMI088Sensor.Temperature,
+                            (state->bmi270_temperature_filter_valid != 0U) ?
+                                state->bmi270_temperature_filtered : BMI270Sensor.Temperature);
+            TaskSerial_Write(line);
+        }
+    }
+
+    TaskSerial_Write("CAL_WAIT:DONE\n");
+    return 1U;
+}
+
 static void load_or_calibrate_bias(RuntimeState_t *state)
 {
     if (state->gyro_bias_valid != 0U) {
@@ -37,15 +97,36 @@ static void load_or_calibrate_bias(RuntimeState_t *state)
         return;
     }
 
-    TaskSerial_Write("0,0,0,0,0,0,0,0,0\n");
-    if (GyroBias_Calibrate(&state->runtime_config.gyro_bias,
-                           GYRO_BIAS_DEFAULT_WAIT_MS,
-                           GYRO_BIAS_DEFAULT_RECORD_MS) != 0U) {
+#if TEMP_TUNING_FIRMWARE
+    /*
+     * 温控调试临时固件：Keil 全片擦除后 Flash 零漂会丢失。
+     * 此版本只用于循环观察温度/PWM，不等待 40 秒零漂整定，避免上电后长时间不输出温度。
+     */
+    for (uint8_t axis = 0U; axis < 3U; axis++) {
+        state->runtime_config.gyro_bias.bmi088[axis] = 0.0f;
+        state->runtime_config.gyro_bias.bmi270[axis] = 0.0f;
+    }
+    GyroBias_Apply(&state->runtime_config.gyro_bias);
+    return;
+#else
+    if (auto_calibration_wait_ready(state) == 0U) {
+        return;
+    }
+    TaskSerial_Write("CAL:START\n");
+    if (GyroBias_CalibrateWithService(&state->runtime_config.gyro_bias,
+                                      0U,
+                                      GYRO_BIAS_DEFAULT_RECORD_MS,
+                                      TaskTemperature_CalibrationService,
+                                      state) != 0U) {
         state->runtime_config.gyro_bias_valid = 1U;
         state->gyro_bias_valid = 1U;
         state->gyro_bias_calibrated = 1U;
         (void) RuntimeConfig_Save(&state->runtime_config);
+        TaskSerial_Write("CAL:DONE\n");
+    } else {
+        TaskSerial_Write("ERROR:CAL_FAILED\n");
     }
+#endif
 }
 
 /*
@@ -75,11 +156,17 @@ void TaskIMU_Init(RuntimeState_t *state)
 /* 检查 IMU 初始化结果和芯片 ID，供 LED 状态和异常输出判断使用。 */
 uint8_t TaskIMU_HaveFault(const RuntimeState_t *state)
 {
-    if ((state->bmi088_init_error != 0U) || (state->bmi270_init_error != 0U)) {
+    return (imu_identity_has_fault(state) != 0U) ? 1U : 0U;
+}
+
+/* 判断芯片已启动后的传感器报警状态：IMU 初始化失败、ID 读不到或温度异常都需要闪灯。 */
+uint8_t TaskIMU_HaveAlarm(const RuntimeState_t *state)
+{
+    if (TaskIMU_HaveFault(state) != 0U) {
         return 1U;
     }
 
-    if ((state->accel_chip_id == 0U) || (state->gyro_chip_id == 0U) || (state->bmi270_chip_id == 0U)) {
+    if (TaskTemperature_HaveFault(state) != 0U) {
         return 1U;
     }
 
@@ -139,6 +226,17 @@ void TaskIMU_UpdateOutputAngles(void)
 void TaskIMU_WriteAngles(const RuntimeState_t *state)
 {
     char line[192];
+#if TEMP_TUNING_FIRMWARE
+    (void) snprintf(line, sizeof(line),
+                    "%.3f,%.3f,%.3f,%.3f,%.3f\n",
+                    (state->bmi088_temperature_filter_valid != 0U) ?
+                        state->bmi088_temperature_filtered : BMI088Sensor.Temperature,
+                    BMI270Sensor.Temperature,
+                    state->bmi088_heater_duty,
+                    state->bmi270_heater_duty,
+                    state->runtime_config.target_temperature_c);
+    TaskSerial_Write(line);
+#else
     float bmi088_pitch;
     float bmi088_roll;
     float bmi088_yaw;
@@ -181,6 +279,7 @@ void TaskIMU_WriteAngles(const RuntimeState_t *state)
                         virtual_yaw * RAD2DEG);
     }
     TaskSerial_Write(line);
+#endif
 }
 
 /*
@@ -255,7 +354,10 @@ void TaskIMU_ServiceReport(RuntimeState_t *state)
     }
 
     if ((int32_t)(gSystemTickMs - state->uart_report_resume_tick) >= 0) {
-        TaskLED_Refresh(TaskIMU_HaveFault(state) == 0U, 1U);
+        TaskLED_UpdateSystemStatus(1U,
+                                   TaskIMU_HaveAlarm(state),
+                                   TaskTemperature_IsReady(state, 2.0f),
+                                   1U);
         TaskIMU_WriteAngles(state);
     } else {
         TaskLED_Set(0U);

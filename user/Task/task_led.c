@@ -1,17 +1,19 @@
 #include "task_led.h"
 
 #include "ti_msp_dl_config.h"
+#include "runtime_state.h"
 
 #define STATUS_LED_PORT GPIOB
 #define STATUS_LED_PIN DL_GPIO_PIN_18
 #define STATUS_LED_IOMUX IOMUX_PINCM44
+#define STATUS_LED_ALARM_BLINK_MS 100U
+#define STATUS_LED_WAIT_BLINK_MS 600U
 
 /*
  * LED 任务流程：
  * 1. TaskLED_Init() 配置 PB18 为输出，并默认关闭 LED。
  * 2. TaskLED_Set() 封装 PB18 低电平点亮的硬件细节。
- * 3. TaskLED_Refresh() 根据“传感器正常”和“当前允许回传”两个条件决定是否点亮。
- * 4. 串口命令回复等待期间、初始化异常或暂停输出时，其他任务会直接关闭 LED。
+ * 3. TaskLED_UpdateSystemStatus() 负责错误快闪、等待加热慢闪、温度到位常亮。
  */
 
 /* 初始化 PB18 状态灯 GPIO，默认关闭后再使能输出。 */
@@ -32,9 +34,33 @@ void TaskLED_Set(uint8_t on)
     }
 }
 
-/* 根据传感器状态和输出状态刷新 LED，作为系统是否正常回传的外部指示。 */
-void TaskLED_Refresh(uint8_t sensors_ok, uint8_t output_active)
+/*
+ * 刷新系统状态灯：
+ * - 出现 IMU/温度异常：快闪。
+ * - 无错误但两颗 IMU 尚未进入目标温度 +-2 摄氏度：慢闪。
+ * - 两颗 IMU 均进入目标温度 +-2 摄氏度且一切正常：常亮。
+ * - 命令回复暂停期间或尚未启动完成：熄灭。
+ */
+void TaskLED_UpdateSystemStatus(uint8_t started, uint8_t alarm, uint8_t ready, uint8_t output_active)
 {
-    TaskLED_Set(((sensors_ok != 0U) && (output_active != 0U)) ? 1U : 0U);
+    uint8_t blink_on;
+
+    if ((started == 0U) || (output_active == 0U)) {
+        TaskLED_Set(0U);
+        return;
+    }
+
+    if (alarm != 0U) {
+        blink_on = (((gSystemTickMs / STATUS_LED_ALARM_BLINK_MS) & 1U) == 0U) ? 1U : 0U;
+        TaskLED_Set(blink_on);
+        return;
+    }
+
+    if (ready != 0U) {
+        TaskLED_Set(1U);
+    } else {
+        blink_on = (((gSystemTickMs / STATUS_LED_WAIT_BLINK_MS) & 1U) == 0U) ? 1U : 0U;
+        TaskLED_Set(blink_on);
+    }
 }
 

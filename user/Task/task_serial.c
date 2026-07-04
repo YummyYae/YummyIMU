@@ -26,6 +26,8 @@
 #define UART_DMA_TX_CHANNEL    1U
 #define UART_DMA_RX_BUFFER_SIZE 256U
 #define UART_DMA_TX_CHUNK_SIZE  128U
+#define STATUS_BMI088_ACCEL_CHIP_ID 0x1EU
+#define STATUS_BMI088_GYRO_CHIP_ID  0x0FU
 
 static volatile uint8_t gCommandOverflow;
 static volatile uint8_t gRxIndex;
@@ -223,6 +225,29 @@ uint8_t TaskSerial_TakeOverflow(void)
 }
 
 /* 输出 STATUS 快照：当前运行参数、Flash 中的零漂值以及两颗 IMU 温度。 */
+static const char *status_bmi088_model_name(const RuntimeState_t *state)
+{
+    if ((state->accel_chip_id == STATUS_BMI088_ACCEL_CHIP_ID) &&
+        (state->gyro_chip_id == STATUS_BMI088_GYRO_CHIP_ID)) {
+        return "BMI088";
+    }
+
+    return "UNKNOWN";
+}
+
+static const char *status_bmi270_model_name(const RuntimeState_t *state)
+{
+    if (state->bmi270_chip_id == BMI270_CHIP_ID_VALUE) {
+        return "BMI270";
+    }
+
+    if (state->bmi270_chip_id == BMI220_CHIP_ID_VALUE) {
+        return "BMI220";
+    }
+
+    return "UNKNOWN";
+}
+
 static void serial_write_status_snapshot(RuntimeState_t *state)
 {
     char line[256];
@@ -248,6 +273,13 @@ static void serial_write_status_snapshot(RuntimeState_t *state)
                         "MODE:INVALID\n"
                         "TARGET_TEMP:INVALID\n");
     }
+    TaskSerial_Write(line);
+
+    (void) snprintf(line, sizeof(line),
+                    "BMI088_MODEL:%s\n"
+                    "BMI270_MODEL:%s\n",
+                    status_bmi088_model_name(state),
+                    status_bmi270_model_name(state));
     TaskSerial_Write(line);
 
     if ((flash_config_valid != 0U) && (flash_config.gyro_bias_valid != 0U)) {
@@ -283,6 +315,13 @@ static void serial_write_status_snapshot(RuntimeState_t *state)
     } else {
         (void) snprintf(line, sizeof(line), "BMI270_TEMP:INVALID\n");
     }
+    TaskSerial_Write(line);
+
+    (void) snprintf(line, sizeof(line),
+                    "BMI088_HEAT:%.3f\n"
+                    "BMI270_HEAT:%.3f\n",
+                    state->bmi088_heater_duty,
+                    state->bmi270_heater_duty);
     TaskSerial_Write(line);
 
     (void) snprintf(line, sizeof(line),
@@ -427,9 +466,11 @@ static void command_handle(RuntimeState_t *state, char *line)
 
         TaskSerial_Write("CAL:START\n");
         TaskIMU_EnableInterruptUpdate(0U);
-        if (GyroBias_Calibrate(&state->runtime_config.gyro_bias,
-                               wait_s * 1000U,
-                               record_s * 1000U) != 0U) {
+        if (GyroBias_CalibrateWithService(&state->runtime_config.gyro_bias,
+                                          wait_s * 1000U,
+                                          record_s * 1000U,
+                                          TaskTemperature_CalibrationService,
+                                          state) != 0U) {
             state->runtime_config.gyro_bias_valid = 1U;
             state->gyro_bias_valid = 1U;
             state->gyro_bias_calibrated = 1U;

@@ -35,14 +35,11 @@ int main(void)
     TaskIMU_Init(&gRuntimeState);
     RuntimeState_ClearImuRuntimeStats();
 
-    /* 任意 IMU 初始化异常时，关闭状态灯 */
-    if (TaskIMU_HaveFault(&gRuntimeState) != 0U) {
-        TaskLED_Set(0U);
-    }
     TaskTemperature_Update100Hz(&gRuntimeState);
 
     while (1) {
         uint8_t handled = 0U;
+        uint8_t output_active;
 
         /* 第一优先级：处理串口命令，命令期间只暂停回传，不阻塞 1kHz IMU 中断。 */
         TaskSerial_CollectRx();
@@ -58,6 +55,13 @@ int main(void)
             TaskTemperature_Update100Hz(&gRuntimeState);
             handled = 1U;
         }
+
+        /* LED 状态独立刷新：错误快闪，等待加热慢闪，温度到位且正常常亮。 */
+        output_active = ((int32_t)(gSystemTickMs - gRuntimeState.uart_report_resume_tick) >= 0) ? 1U : 0U;
+        TaskLED_UpdateSystemStatus(1U,
+                                   TaskIMU_HaveAlarm(&gRuntimeState),
+                                   TaskTemperature_IsReady(&gRuntimeState, 2.0f),
+                                   output_active);
 
         /* 没有待处理任务时进入 WFI，等待下一次中断唤醒。 */
         if (handled == 0U) {

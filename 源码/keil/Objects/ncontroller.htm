@@ -1,0 +1,2605 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+<title>Static Call Graph - [.\Objects\ncontroller.axf]</title></head>
+<body><HR>
+<H1>Static Call Graph for image .\Objects\ncontroller.axf</H1><HR>
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Mon Jul  6 01:04:42 2026
+<BR><P>
+<H3>Maximum Stack Usage =        872 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+Call chain for Maximum Stack Depth:</H3>
+__rt_entry_main &rArr; main &rArr; TaskSerial_PollCommand &rArr; command_save_and_reset &rArr; RuntimeConfig_Save &rArr; record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+<P>
+<H3>
+Mutually Recursive functions
+</H3> <LI><a href="#[2]">HardFault_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[2]">HardFault_Handler</a><BR>
+ <LI><a href="#[3]">SVC_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[3]">SVC_Handler</a><BR>
+ <LI><a href="#[4]">PendSV_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[4]">PendSV_Handler</a><BR>
+</UL>
+<P>
+<H3>
+Function Pointers
+</H3><UL>
+ <LI><a href="#[a]">ADC0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[b]">ADC1_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[1b]">AES_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[c]">CANFD0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[d]">DAC0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[1d]">DMA_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[6]">GROUP0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[7]">GROUP1_IRQHandler</a> from interrupt_mspm0.o(.text.GROUP1_IRQHandler) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[2]">HardFault_Handler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[19]">I2C0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[1a]">I2C1_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[1]">NMI_Handler</a> from interrupt_mspm0.o(.text.NMI_Handler) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[4]">PendSV_Handler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[1c]">RTC_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[0]">Reset_Handler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[e]">SPI0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[f]">SPI1_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[3]">SVC_Handler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[5]">SysTick_Handler</a> from interrupt_mspm0.o(.text.SysTick_Handler) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[15]">TIMA0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[16]">TIMA1_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[13]">TIMG0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[18]">TIMG12_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[14]">TIMG6_IRQHandler</a> from interrupt_mspm0.o(.text.TIMG6_IRQHandler) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[17]">TIMG7_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[8]">TIMG8_IRQHandler</a> from interrupt_mspm0.o(.text.TIMG8_IRQHandler) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[21]">TaskTemperature_CalibrationService</a> from task_temperature.o(.text.TaskTemperature_CalibrationService) referenced from task_imu.o(.text.TaskIMU_Init)
+ <LI><a href="#[21]">TaskTemperature_CalibrationService</a> from task_temperature.o(.text.TaskTemperature_CalibrationService) referenced from task_serial.o(.text.TaskSerial_PollCommand)
+ <LI><a href="#[12]">UART0_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[10]">UART1_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[11]">UART2_IRQHandler</a> from interrupt_mspm0.o(.text.UART2_IRQHandler) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[9]">UART3_IRQHandler</a> from startup_mspm0g350x_uvision.o(.text) referenced from startup_mspm0g350x_uvision.o(RESET)
+ <LI><a href="#[1e]">__main</a> from __main.o(!!!main) referenced from startup_mspm0g350x_uvision.o(.text)
+ <LI><a href="#[22]">_printf_fp_dec_real</a> from _printf_fp_dec.o(.text) referenced from printf1.o(x$fpl$printf1)
+ <LI><a href="#[20]">_printf_input_char</a> from _printf_char_common.o(.text) referenced from _printf_char_common.o(.text)
+ <LI><a href="#[1f]">_snputc</a> from _snputc.o(.text) referenced from noretval__2snprintf.o(.text)
+</UL>
+<P>
+<H3>
+Global Symbols
+</H3>
+<P><STRONG><a name="[1e]"></a>__main</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, __main.o(!!!main))
+<BR><BR>[Calls]<UL><LI><a href="#[24]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry
+<LI><a href="#[23]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(.text)
+</UL>
+<P><STRONG><a name="[23]"></a>__scatterload</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __scatter.o(!!!scatter))
+<BR><BR>[Called By]<UL><LI><a href="#[1e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
+</UL>
+
+<P><STRONG><a name="[25]"></a>__scatterload_rt2</STRONG> (Thumb, 74 bytes, Stack size unknown bytes, __scatter.o(!!!scatter), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[24]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry
+</UL>
+
+<P><STRONG><a name="[126]"></a>__scatterload_rt2_thumb_only</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __scatter.o(!!!scatter), UNUSED)
+
+<P><STRONG><a name="[127]"></a>__scatterload_loop</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __scatter.o(!!!scatter), UNUSED)
+
+<P><STRONG><a name="[26]"></a>__scatterload_copy</STRONG> (Thumb, 26 bytes, Stack size unknown bytes, __scatter_copy.o(!!handler_copy), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_copy
+</UL>
+<BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_copy
+</UL>
+
+<P><STRONG><a name="[128]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, __scatter.o(!!handler_null), UNUSED)
+
+<P><STRONG><a name="[129]"></a>__scatterload_zeroinit</STRONG> (Thumb, 28 bytes, Stack size unknown bytes, __scatter_zi.o(!!handler_zi), UNUSED)
+
+<P><STRONG><a name="[49]"></a>_printf_percent</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_percent.o(.ARM.Collect$$_printf_percent$$00000000))
+<BR><BR>[Called By]<UL><LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__printf
+</UL>
+
+<P><STRONG><a name="[27]"></a>_printf_f</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_f.o(.ARM.Collect$$_printf_percent$$00000003))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72 + Unknown Stack Size
+<LI>Call Chain = _printf_f &rArr; _printf_u &rArr; _printf_int_dec &rArr; _printf_int_common
+</UL>
+<BR>[Calls]<UL><LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec
+<LI><a href="#[28]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_u
+</UL>
+
+<P><STRONG><a name="[28]"></a>_printf_u</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_u.o(.ARM.Collect$$_printf_percent$$0000000A))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72 + Unknown Stack Size
+<LI>Call Chain = _printf_u &rArr; _printf_int_dec &rArr; _printf_int_common
+</UL>
+<BR>[Calls]<UL><LI><a href="#[2a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_s
+<LI><a href="#[2b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_dec
+</UL>
+<BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_f
+</UL>
+
+<P><STRONG><a name="[2a]"></a>_printf_s</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_s.o(.ARM.Collect$$_printf_percent$$00000014))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24 + Unknown Stack Size
+<LI>Call Chain = _printf_s &rArr; _printf_string &rArr; _printf_cs_common &rArr; _printf_str
+</UL>
+<BR>[Calls]<UL><LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_percent_end
+<LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_string
+</UL>
+<BR>[Called By]<UL><LI><a href="#[28]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_u
+</UL>
+
+<P><STRONG><a name="[2c]"></a>_printf_percent_end</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_percent_end.o(.ARM.Collect$$_printf_percent$$00000017))
+<BR><BR>[Called By]<UL><LI><a href="#[2a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_s
+</UL>
+
+<P><STRONG><a name="[35]"></a>__rt_lib_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit.o(.ARM.Collect$$libinit$$00000000))
+<BR><BR>[Called By]<UL><LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_li
+</UL>
+
+<P><STRONG><a name="[12a]"></a>__rt_lib_init_fp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000002))
+
+<P><STRONG><a name="[12b]"></a>__rt_lib_init_heap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000000C))
+
+<P><STRONG><a name="[2e]"></a>__rt_lib_init_lc_common</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000011))
+<BR><BR>[Calls]<UL><LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_locale
+</UL>
+
+<P><STRONG><a name="[12c]"></a>__rt_lib_init_preinit_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000006))
+
+<P><STRONG><a name="[12d]"></a>__rt_lib_init_rand_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000010))
+
+<P><STRONG><a name="[12e]"></a>__rt_lib_init_relocate_pie_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000004))
+
+<P><STRONG><a name="[12f]"></a>__rt_lib_init_user_alloc_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000000E))
+
+<P><STRONG><a name="[130]"></a>__rt_lib_init_lc_collate_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000013))
+
+<P><STRONG><a name="[131]"></a>__rt_lib_init_lc_ctype_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000015))
+
+<P><STRONG><a name="[132]"></a>__rt_lib_init_lc_monetary_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000017))
+
+<P><STRONG><a name="[30]"></a>__rt_lib_init_lc_numeric_2</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000018))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24 + Unknown Stack Size
+<LI>Call Chain = __rt_lib_init_lc_numeric_2 &rArr; _get_lc_numeric &rArr; strcmp
+</UL>
+<BR>[Calls]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_get_lc_numeric
+</UL>
+
+<P><STRONG><a name="[133]"></a>__rt_lib_init_alloca_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000030))
+
+<P><STRONG><a name="[134]"></a>__rt_lib_init_argv_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000002E))
+
+<P><STRONG><a name="[135]"></a>__rt_lib_init_atexit_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001D))
+
+<P><STRONG><a name="[136]"></a>__rt_lib_init_clock_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000023))
+
+<P><STRONG><a name="[137]"></a>__rt_lib_init_cpp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000034))
+
+<P><STRONG><a name="[138]"></a>__rt_lib_init_exceptions_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000032))
+
+<P><STRONG><a name="[139]"></a>__rt_lib_init_fp_trap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000021))
+
+<P><STRONG><a name="[13a]"></a>__rt_lib_init_getenv_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000025))
+
+<P><STRONG><a name="[13b]"></a>__rt_lib_init_lc_numeric_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000019))
+
+<P><STRONG><a name="[13c]"></a>__rt_lib_init_lc_time_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001B))
+
+<P><STRONG><a name="[13d]"></a>__rt_lib_init_return</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000035))
+
+<P><STRONG><a name="[13e]"></a>__rt_lib_init_signal_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001F))
+
+<P><STRONG><a name="[13f]"></a>__rt_lib_init_stdio_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000027))
+
+<P><STRONG><a name="[3a]"></a>__rt_lib_shutdown</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown.o(.ARM.Collect$$libshutdown$$00000000))
+<BR><BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit_ls
+</UL>
+
+<P><STRONG><a name="[140]"></a>__rt_lib_shutdown_cpp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000002))
+
+<P><STRONG><a name="[141]"></a>__rt_lib_shutdown_fp_trap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000007))
+
+<P><STRONG><a name="[142]"></a>__rt_lib_shutdown_heap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000F))
+
+<P><STRONG><a name="[143]"></a>__rt_lib_shutdown_return</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000010))
+
+<P><STRONG><a name="[144]"></a>__rt_lib_shutdown_signal_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000A))
+
+<P><STRONG><a name="[145]"></a>__rt_lib_shutdown_stdio_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000004))
+
+<P><STRONG><a name="[146]"></a>__rt_lib_shutdown_user_alloc_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000C))
+
+<P><STRONG><a name="[24]"></a>__rt_entry</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry.o(.ARM.Collect$$rtentry$$00000000))
+<BR><BR>[Called By]<UL><LI><a href="#[1e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
+<LI><a href="#[25]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_rt2
+</UL>
+
+<P><STRONG><a name="[147]"></a>__rt_entry_presh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000002))
+
+<P><STRONG><a name="[32]"></a>__rt_entry_sh</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry4.o(.ARM.Collect$$rtentry$$00000004))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
+<LI>Call Chain = __rt_entry_sh &rArr; __user_setup_stackheap
+</UL>
+<BR>[Calls]<UL><LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_setup_stackheap
+</UL>
+
+<P><STRONG><a name="[34]"></a>__rt_entry_li</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000A))
+<BR><BR>[Calls]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init
+</UL>
+
+<P><STRONG><a name="[148]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
+
+<P><STRONG><a name="[36]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
+<BR><BR>[Stack]<UL><LI>Max Depth = 872 + Unknown Stack Size
+<LI>Call Chain = __rt_entry_main &rArr; main &rArr; TaskSerial_PollCommand &rArr; command_save_and_reset &rArr; RuntimeConfig_Save &rArr; record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
+</UL>
+
+<P><STRONG><a name="[149]"></a>__rt_entry_postli_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000C))
+
+<P><STRONG><a name="[78]"></a>__rt_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit.o(.ARM.Collect$$rtexit$$00000000))
+<BR><BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
+</UL>
+
+<P><STRONG><a name="[39]"></a>__rt_exit_ls</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit2.o(.ARM.Collect$$rtexit$$00000003))
+<BR><BR>[Calls]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_shutdown
+</UL>
+
+<P><STRONG><a name="[14a]"></a>__rt_exit_prels_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit2.o(.ARM.Collect$$rtexit$$00000002))
+
+<P><STRONG><a name="[3b]"></a>__rt_exit_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit2.o(.ARM.Collect$$rtexit$$00000004))
+<BR><BR>[Calls]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_sys_exit
+</UL>
+
+<P><STRONG><a name="[fb]"></a>__aeabi_memcpy4</STRONG> (Thumb, 56 bytes, Stack size 0 bytes, rt_memcpy.o(.emb_text))
+<BR><BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+</UL>
+
+<P><STRONG><a name="[14b]"></a>__aeabi_memcpy8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, rt_memcpy.o(.emb_text), UNUSED)
+
+<P><STRONG><a name="[0]"></a>Reset_Handler</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[2]"></a>HardFault_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR><BR>[Calls]<UL><LI><a href="#[2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HardFault_Handler
+</UL>
+<BR>[Called By]<UL><LI><a href="#[2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HardFault_Handler
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[3]"></a>SVC_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR><BR>[Calls]<UL><LI><a href="#[3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SVC_Handler
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SVC_Handler
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[4]"></a>PendSV_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR><BR>[Calls]<UL><LI><a href="#[4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PendSV_Handler
+</UL>
+<BR>[Called By]<UL><LI><a href="#[4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PendSV_Handler
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[a]"></a>ADC0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[b]"></a>ADC1_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[1b]"></a>AES_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[c]"></a>CANFD0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[d]"></a>DAC0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[1d]"></a>DMA_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[3d]"></a>Default_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Default_Handler
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Default_Handler
+</UL>
+
+<P><STRONG><a name="[6]"></a>GROUP0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[19]"></a>I2C0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[1a]"></a>I2C1_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[1c]"></a>RTC_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[e]"></a>SPI0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[f]"></a>SPI1_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[15]"></a>TIMA0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[16]"></a>TIMA1_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[13]"></a>TIMG0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[18]"></a>TIMG12_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[17]"></a>TIMG7_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[12]"></a>UART0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[10]"></a>UART1_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[9]"></a>UART3_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[76]"></a>__user_initial_stackheap</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, startup_mspm0g350x_uvision.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_setup_stackheap
+</UL>
+
+<P><STRONG><a name="[3e]"></a>__2snprintf</STRONG> (Thumb, 60 bytes, Stack size 32 bytes, noretval__2snprintf.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 128 + Unknown Stack Size
+<LI>Call Chain = __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_WriteAngles
+<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrationProgress
+<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;command_save_and_reset
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[40]"></a>_printf_str</STRONG> (Thumb, 82 bytes, Stack size 16 bytes, _printf_str.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = _printf_str
+</UL>
+<BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_pre_padding (Weak Reference)
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_post_padding (Weak Reference)
+</UL>
+<BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_cs_common
+</UL>
+
+<P><STRONG><a name="[2b]"></a>_printf_int_dec</STRONG> (Thumb, 90 bytes, Stack size 32 bytes, _printf_dec.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = _printf_int_dec &rArr; _printf_int_common
+</UL>
+<BR>[Calls]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_udiv10
+<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_common
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_truncate_unsigned (Weak Reference)
+<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_truncate_signed (Weak Reference)
+</UL>
+<BR>[Called By]<UL><LI><a href="#[28]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_u
+</UL>
+
+<P><STRONG><a name="[47]"></a>__printf</STRONG> (Thumb, 352 bytes, Stack size 32 bytes, __printf_ss_wp.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32 + Unknown Stack Size
+<LI>Call Chain = __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_percent
+<LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_is_digit
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
+</UL>
+
+<P><STRONG><a name="[f7]"></a>strncmp</STRONG> (Thumb, 154 bytes, Stack size 20 bytes, strncmp.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = strncmp
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+</UL>
+
+<P><STRONG><a name="[4a]"></a>__aeabi_memset4</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, aeabi_memset4.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_memset4
+</UL>
+<BR>[Calls]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_memset_w
+</UL>
+<BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+</UL>
+
+<P><STRONG><a name="[14c]"></a>__aeabi_memset8</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, aeabi_memset4.o(.text), UNUSED)
+
+<P><STRONG><a name="[4b]"></a>_memset_w</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, rt_memclr.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_memclr_w
+<LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_memset
+<LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset4
+</UL>
+
+<P><STRONG><a name="[4c]"></a>_memset</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, rt_memclr.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_memset_w
+</UL>
+<BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
+</UL>
+
+<P><STRONG><a name="[4d]"></a>__aeabi_memclr</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, rt_memclr.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_memset
+</UL>
+
+<P><STRONG><a name="[14d]"></a>__rt_memclr</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, rt_memclr.o(.text), UNUSED)
+
+<P><STRONG><a name="[b8]"></a>__aeabi_memclr4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, rt_memclr.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Init
+<LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_ApplyBaud
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+</UL>
+
+<P><STRONG><a name="[14e]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, rt_memclr.o(.text), UNUSED)
+
+<P><STRONG><a name="[4e]"></a>__rt_memclr_w</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, rt_memclr.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_memset_w
+</UL>
+
+<P><STRONG><a name="[a2]"></a>__aeabi_uidivmod</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, aeabi_sdivfast.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_unprotectSector
+</UL>
+
+<P><STRONG><a name="[6c]"></a>__aeabi_idivmod</STRONG> (Thumb, 472 bytes, Stack size 8 bytes, aeabi_sdivfast.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_idivmod
+</UL>
+<BR>[Called By]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_etento
+</UL>
+
+<P><STRONG><a name="[14f]"></a>__use_two_region_memory</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+
+<P><STRONG><a name="[150]"></a>__rt_heap_escrow$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+
+<P><STRONG><a name="[151]"></a>__rt_heap_expand$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+
+<P><STRONG><a name="[ac]"></a>__aeabi_d2f</STRONG> (Thumb, 0 bytes, Stack size 12 bytes, d2f.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = __aeabi_d2f
+</UL>
+<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+</UL>
+
+<P><STRONG><a name="[152]"></a>__truncdfsf2</STRONG> (Thumb, 0 bytes, Stack size 12 bytes, d2f.o(.text), UNUSED)
+
+<P><STRONG><a name="[153]"></a>_d2f</STRONG> (Thumb, 120 bytes, Stack size 12 bytes, d2f.o(.text), UNUSED)
+
+<P><STRONG><a name="[154]"></a>__adddf3</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, daddsub.o(.text), UNUSED)
+
+<P><STRONG><a name="[aa]"></a>__aeabi_dadd</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, daddsub.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_dadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+</UL>
+
+<P><STRONG><a name="[4f]"></a>_dadd</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, daddsub.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub1
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
+</UL>
+
+<P><STRONG><a name="[155]"></a>__aeabi_dsub</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, daddsub.o(.text), UNUSED)
+
+<P><STRONG><a name="[156]"></a>__subdf3</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, daddsub.o(.text), UNUSED)
+
+<P><STRONG><a name="[52]"></a>_dsub</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, daddsub.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub1
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
+</UL>
+
+<P><STRONG><a name="[157]"></a>__aeabi_drsub</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, daddsub.o(.text), UNUSED)
+
+<P><STRONG><a name="[53]"></a>_drsb</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, daddsub.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub1
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
+</UL>
+
+<P><STRONG><a name="[ab]"></a>__aeabi_ddiv</STRONG> (Thumb, 0 bytes, Stack size 64 bytes, ddiv.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = __aeabi_ddiv
+</UL>
+<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+</UL>
+
+<P><STRONG><a name="[158]"></a>__divdf3</STRONG> (Thumb, 0 bytes, Stack size 64 bytes, ddiv.o(.text), UNUSED)
+
+<P><STRONG><a name="[55]"></a>_ddiv</STRONG> (Thumb, 1072 bytes, Stack size 64 bytes, ddiv.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_drdiv
+</UL>
+
+<P><STRONG><a name="[54]"></a>_drdiv</STRONG> (Thumb, 20 bytes, Stack size 16 bytes, ddiv.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ddiv
+</UL>
+
+<P><STRONG><a name="[57]"></a>__aeabi_i2d_normalise</STRONG> (Thumb, 66 bytes, Stack size 0 bytes, dflti.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
+</UL>
+
+<P><STRONG><a name="[56]"></a>__aeabi_i2d</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, dflti.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d_normalise
+</UL>
+
+<P><STRONG><a name="[159]"></a>_dflt</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, dflti.o(.text), UNUSED)
+
+<P><STRONG><a name="[58]"></a>__aeabi_ui2d</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, dflti.o(.text))
+<BR><BR>[Calls]<UL><LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d_normalise
+</UL>
+<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+</UL>
+
+<P><STRONG><a name="[15a]"></a>_dfltu</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, dflti.o(.text), UNUSED)
+
+<P><STRONG><a name="[a9]"></a>__aeabi_f2d</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, f2d.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_WriteAngles
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[15b]"></a>__extendsfdf2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, f2d.o(.text), UNUSED)
+
+<P><STRONG><a name="[15c]"></a>_f2d</STRONG> (Thumb, 80 bytes, Stack size 0 bytes, f2d.o(.text), UNUSED)
+
+<P><STRONG><a name="[84]"></a>__aeabi_fdiv</STRONG> (Thumb, 0 bytes, Stack size 20 bytes, fdiv.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = __aeabi_fdiv
+</UL>
+<BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_invalid
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calibrate_gyro_offset
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[15d]"></a>__divsf3</STRONG> (Thumb, 0 bytes, Stack size 20 bytes, fdiv.o(.text), UNUSED)
+
+<P><STRONG><a name="[5a]"></a>_fdiv</STRONG> (Thumb, 334 bytes, Stack size 20 bytes, fdiv.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_frdiv
+</UL>
+
+<P><STRONG><a name="[59]"></a>_frdiv</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, fdiv.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fdiv
+</UL>
+
+<P><STRONG><a name="[103]"></a>__aeabi_f2uiz</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, ffixui.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi270_heater_set_duty
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_heater_set_duty
+</UL>
+
+<P><STRONG><a name="[15e]"></a>_ffixu</STRONG> (Thumb, 48 bytes, Stack size 0 bytes, ffixui.o(.text), UNUSED)
+
+<P><STRONG><a name="[5c]"></a>__aeabi_i2f_normalise</STRONG> (Thumb, 72 bytes, Stack size 0 bytes, fflti.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2f
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+</UL>
+
+<P><STRONG><a name="[5b]"></a>__aeabi_i2f</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, fflti.o(.text))
+<BR><BR>[Calls]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f_normalise
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_ReadTemperature
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Read
+<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Read
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calibrate_gyro_offset
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[15f]"></a>_fflt</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, fflti.o(.text), UNUSED)
+
+<P><STRONG><a name="[5d]"></a>__aeabi_ui2f</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, fflti.o(.text))
+<BR><BR>[Calls]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f_normalise
+</UL>
+<BR>[Called By]<UL><LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[160]"></a>_ffltu</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, fflti.o(.text), UNUSED)
+
+<P><STRONG><a name="[5e]"></a>__read_errno</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, _rserrno.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_errno_addr
+</UL>
+
+<P><STRONG><a name="[60]"></a>__set_errno</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, _rserrno.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __set_errno
+</UL>
+<BR>[Calls]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_errno_addr
+</UL>
+<BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrtf
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+</UL>
+
+<P><STRONG><a name="[46]"></a>_printf_int_common</STRONG> (Thumb, 176 bytes, Stack size 40 bytes, _printf_intcommon.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = _printf_int_common
+</UL>
+<BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_pre_padding (Weak Reference)
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_post_padding (Weak Reference)
+</UL>
+<BR>[Called By]<UL><LI><a href="#[2b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_dec
+</UL>
+
+<P><STRONG><a name="[22]"></a>_printf_fp_dec_real</STRONG> (Thumb, 620 bytes, Stack size 96 bytes, _printf_fp_dec.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 368<LI>Call Chain = _printf_fp_dec_real &rArr; _fp_digits &rArr; _btod_etento &rArr; _btod_emul &rArr; btod_internal_mul &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
+<LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_infnan
+<LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_locale
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_udiv10
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_pre_padding (Weak Reference)
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_post_padding (Weak Reference)
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> printf1.o(x$fpl$printf1)
+</UL>
+<P><STRONG><a name="[3f]"></a>_printf_char_common</STRONG> (Thumb, 32 bytes, Stack size 64 bytes, _printf_char_common.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 96 + Unknown Stack Size
+<LI>Call Chain = _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__printf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+</UL>
+
+<P><STRONG><a name="[1f]"></a>_snputc</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, _snputc.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> noretval__2snprintf.o(.text)
+</UL>
+<P><STRONG><a name="[69]"></a>_printf_cs_common</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, _printf_char.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = _printf_cs_common &rArr; _printf_str
+</UL>
+<BR>[Calls]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_mbtowc (Weak Reference)
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_str
+</UL>
+<BR>[Called By]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_string
+<LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char
+</UL>
+
+<P><STRONG><a name="[6b]"></a>_printf_char</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, _printf_char.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_cs_common
+</UL>
+
+<P><STRONG><a name="[2d]"></a>_printf_string</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, _printf_char.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = _printf_string &rArr; _printf_cs_common &rArr; _printf_str
+</UL>
+<BR>[Calls]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_cs_common
+</UL>
+<BR>[Called By]<UL><LI><a href="#[2a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_s
+</UL>
+
+<P><STRONG><a name="[45]"></a>__rt_udiv10</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, rtudiv10.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec_real
+<LI><a href="#[2b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_dec
+</UL>
+
+<P><STRONG><a name="[11e]"></a>__aeabi_f2iz</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, ffixi.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_f2iz
+</UL>
+<BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+</UL>
+
+<P><STRONG><a name="[161]"></a>_ffix</STRONG> (Thumb, 76 bytes, Stack size 8 bytes, ffixi.o(.text), UNUSED)
+
+<P><STRONG><a name="[11d]"></a>_frnd</STRONG> (Thumb, 122 bytes, Stack size 8 bytes, frnd.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _frnd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+</UL>
+
+<P><STRONG><a name="[10e]"></a>__ARM_scalbnf</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, fscalbn.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __ARM_scalbnf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_underflow
+<LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_infnan
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+</UL>
+
+<P><STRONG><a name="[11f]"></a>_fsqrt</STRONG> (Thumb, 140 bytes, Stack size 12 bytes, fsqrt.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = _fsqrt
+</UL>
+<BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrtf
+</UL>
+
+<P><STRONG><a name="[2f]"></a>__rt_locale</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, rt_locale_intlibspace.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec_real
+<LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init_lc_common
+</UL>
+
+<P><STRONG><a name="[5f]"></a>__aeabi_errno_addr</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, rt_errno_addr_intlibspace.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__read_errno
+</UL>
+
+<P><STRONG><a name="[162]"></a>__errno$intlibspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, rt_errno_addr_intlibspace.o(.text), UNUSED)
+
+<P><STRONG><a name="[163]"></a>__rt_errno_addr$intlibspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, rt_errno_addr_intlibspace.o(.text), UNUSED)
+
+<P><STRONG><a name="[66]"></a>_ll_udiv10</STRONG> (Thumb, 122 bytes, Stack size 16 bytes, lludiv10.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = _ll_udiv10
+</UL>
+<BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+</UL>
+
+<P><STRONG><a name="[68]"></a>_printf_fp_infnan</STRONG> (Thumb, 120 bytes, Stack size 24 bytes, _printf_fp_infnan.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = _printf_fp_infnan
+</UL>
+<BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_pre_padding (Weak Reference)
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_post_padding (Weak Reference)
+</UL>
+<BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec_real
+</UL>
+
+<P><STRONG><a name="[62]"></a>_btod_etento</STRONG> (Thumb, 210 bytes, Stack size 72 bytes, bigflt0.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = _btod_etento &rArr; _btod_emul &rArr; btod_internal_mul &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_ediv
+<LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_emul
+<LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_idivmod
+</UL>
+<BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+</UL>
+
+<P><STRONG><a name="[63]"></a>_btod_d2e</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, btod.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _btod_d2e
+</UL>
+<BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+</UL>
+
+<P><STRONG><a name="[65]"></a>_btod_emul</STRONG> (Thumb, 28 bytes, Stack size 24 bytes, btod.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = _btod_emul &rArr; btod_internal_mul &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;btod_internal_mul
+</UL>
+<BR>[Called By]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_etento
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+</UL>
+
+<P><STRONG><a name="[6f]"></a>_btod_emuld</STRONG> (Thumb, 144 bytes, Stack size 56 bytes, btod.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;btod_internal_mul
+</UL>
+
+<P><STRONG><a name="[64]"></a>_btod_ediv</STRONG> (Thumb, 26 bytes, Stack size 24 bytes, btod.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = _btod_ediv &rArr; btod_internal_div
+</UL>
+<BR>[Calls]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;btod_internal_div
+</UL>
+<BR>[Called By]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_etento
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+</UL>
+
+<P><STRONG><a name="[71]"></a>_btod_edivd</STRONG> (Thumb, 124 bytes, Stack size 56 bytes, btod.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;btod_internal_div
+</UL>
+
+<P><STRONG><a name="[72]"></a>__fpl_fcmp_InfNaN</STRONG> (Thumb, 96 bytes, Stack size 8 bytes, fcmpin.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fcheck_NaN2
+<LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_cmpreturn
+</UL>
+<BR>[Called By]<UL><LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmple
+<LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmpge
+<LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmpeq
+</UL>
+
+<P><STRONG><a name="[164]"></a>__user_libspace</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
+
+<P><STRONG><a name="[75]"></a>__user_perproc_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_setup_stackheap
+</UL>
+
+<P><STRONG><a name="[165]"></a>__user_perthread_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
+
+<P><STRONG><a name="[33]"></a>__user_setup_stackheap</STRONG> (Thumb, 62 bytes, Stack size 8 bytes, sys_stackheap_outer.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __user_setup_stackheap
+</UL>
+<BR>[Calls]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_initial_stackheap
+<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_perproc_libspace
+</UL>
+<BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_sh
+</UL>
+
+<P><STRONG><a name="[38]"></a>exit</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, exit.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
+<LI>Call Chain = exit
+</UL>
+<BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit
+<LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_call_atexit_fns (Weak Reference)
+</UL>
+<BR>[Called By]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
+</UL>
+
+<P><STRONG><a name="[120]"></a>strcmp</STRONG> (Thumb, 176 bytes, Stack size 16 bytes, strcmpv6m.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = strcmp
+</UL>
+<BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_get_lc_numeric
+</UL>
+
+<P><STRONG><a name="[73]"></a>__fpl_cmpreturn</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, cmpret.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fcmp_InfNaN
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_return_NaN
+</UL>
+
+<P><STRONG><a name="[74]"></a>__fpl_fcheck_NaN2</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, fnan2.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_return_NaN
+</UL>
+<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fcmp_InfNaN
+</UL>
+
+<P><STRONG><a name="[79]"></a>__fpl_return_NaN</STRONG> (Thumb, 94 bytes, Stack size 8 bytes, retnan.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_cmpreturn
+</UL>
+<BR>[Called By]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fcheck_NaN2
+</UL>
+
+<P><STRONG><a name="[3c]"></a>_sys_exit</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sys_exit.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit_exit
+</UL>
+
+<P><STRONG><a name="[166]"></a>__I$use$semihosting</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
+
+<P><STRONG><a name="[167]"></a>__use_no_semihosting_swi</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
+
+<P><STRONG><a name="[168]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, indicate_semi.o(.text), UNUSED)
+
+<P><STRONG><a name="[7a]"></a>BMI088_Init</STRONG> (Thumb, 1500 bytes, Stack size 56 bytes, bmi088_mspm0.o(.text.BMI088_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 220<LI>Call Chain = BMI088_Init &rArr; BMI088_StartupCalibrate &rArr; sqrtf &rArr; _fsqrt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_single_reg
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_single_reg
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_write_single_reg
+<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_write_single_reg
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_multi_reg
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[85]"></a>BMI088_Read</STRONG> (Thumb, 368 bytes, Stack size 48 bytes, bmi088_mspm0.o(.text.BMI088_Read))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = BMI088_Read &rArr; gyro_read_multi_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_multi_reg
+<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_multi_reg
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+</UL>
+
+<P><STRONG><a name="[88]"></a>BMI088_ReadAccelChipId</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, bmi088_mspm0.o(.text.BMI088_ReadAccelChipId))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = BMI088_ReadAccelChipId &rArr; accel_read_single_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_single_reg
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[89]"></a>BMI088_ReadGyroChipId</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, bmi088_mspm0.o(.text.BMI088_ReadGyroChipId))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = BMI088_ReadGyroChipId &rArr; gyro_read_single_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_single_reg
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[8a]"></a>BMI088_ReadTemperatureRaw</STRONG> (Thumb, 64 bytes, Stack size 24 bytes, bmi088_mspm0.o(.text.BMI088_ReadTemperatureRaw))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = BMI088_ReadTemperatureRaw &rArr; accel_read_multi_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_multi_reg
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+</UL>
+
+<P><STRONG><a name="[80]"></a>BMI088_StartupCalibrate</STRONG> (Thumb, 816 bytes, Stack size 136 bytes, bmi088_mspm0.o(.text.BMI088_StartupCalibrate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 164<LI>Call Chain = BMI088_StartupCalibrate &rArr; sqrtf &rArr; _fsqrt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrtf
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2f
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmplt
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_multi_reg
+<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_multi_reg
+</UL>
+<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+</UL>
+
+<P><STRONG><a name="[90]"></a>BMI270_Init</STRONG> (Thumb, 2200 bytes, Stack size 40 bytes, bmi270_mspm0.o(.text.BMI270_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = BMI270_Init &rArr; calibrate_gyro_offset &rArr; read_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calibrate_gyro_offset
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;capture_config_status
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;upload_config_file
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enter_config_load_mode
+<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_regs
+<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_chip_id_retry
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[98]"></a>BMI270_Read</STRONG> (Thumb, 328 bytes, Stack size 56 bytes, bmi270_mspm0.o(.text.BMI270_Read))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = BMI270_Read &rArr; read_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+</UL>
+
+<P><STRONG><a name="[99]"></a>BMI270_ReadChipId</STRONG> (Thumb, 22 bytes, Stack size 16 bytes, bmi270_mspm0.o(.text.BMI270_ReadChipId))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = BMI270_ReadChipId &rArr; read_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[9a]"></a>BMI270_ReadTemperature</STRONG> (Thumb, 52 bytes, Stack size 16 bytes, bmi270_mspm0.o(.text.BMI270_ReadTemperature))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = BMI270_ReadTemperature &rArr; read_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+</UL>
+
+<P><STRONG><a name="[107]"></a>Board_EnableInterrupts</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, board_mspm0.o(.text.Board_EnableInterrupts))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Board_EnableInterrupts
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[a6]"></a>Board_HandleGroup1Irq</STRONG> (Thumb, 52 bytes, Stack size 0 bytes, board_mspm0.o(.text.Board_HandleGroup1Irq))
+<BR><BR>[Called By]<UL><LI><a href="#[7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GROUP1_IRQHandler
+</UL>
+
+<P><STRONG><a name="[c0]"></a>Board_HandleNmi</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, board_mspm0.o(.text.Board_HandleNmi))
+<BR><BR>[Called By]<UL><LI><a href="#[1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NMI_Handler
+</UL>
+
+<P><STRONG><a name="[9b]"></a>Board_InitHardware</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, board_mspm0.o(.text.Board_InitHardware))
+<BR><BR>[Stack]<UL><LI>Max Depth = 108<LI>Call Chain = Board_InitHardware &rArr; SYSCFG_DL_init &rArr; SYSCFG_DL_PWM_Motors_init &rArr; DL_TimerA_initPWMMode &rArr; DL_Timer_initPWMMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[105]"></a>Board_ResetAfterSave</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, board_mspm0.o(.text.Board_ResetAfterSave))
+<BR><BR>[Called By]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;command_save_and_reset
+</UL>
+
+<P><STRONG><a name="[7b]"></a>DL_Common_delayCycles</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, dl_common.o(.text.DL_Common_delayCycles))
+<BR><BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_initPower
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calibrate_gyro_offset
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;capture_config_status
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;upload_config_file
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enter_config_load_mode
+<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_chip_id_retry
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[f5]"></a>DL_DMA_initChannel</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, dl_dma.o(.text.DL_DMA_initChannel))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = DL_DMA_initChannel
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_ApplyBaud
+</UL>
+
+<P><STRONG><a name="[9d]"></a>DL_FlashCTL_eraseMemoryFromRAM</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, dl_flashctl.o(.text.DL_FlashCTL_eraseMemoryFromRAM))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = DL_FlashCTL_eraseMemoryFromRAM
+</UL>
+<BR>[Calls]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_executeCommandFromRAM (via Veneer)
+</UL>
+<BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+</UL>
+
+<P><STRONG><a name="[9f]"></a>DL_FlashCTL_programMemoryBlockingFromRAM64WithECCGenerated</STRONG> (Thumb, 116 bytes, Stack size 40 bytes, dl_flashctl.o(.text.DL_FlashCTL_programMemoryBlockingFromRAM64WithECCGenerated))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = DL_FlashCTL_programMemoryBlockingFromRAM64WithECCGenerated &rArr; DL_FlashCTL_unprotectSector
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_unprotectSector
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_executeCommandFromRAM (via Veneer)
+</UL>
+<BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+</UL>
+
+<P><STRONG><a name="[c5]"></a>DL_FlashCTL_protectMainMemory</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, dl_flashctl.o(.text.DL_FlashCTL_protectMainMemory))
+<BR><BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+</UL>
+
+<P><STRONG><a name="[a0]"></a>DL_FlashCTL_unprotectSector</STRONG> (Thumb, 188 bytes, Stack size 32 bytes, dl_flashctl.o(.text.DL_FlashCTL_unprotectSector))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = DL_FlashCTL_unprotectSector
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidiv
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidivmod
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_programMemoryBlockingFromRAM64WithECCGenerated
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+</UL>
+
+<P><STRONG><a name="[d0]"></a>DL_SPI_init</STRONG> (Thumb, 60 bytes, Stack size 16 bytes, dl_spi.o(.text.DL_SPI_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = DL_SPI_init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SPI_BMI088_init
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SPI_Bmi270_init
+</UL>
+
+<P><STRONG><a name="[102]"></a>DL_SPI_receiveDataBlocking8</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, dl_spi.o(.text.DL_SPI_receiveDataBlocking8))
+<BR><BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_single_reg
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_single_reg
+<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_regs
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_write_single_reg
+<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_write_single_reg
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_multi_reg
+<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_multi_reg
+</UL>
+
+<P><STRONG><a name="[cf]"></a>DL_SPI_setClockConfig</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, dl_spi.o(.text.DL_SPI_setClockConfig))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = DL_SPI_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SPI_BMI088_init
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SPI_Bmi270_init
+</UL>
+
+<P><STRONG><a name="[101]"></a>DL_SPI_transmitDataBlocking8</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, dl_spi.o(.text.DL_SPI_transmitDataBlocking8))
+<BR><BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_single_reg
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_single_reg
+<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_regs
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_write_single_reg
+<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_write_single_reg
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gyro_read_multi_reg
+<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;accel_read_multi_reg
+</UL>
+
+<P><STRONG><a name="[d4]"></a>DL_SYSCTL_configSYSPLL</STRONG> (Thumb, 180 bytes, Stack size 36 bytes, dl_sysctl_mspm0g1x0x_g3x0x.o(.text.DL_SYSCTL_configSYSPLL))
+<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = DL_SYSCTL_configSYSPLL
+</UL>
+<BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SYSCTL_init
+</UL>
+
+<P><STRONG><a name="[d3]"></a>DL_SYSCTL_setHFCLKSourceHFXTParams</STRONG> (Thumb, 76 bytes, Stack size 20 bytes, dl_sysctl_mspm0g1x0x_g3x0x.o(.text.DL_SYSCTL_setHFCLKSourceHFXTParams))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = DL_SYSCTL_setHFCLKSourceHFXTParams
+</UL>
+<BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SYSCTL_init
+</UL>
+
+<P><STRONG><a name="[d5]"></a>DL_SYSCTL_switchMCLKfromSYSOSCtoHSCLK</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, dl_sysctl_mspm0g1x0x_g3x0x.o(.text.DL_SYSCTL_switchMCLKfromSYSOSCtoHSCLK))
+<BR><BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SYSCTL_init
+</UL>
+
+<P><STRONG><a name="[a3]"></a>DL_TimerA_initPWMMode</STRONG> (Thumb, 120 bytes, Stack size 32 bytes, dl_timer.o(.text.DL_TimerA_initPWMMode))
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = DL_TimerA_initPWMMode &rArr; DL_Timer_initPWMMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_initPWMMode
+</UL>
+<BR>[Called By]<UL><LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Motors_init
+</UL>
+
+<P><STRONG><a name="[a4]"></a>DL_Timer_initPWMMode</STRONG> (Thumb, 188 bytes, Stack size 36 bytes, dl_timer.o(.text.DL_Timer_initPWMMode))
+<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = DL_Timer_initPWMMode
+</UL>
+<BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_TimerA_initPWMMode
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Buzzer_init
+</UL>
+
+<P><STRONG><a name="[d7]"></a>DL_Timer_initTimerMode</STRONG> (Thumb, 224 bytes, Stack size 16 bytes, dl_timer.o(.text.DL_Timer_initTimerMode))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = DL_Timer_initTimerMode
+</UL>
+<BR>[Called By]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG6_1000hz_init
+<LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG8_100hz_init
+<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG7_200hz_init
+<LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERA1_10hz_init
+</UL>
+
+<P><STRONG><a name="[cb]"></a>DL_Timer_setCaptCompUpdateMethod</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, dl_timer.o(.text.DL_Timer_setCaptCompUpdateMethod))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = DL_Timer_setCaptCompUpdateMethod
+</UL>
+<BR>[Called By]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Buzzer_init
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Motors_init
+</UL>
+
+<P><STRONG><a name="[ca]"></a>DL_Timer_setCaptureCompareOutCtl</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, dl_timer.o(.text.DL_Timer_setCaptureCompareOutCtl))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = DL_Timer_setCaptureCompareOutCtl
+</UL>
+<BR>[Called By]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Buzzer_init
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Motors_init
+</UL>
+
+<P><STRONG><a name="[cc]"></a>DL_Timer_setCaptureCompareValue</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, dl_timer.o(.text.DL_Timer_setCaptureCompareValue))
+<BR><BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi270_heater_set_duty
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_heater_set_duty
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Update100Hz
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Init
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Buzzer_init
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Motors_init
+</UL>
+
+<P><STRONG><a name="[c9]"></a>DL_Timer_setClockConfig</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, dl_timer.o(.text.DL_Timer_setClockConfig))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = DL_Timer_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG6_1000hz_init
+<LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG8_100hz_init
+<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG7_200hz_init
+<LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERA1_10hz_init
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Buzzer_init
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Motors_init
+</UL>
+
+<P><STRONG><a name="[a5]"></a>DL_UART_configBaudRate</STRONG> (Thumb, 124 bytes, Stack size 8 bytes, dl_uart.o(.text.DL_UART_configBaudRate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = DL_UART_configBaudRate
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidiv
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_ApplyBaud
+</UL>
+
+<P><STRONG><a name="[dd]"></a>DL_UART_init</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, dl_uart.o(.text.DL_UART_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = DL_UART_init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_UART_OUT_init
+</UL>
+
+<P><STRONG><a name="[dc]"></a>DL_UART_setClockConfig</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, dl_uart.o(.text.DL_UART_setClockConfig))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = DL_UART_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_UART_OUT_init
+</UL>
+
+<P><STRONG><a name="[7]"></a>GROUP1_IRQHandler</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, interrupt_mspm0.o(.text.GROUP1_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = GROUP1_IRQHandler
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Board_HandleGroup1Irq
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[eb]"></a>GyroBias_Apply</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, flash_storage.o(.text.GyroBias_Apply))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = GyroBias_Apply
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[a7]"></a>GyroBias_CalibrateWithService</STRONG> (Thumb, 464 bytes, Stack size 104 bytes, flash_storage.o(.text.GyroBias_CalibrateWithService))
+<BR><BR>[Stack]<UL><LI>Max Depth = 320 + Unknown Stack Size
+<LI>Call Chain = GyroBias_CalibrateWithService &rArr; GyroBias_CalibrationProgress &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Read
+<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Read
+<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrationProgress
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[a8]"></a>GyroBias_CalibrationProgress</STRONG> (Thumb, 132 bytes, Stack size 88 bytes, task_serial.o(.text.GyroBias_CalibrationProgress))
+<BR><BR>[Stack]<UL><LI>Max Depth = 216 + Unknown Stack Size
+<LI>Call Chain = GyroBias_CalibrationProgress &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidiv
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+</UL>
+
+<P><STRONG><a name="[e7]"></a>ImuAttitude_BMI088AccelToBoard</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, imu_attitude.o(.text.ImuAttitude_BMI088AccelToBoard))
+<BR><BR>[Called By]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+</UL>
+
+<P><STRONG><a name="[e6]"></a>ImuAttitude_BMI270AccelToBoard</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, imu_attitude.o(.text.ImuAttitude_BMI270AccelToBoard))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = ImuAttitude_BMI270AccelToBoard
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+</UL>
+
+<P><STRONG><a name="[ad]"></a>ImuAttitude_Init</STRONG> (Thumb, 188 bytes, Stack size 16 bytes, imu_attitude.o(.text.ImuAttitude_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = ImuAttitude_Init &rArr; Mahony_Init &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[ee]"></a>ImuAttitude_SetDebugMode</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, imu_attitude.o(.text.ImuAttitude_SetDebugMode))
+<BR><BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[af]"></a>ImuAttitude_SetInitialAccel</STRONG> (Thumb, 220 bytes, Stack size 48 bytes, imu_attitude.o(.text.ImuAttitude_SetInitialAccel))
+<BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = ImuAttitude_SetInitialAccel &rArr; Mahony_SetFromAccel &rArr; sinf &rArr; __mathlib_rredf2 &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Output
+<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+</UL>
+
+<P><STRONG><a name="[b3]"></a>ImuAttitude_Update</STRONG> (Thumb, 1192 bytes, Stack size 112 bytes, imu_attitude.o(.text.ImuAttitude_Update))
+<BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = ImuAttitude_Update &rArr; Mahony_UpdateFast &rArr; mahony_update_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_UpdateFast
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_UpdateGyroOnlyFast
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_axis
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Read
+<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Read
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmplt
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_UpdateFromInterrupt
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+</UL>
+
+<P><STRONG><a name="[b7]"></a>ImuAttitude_UpdateOutput</STRONG> (Thumb, 72 bytes, Stack size 24 bytes, imu_attitude.o(.text.ImuAttitude_UpdateOutput))
+<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = ImuAttitude_UpdateOutput &rArr; bmi088_attitude_update_output &rArr; Mahony_Output &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Output
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_UpdateFromInterrupt
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+</UL>
+
+<P><STRONG><a name="[ae]"></a>Mahony_Init</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, mahony_filter.o(.text.Mahony_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Mahony_Init &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_RotationMatrixUpdate
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Init
+</UL>
+
+<P><STRONG><a name="[b2]"></a>Mahony_Output</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, mahony_filter.o(.text.Mahony_Output))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Mahony_Output &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_UpdateOutput
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_SetInitialAccel
+</UL>
+
+<P><STRONG><a name="[b9]"></a>Mahony_RotationMatrixUpdate</STRONG> (Thumb, 282 bytes, Stack size 48 bytes, mahony_filter.o(.text.Mahony_RotationMatrixUpdate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Mahony_RotationMatrixUpdate &rArr; __aeabi_fmul
+</UL>
+<BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Init
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+</UL>
+
+<P><STRONG><a name="[b0]"></a>Mahony_SetFromAccel</STRONG> (Thumb, 408 bytes, Stack size 48 bytes, mahony_filter.o(.text.Mahony_SetFromAccel))
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = Mahony_SetFromAccel &rArr; sinf &rArr; __mathlib_rredf2 &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrtf
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_RotationMatrixUpdate
+</UL>
+<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_SetInitialAccel
+</UL>
+
+<P><STRONG><a name="[b6]"></a>Mahony_UpdateFast</STRONG> (Thumb, 28 bytes, Stack size 24 bytes, mahony_filter.o(.text.Mahony_UpdateFast))
+<BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = Mahony_UpdateFast &rArr; mahony_update_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+</UL>
+
+<P><STRONG><a name="[b4]"></a>Mahony_UpdateGyroOnlyFast</STRONG> (Thumb, 16 bytes, Stack size 16 bytes, mahony_filter.o(.text.Mahony_UpdateGyroOnlyFast))
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = Mahony_UpdateGyroOnlyFast &rArr; mahony_update_gyro_only_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+</UL>
+
+<P><STRONG><a name="[1]"></a>NMI_Handler</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, interrupt_mspm0.o(.text.NMI_Handler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = NMI_Handler
+</UL>
+<BR>[Calls]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Board_HandleNmi
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[c1]"></a>RuntimeConfig_Load</STRONG> (Thumb, 180 bytes, Stack size 32 bytes, flash_storage.o(.text.RuntimeConfig_Load))
+<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = RuntimeConfig_Load &rArr; record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;config_sanitize
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;record_is_valid
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_LoadConfig
+</UL>
+
+<P><STRONG><a name="[c4]"></a>RuntimeConfig_Save</STRONG> (Thumb, 404 bytes, Stack size 200 bytes, flash_storage.o(.text.RuntimeConfig_Save))
+<BR><BR>[Stack]<UL><LI>Max Depth = 304<LI>Call Chain = RuntimeConfig_Save &rArr; record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_protectMainMemory
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_programMemoryBlockingFromRAM64WithECCGenerated
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_unprotectSector
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_eraseMemoryFromRAM
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;config_sanitize
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;record_is_valid
+<LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset4
+</UL>
+<BR>[Called By]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;command_save_and_reset
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[f8]"></a>RuntimeState_BaudRateIsSupported</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, runtime_state.o(.text.RuntimeState_BaudRateIsSupported))
+<BR><BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+</UL>
+
+<P><STRONG><a name="[108]"></a>RuntimeState_ClearImuRuntimeStats</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, runtime_state.o(.text.RuntimeState_ClearImuRuntimeStats))
+<BR><BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[104]"></a>RuntimeState_ClearImuUpdates</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, runtime_state.o(.text.RuntimeState_ClearImuUpdates))
+<BR><BR>[Called By]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;command_save_and_reset
+</UL>
+
+<P><STRONG><a name="[c6]"></a>RuntimeState_LoadConfig</STRONG> (Thumb, 50 bytes, Stack size 16 bytes, runtime_state.o(.text.RuntimeState_LoadConfig))
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = RuntimeState_LoadConfig &rArr; RuntimeConfig_Load &rArr; record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Load
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidiv
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[e2]"></a>RuntimeState_OnSysTick</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, runtime_state.o(.text.RuntimeState_OnSysTick))
+<BR><BR>[Called By]<UL><LI><a href="#[5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Handler
+</UL>
+
+<P><STRONG><a name="[e4]"></a>RuntimeState_OnTemperatureTick</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, runtime_state.o(.text.RuntimeState_OnTemperatureTick))
+<BR><BR>[Called By]<UL><LI><a href="#[8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIMG8_IRQHandler
+</UL>
+
+<P><STRONG><a name="[10a]"></a>RuntimeState_TakeTemperatureUpdate</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, runtime_state.o(.text.RuntimeState_TakeTemperatureUpdate))
+<BR><BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[c7]"></a>RuntimeState_UpdateReportRate</STRONG> (Thumb, 38 bytes, Stack size 16 bytes, runtime_state.o(.text.RuntimeState_UpdateReportRate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = RuntimeState_UpdateReportRate
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidiv
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+</UL>
+
+<P><STRONG><a name="[10b]"></a>RuntimeState_WaitForInterrupt</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, runtime_state.o(.text.RuntimeState_WaitForInterrupt))
+<BR><BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[df]"></a>SYSCFG_DL_GPIO_init</STRONG> (Thumb, 164 bytes, Stack size 16 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_GPIO_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = SYSCFG_DL_GPIO_init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[c8]"></a>SYSCFG_DL_PWM_Buzzer_init</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_PWM_Buzzer_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = SYSCFG_DL_PWM_Buzzer_init &rArr; DL_Timer_initPWMMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptCompUpdateMethod
+<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptureCompareOutCtl
+<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_initPWMMode
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptureCompareValue
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[cd]"></a>SYSCFG_DL_PWM_Motors_init</STRONG> (Thumb, 124 bytes, Stack size 24 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_PWM_Motors_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 92<LI>Call Chain = SYSCFG_DL_PWM_Motors_init &rArr; DL_TimerA_initPWMMode &rArr; DL_Timer_initPWMMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_TimerA_initPWMMode
+<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptCompUpdateMethod
+<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptureCompareOutCtl
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptureCompareValue
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[ce]"></a>SYSCFG_DL_SPI_BMI088_init</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_SPI_BMI088_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SYSCFG_DL_SPI_BMI088_init &rArr; DL_SPI_init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_setClockConfig
+<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[d1]"></a>SYSCFG_DL_SPI_Bmi270_init</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_SPI_Bmi270_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SYSCFG_DL_SPI_Bmi270_init &rArr; DL_SPI_init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_setClockConfig
+<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[e0]"></a>SYSCFG_DL_SYSCTL_CLK_init</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_SYSCTL_CLK_init))
+<BR><BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[d2]"></a>SYSCFG_DL_SYSCTL_init</STRONG> (Thumb, 128 bytes, Stack size 24 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_SYSCTL_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = SYSCFG_DL_SYSCTL_init &rArr; DL_SYSCTL_configSYSPLL
+</UL>
+<BR>[Calls]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SYSCTL_setHFCLKSourceHFXTParams
+<LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SYSCTL_switchMCLKfromSYSOSCtoHSCLK
+<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SYSCTL_configSYSPLL
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[e1]"></a>SYSCFG_DL_SYSTICK_init</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_SYSTICK_init))
+<BR><BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[d6]"></a>SYSCFG_DL_TIMERA1_10hz_init</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_TIMERA1_10hz_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SYSCFG_DL_TIMERA1_10hz_init &rArr; DL_Timer_initTimerMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_initTimerMode
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[d8]"></a>SYSCFG_DL_TIMERG6_1000hz_init</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_TIMERG6_1000hz_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SYSCFG_DL_TIMERG6_1000hz_init &rArr; DL_Timer_initTimerMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_initTimerMode
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[d9]"></a>SYSCFG_DL_TIMERG7_200hz_init</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_TIMERG7_200hz_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SYSCFG_DL_TIMERG7_200hz_init &rArr; DL_Timer_initTimerMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_initTimerMode
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[da]"></a>SYSCFG_DL_TIMERG8_100hz_init</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_TIMERG8_100hz_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SYSCFG_DL_TIMERG8_100hz_init &rArr; DL_Timer_initTimerMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_initTimerMode
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setClockConfig
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[db]"></a>SYSCFG_DL_UART_OUT_init</STRONG> (Thumb, 88 bytes, Stack size 8 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_UART_OUT_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SYSCFG_DL_UART_OUT_init &rArr; DL_UART_init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_UART_setClockConfig
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_UART_init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[9c]"></a>SYSCFG_DL_init</STRONG> (Thumb, 92 bytes, Stack size 8 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = SYSCFG_DL_init &rArr; SYSCFG_DL_PWM_Motors_init &rArr; DL_TimerA_initPWMMode &rArr; DL_Timer_initPWMMode
+</UL>
+<BR>[Calls]<UL><LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SYSTICK_init
+<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SPI_BMI088_init
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SPI_Bmi270_init
+<LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_UART_OUT_init
+<LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG6_1000hz_init
+<LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG8_100hz_init
+<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERG7_200hz_init
+<LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_TIMERA1_10hz_init
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Buzzer_init
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_PWM_Motors_init
+<LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SYSCTL_CLK_init
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_SYSCTL_init
+<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_GPIO_init
+<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_initPower
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Board_InitHardware
+</UL>
+
+<P><STRONG><a name="[de]"></a>SYSCFG_DL_initPower</STRONG> (Thumb, 96 bytes, Stack size 24 bytes, ti_msp_dl_config.o(.text.SYSCFG_DL_initPower))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SYSCFG_DL_initPower
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_DL_init
+</UL>
+
+<P><STRONG><a name="[5]"></a>SysTick_Handler</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, interrupt_mspm0.o(.text.SysTick_Handler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = SysTick_Handler
+</UL>
+<BR>[Calls]<UL><LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_OnSysTick
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[14]"></a>TIMG6_IRQHandler</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, interrupt_mspm0.o(.text.TIMG6_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 296<LI>Call Chain = TIMG6_IRQHandler &rArr; TaskIMU_UpdateFromInterrupt &rArr; ImuAttitude_Update &rArr; Mahony_UpdateFast &rArr; mahony_update_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_UpdateFromInterrupt
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[8]"></a>TIMG8_IRQHandler</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, interrupt_mspm0.o(.text.TIMG8_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = TIMG8_IRQHandler
+</UL>
+<BR>[Calls]<UL><LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_OnTemperatureTick
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[e5]"></a>TaskIMU_AlignInitialAttitude</STRONG> (Thumb, 252 bytes, Stack size 80 bytes, task_imu.o(.text.TaskIMU_AlignInitialAttitude))
+<BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = TaskIMU_AlignInitialAttitude &rArr; ImuAttitude_Update &rArr; Mahony_UpdateFast &rArr; mahony_update_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_UpdateOutput
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_SetInitialAccel
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_BMI088AccelToBoard
+<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_BMI270AccelToBoard
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Read
+<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Read
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[f9]"></a>TaskIMU_EnableInterruptUpdate</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, task_imu.o(.text.TaskIMU_EnableInterruptUpdate))
+<BR><BR>[Called By]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;command_save_and_reset
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+</UL>
+
+<P><STRONG><a name="[e8]"></a>TaskIMU_HaveAlarm</STRONG> (Thumb, 54 bytes, Stack size 8 bytes, task_imu.o(.text.TaskIMU_HaveAlarm))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = TaskIMU_HaveAlarm &rArr; TaskTemperature_HaveFault &rArr; __aeabi_fcmple
+</UL>
+<BR>[Calls]<UL><LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_HaveFault
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[ea]"></a>TaskIMU_Init</STRONG> (Thumb, 448 bytes, Stack size 200 bytes, task_imu.o(.text.TaskIMU_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 552 + Unknown Stack Size
+<LI>Call Chain = TaskIMU_Init &rArr; TaskIMU_AlignInitialAttitude &rArr; ImuAttitude_Update &rArr; Mahony_UpdateFast &rArr; mahony_update_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Init
+<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_SetDebugMode
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_Apply
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_ReadChipId
+<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+<LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ReadGyroChipId
+<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ReadAccelChipId
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+<LI><a href="#[21]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_CalibrationService
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+<LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_Write
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_IsReady
+<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[f0]"></a>TaskIMU_ServiceReport</STRONG> (Thumb, 128 bytes, Stack size 16 bytes, task_imu.o(.text.TaskIMU_ServiceReport))
+<BR><BR>[Stack]<UL><LI>Max Depth = 488 + Unknown Stack Size
+<LI>Call Chain = TaskIMU_ServiceReport &rArr; TaskIMU_WriteAngles &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_WriteAngles
+<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_HaveFault
+<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskLED_Set
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskLED_UpdateSystemStatus
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_IsReady
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[e3]"></a>TaskIMU_UpdateFromInterrupt</STRONG> (Thumb, 92 bytes, Stack size 16 bytes, task_imu.o(.text.TaskIMU_UpdateFromInterrupt))
+<BR><BR>[Stack]<UL><LI>Max Depth = 288<LI>Call Chain = TaskIMU_UpdateFromInterrupt &rArr; ImuAttitude_Update &rArr; Mahony_UpdateFast &rArr; mahony_update_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_UpdateOutput
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+</UL>
+<BR>[Called By]<UL><LI><a href="#[14]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIMG6_IRQHandler
+</UL>
+
+<P><STRONG><a name="[f2]"></a>TaskIMU_WriteAngles</STRONG> (Thumb, 344 bytes, Stack size 344 bytes, task_imu.o(.text.TaskIMU_WriteAngles))
+<BR><BR>[Stack]<UL><LI>Max Depth = 472 + Unknown Stack Size
+<LI>Call Chain = TaskIMU_WriteAngles &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_Write
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_ServiceReport
+</UL>
+
+<P><STRONG><a name="[106]"></a>TaskLED_Init</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, task_led.o(.text.TaskLED_Init))
+<BR><BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[f3]"></a>TaskLED_Set</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, task_led.o(.text.TaskLED_Set))
+<BR><BR>[Called By]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_ServiceReport
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+</UL>
+
+<P><STRONG><a name="[f1]"></a>TaskLED_UpdateSystemStatus</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, task_led.o(.text.TaskLED_UpdateSystemStatus))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = TaskLED_UpdateSystemStatus
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidiv
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_ServiceReport
+<LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[f4]"></a>TaskSerial_ApplyBaud</STRONG> (Thumb, 224 bytes, Stack size 88 bytes, task_serial.o(.text.TaskSerial_ApplyBaud))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = TaskSerial_ApplyBaud &rArr; DL_DMA_initChannel
+</UL>
+<BR>[Calls]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_DMA_initChannel
+<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_UART_configBaudRate
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[109]"></a>TaskSerial_CollectRx</STRONG> (Thumb, 244 bytes, Stack size 32 bytes, task_serial.o(.text.TaskSerial_CollectRx))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = TaskSerial_CollectRx
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[f6]"></a>TaskSerial_PollCommand</STRONG> (Thumb, 3544 bytes, Stack size 464 bytes, task_serial.o(.text.TaskSerial_PollCommand))
+<BR><BR>[Stack]<UL><LI>Max Depth = 864 + Unknown Stack Size
+<LI>Call Chain = TaskSerial_PollCommand &rArr; command_save_and_reset &rArr; RuntimeConfig_Save &rArr; record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_EnableInterruptUpdate
+<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskLED_Set
+<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;command_save_and_reset
+<LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_BaudRateIsSupported
+<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_UpdateReportRate
+<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Load
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmplt
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+<LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strncmp
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[ec]"></a>TaskSerial_Write</STRONG> (Thumb, 84 bytes, Stack size 20 bytes, task_serial.o(.text.TaskSerial_Write))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = TaskSerial_Write
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_WriteAngles
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[21]"></a>TaskTemperature_CalibrationService</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, task_temperature.o(.text.TaskTemperature_CalibrationService))
+<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = TaskTemperature_CalibrationService &rArr; TaskTemperature_SampleSensorsFromInterrupt &rArr; BMI088_ReadTemperatureRaw &rArr; accel_read_multi_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Update100Hz
+</UL>
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+<BR>[Address Reference Count : 2]<UL><LI> task_serial.o(.text.TaskSerial_PollCommand)
+<LI> task_imu.o(.text.TaskIMU_Init)
+</UL>
+<P><STRONG><a name="[e9]"></a>TaskTemperature_HaveFault</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, task_temperature.o(.text.TaskTemperature_HaveFault))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = TaskTemperature_HaveFault &rArr; __aeabi_fcmple
+</UL>
+<BR>[Calls]<UL><LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_HaveAlarm
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_ServiceReport
+</UL>
+
+<P><STRONG><a name="[fd]"></a>TaskTemperature_Init</STRONG> (Thumb, 132 bytes, Stack size 32 bytes, task_temperature.o(.text.TaskTemperature_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = TaskTemperature_Init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptureCompareValue
+</UL>
+<BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[ed]"></a>TaskTemperature_IsReady</STRONG> (Thumb, 126 bytes, Stack size 32 bytes, task_temperature.o(.text.TaskTemperature_IsReady))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = TaskTemperature_IsReady &rArr; __aeabi_fsub
+</UL>
+<BR>[Calls]<UL><LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmplt
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_ServiceReport
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+<LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[ef]"></a>TaskTemperature_SampleSensorsFromInterrupt</STRONG> (Thumb, 272 bytes, Stack size 40 bytes, task_temperature.o(.text.TaskTemperature_SampleSensorsFromInterrupt))
+<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = TaskTemperature_SampleSensorsFromInterrupt &rArr; BMI088_ReadTemperatureRaw &rArr; accel_read_multi_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ReadTemperatureRaw
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_ReadTemperature
+<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ReadAccelChipId
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmplt
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_UpdateFromInterrupt
+<LI><a href="#[21]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_CalibrationService
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+</UL>
+
+<P><STRONG><a name="[fc]"></a>TaskTemperature_Update100Hz</STRONG> (Thumb, 312 bytes, Stack size 32 bytes, task_temperature.o(.text.TaskTemperature_Update100Hz))
+<BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = TaskTemperature_Update100Hz &rArr; heater_pid_update &rArr; __aeabi_fdiv
+</UL>
+<BR>[Calls]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi270_heater_set_duty
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_heater_set_duty
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptureCompareValue
+<LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
+</UL>
+<BR>[Called By]<UL><LI><a href="#[21]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_CalibrationService
+<LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[11]"></a>UART2_IRQHandler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, interrupt_mspm0.o(.text.UART2_IRQHandler))
+<BR>[Address Reference Count : 1]<UL><LI> startup_mspm0g350x_uvision.o(RESET)
+</UL>
+<P><STRONG><a name="[37]"></a>main</STRONG> (Thumb, 144 bytes, Stack size 8 bytes, main.o(.text.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 872 + Unknown Stack Size
+<LI>Call Chain = main &rArr; TaskSerial_PollCommand &rArr; command_save_and_reset &rArr; RuntimeConfig_Save &rArr; record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_WaitForInterrupt
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskLED_UpdateSystemStatus
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_IsReady
+<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_HaveAlarm
+<LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_TakeTemperatureUpdate
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_ServiceReport
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_CollectRx
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Update100Hz
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_ClearImuRuntimeStats
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_Init
+<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Board_EnableInterrupts
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Init
+<LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_ApplyBaud
+<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_LoadConfig
+<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskLED_Init
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Board_InitHardware
+</UL>
+<BR>[Called By]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
+</UL>
+
+<P><STRONG><a name="[a1]"></a>__aeabi_uidiv</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, aeabi_sdivfast.o(.text_divfast))
+<BR><BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_unprotectSector
+<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrationProgress
+<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_UpdateReportRate
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskLED_UpdateSystemStatus
+<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_LoadConfig
+<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_UART_configBaudRate
+</UL>
+
+<P><STRONG><a name="[169]"></a>__aeabi_idiv</STRONG> (Thumb, 434 bytes, Stack size 8 bytes, aeabi_sdivfast.o(.text_divfast), UNUSED)
+
+<P><STRONG><a name="[6e]"></a>__ARM_common_ll_muluu</STRONG> (Thumb, 48 bytes, Stack size 24 bytes, btod.o(i.__ARM_common_ll_muluu))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __ARM_common_ll_muluu
+</UL>
+<BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;btod_internal_mul
+<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+</UL>
+
+<P><STRONG><a name="[67]"></a>__ARM_fpclassify</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, fpclassify.o(i.__ARM_fpclassify))
+<BR><BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec_real
+</UL>
+
+<P><STRONG><a name="[11c]"></a>__ARM_fpclassifyf</STRONG> (Thumb, 34 bytes, Stack size 0 bytes, fpclassifyf.o(i.__ARM_fpclassifyf))
+<BR><BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+</UL>
+
+<P><STRONG><a name="[10d]"></a>__mathlib_flt_infnan</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, funder.o(i.__mathlib_flt_infnan))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __mathlib_flt_infnan &rArr; __ARM_scalbnf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_scalbnf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+</UL>
+
+<P><STRONG><a name="[10f]"></a>__mathlib_flt_infnan2</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, funder.o(i.__mathlib_flt_infnan2))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+</UL>
+
+<P><STRONG><a name="[110]"></a>__mathlib_flt_invalid</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, funder.o(i.__mathlib_flt_invalid))
+<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = __mathlib_flt_invalid &rArr; __aeabi_fdiv
+</UL>
+<BR>[Calls]<UL><LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+</UL>
+<BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+</UL>
+
+<P><STRONG><a name="[111]"></a>__mathlib_flt_underflow</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, funder.o(i.__mathlib_flt_underflow))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __mathlib_flt_underflow &rArr; __ARM_scalbnf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_scalbnf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+</UL>
+
+<P><STRONG><a name="[112]"></a>__mathlib_rredf2</STRONG> (Thumb, 366 bytes, Stack size 48 bytes, rredf.o(i.__mathlib_rredf2))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = __mathlib_rredf2 &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_common_ll_muluu
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_scalbnf
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2f
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_frsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+</UL>
+
+<P><STRONG><a name="[10c]"></a>__aeabi_fcmpeq</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, fcmp.o(i._feq))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_fcmpeq
+</UL>
+<BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;record_is_valid
+</UL>
+
+<P><STRONG><a name="[114]"></a>_feq</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, fcmp.o(i._feq), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmpeq
+</UL>
+
+<P><STRONG><a name="[8c]"></a>__aeabi_fcmpge</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, fcmp.o(i._fgeq))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_fcmpge
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_HaveFault
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Update100Hz
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[116]"></a>_fgeq</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, fcmp.o(i._fgeq), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmpge
+</UL>
+
+<P><STRONG><a name="[8e]"></a>__aeabi_fcmpgt</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, fcmp.o(i._fgr))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_fcmpgt
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_axis
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;config_sanitize
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi270_heater_set_duty
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_heater_set_duty
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[118]"></a>_fgr</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, fcmp.o(i._fgr), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmpge
+</UL>
+
+<P><STRONG><a name="[8d]"></a>__aeabi_fcmple</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, fcmp.o(i._fleq))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_fcmple
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;config_sanitize
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_HaveFault
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GyroBias_CalibrateWithService
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[119]"></a>_fleq</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, fcmp.o(i._fleq), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmple
+</UL>
+
+<P><STRONG><a name="[8f]"></a>__aeabi_fcmplt</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, fcmp.o(i._fls))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_fcmplt
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;config_sanitize
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_IsReady
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[11b]"></a>_fls</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, fcmp.o(i._fls), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmple
+</UL>
+
+<P><STRONG><a name="[48]"></a>_is_digit</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, __printf_wp.o(i._is_digit))
+<BR><BR>[Called By]<UL><LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__printf
+</UL>
+
+<P><STRONG><a name="[ba]"></a>asinf</STRONG> (Thumb, 242 bytes, Stack size 24 bytes, asinf.o(i.asinf))
+<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = asinf &rArr; __mathlib_flt_invalid &rArr; __aeabi_fdiv
+</UL>
+<BR>[Calls]<UL><LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_underflow
+<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_invalid
+<LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_infnan
+<LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassifyf
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_scalbnf
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
+<LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrtf
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_frsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Output
+<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Init
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+</UL>
+
+<P><STRONG><a name="[bb]"></a>atan2f</STRONG> (Thumb, 592 bytes, Stack size 48 bytes, atan2f.o(i.atan2f))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_underflow
+<LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_infnan2
+<LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassifyf
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_frsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Output
+<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Init
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+</UL>
+
+<P><STRONG><a name="[bc]"></a>cosf</STRONG> (Thumb, 318 bytes, Stack size 32 bytes, cosf.o(i.cosf))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = cosf &rArr; __mathlib_rredf2 &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_invalid
+<LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_infnan
+<LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_frnd
+<LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2iz
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_frsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+</UL>
+
+<P><STRONG><a name="[bd]"></a>sinf</STRONG> (Thumb, 330 bytes, Stack size 32 bytes, sinf.o(i.sinf))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = sinf &rArr; __mathlib_rredf2 &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_underflow
+<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_invalid
+<LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_infnan
+<LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassifyf
+<LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_frnd
+<LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2iz
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_frsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+</UL>
+
+<P><STRONG><a name="[8b]"></a>sqrtf</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, sqrtf.o(i.sqrtf))
+<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = sqrtf &rArr; _fsqrt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[11f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fsqrt
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[31]"></a>_get_lc_numeric</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, lc_numeric_c.o(locale$$code))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = _get_lc_numeric &rArr; strcmp
+</UL>
+<BR>[Calls]<UL><LI><a href="#[120]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcmp
+</UL>
+<BR>[Called By]<UL><LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init_lc_numeric_2
+</UL>
+
+<P><STRONG><a name="[83]"></a>__aeabi_fadd</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, faddsub.o(x$fpl$fadd))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_axis
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_ReadTemperature
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi270_heater_set_duty
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_heater_set_duty
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_SetInitialAccel
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_AlignInitialAttitude
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_flt_infnan2
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_RotationMatrixUpdate
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calibrate_gyro_offset
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[121]"></a>_fadd</STRONG> (Thumb, 134 bytes, Stack size 16 bytes, faddsub.o(x$fpl$fadd), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fsub1
+</UL>
+
+<P><STRONG><a name="[16a]"></a>__aeabi_cfcmpeq</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, feqf.o(x$fpl$feqf), UNUSED)
+
+<P><STRONG><a name="[115]"></a>_fcmpeq</STRONG> (Thumb, 78 bytes, Stack size 8 bytes, feqf.o(x$fpl$feqf), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fcmp_InfNaN
+</UL>
+<BR>[Called By]<UL><LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_feq
+</UL>
+
+<P><STRONG><a name="[117]"></a>_fcmpge</STRONG> (Thumb, 78 bytes, Stack size 8 bytes, fgef.o(x$fpl$fgeqf), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fcmp_InfNaN
+</UL>
+<BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fgr
+<LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fgeq
+</UL>
+
+<P><STRONG><a name="[16b]"></a>__aeabi_cfcmple</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, flef.o(x$fpl$fleqf), UNUSED)
+
+<P><STRONG><a name="[11a]"></a>_fcmple</STRONG> (Thumb, 78 bytes, Stack size 8 bytes, flef.o(x$fpl$fleqf), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fcmp_InfNaN
+</UL>
+<BR>[Called By]<UL><LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fls
+<LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fleq
+</UL>
+
+<P><STRONG><a name="[82]"></a>__aeabi_fmul</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, fmul.o(x$fpl$fmul))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_fmul
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_SetFromAccel
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_axis
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_ReadTemperature
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi270_heater_set_duty
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_heater_set_duty
+<LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_WriteAngles
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_SetInitialAccel
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Read
+<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Read
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_RotationMatrixUpdate
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calibrate_gyro_offset
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[16c]"></a>_fmul</STRONG> (Thumb, 172 bytes, Stack size 16 bytes, fmul.o(x$fpl$fmul), UNUSED)
+
+<P><STRONG><a name="[113]"></a>__aeabi_frsub</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, faddsub.o(x$fpl$frsb))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_frsub
+</UL>
+<BR>[Called By]<UL><LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+</UL>
+
+<P><STRONG><a name="[123]"></a>_frsb</STRONG> (Thumb, 24 bytes, Stack size 16 bytes, faddsub.o(x$fpl$frsb), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fsub1
+<LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fadd1
+</UL>
+
+<P><STRONG><a name="[87]"></a>__aeabi_fsub</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, faddsub.o(x$fpl$fsub))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_fsub
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_axis
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bmi088_attitude_update_output
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;heater_pid_update
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Read
+<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Read
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_SampleSensorsFromInterrupt
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_IsReady
+<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_rredf2
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sinf
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cosf
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_RotationMatrixUpdate
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_gyro_only_internal
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mahony_update_internal
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[125]"></a>_fsub</STRONG> (Thumb, 204 bytes, Stack size 16 bytes, faddsub.o(x$fpl$fsub), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fadd1
+</UL>
+
+<P><STRONG><a name="[29]"></a>_printf_fp_dec</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, printf1.o(x$fpl$printf1))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _printf_fp_dec
+</UL>
+<BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_f
+</UL>
+<P>
+<H3>
+Local Symbols
+</H3>
+<P><STRONG><a name="[9e]"></a>DL_FlashCTL_executeCommandFromRAM</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, dl_flashctl.o(.ramfunc))
+<BR><BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_programMemoryBlockingFromRAM64WithECCGenerated (via Veneer)
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_FlashCTL_eraseMemoryFromRAM (via Veneer)
+</UL>
+
+<P><STRONG><a name="[fa]"></a>command_save_and_reset</STRONG> (Thumb, 300 bytes, Stack size 96 bytes, task_serial.o(.text.command_save_and_reset))
+<BR><BR>[Stack]<UL><LI>Max Depth = 400 + Unknown Stack Size
+<LI>Call Chain = command_save_and_reset &rArr; RuntimeConfig_Save &rArr; record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Board_ResetAfterSave
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskIMU_EnableInterruptUpdate
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeState_ClearImuUpdates
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskSerial_PollCommand
+</UL>
+
+<P><STRONG><a name="[fe]"></a>bmi088_heater_set_duty</STRONG> (Thumb, 160 bytes, Stack size 32 bytes, task_temperature.o(.text.bmi088_heater_set_duty))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = bmi088_heater_set_duty &rArr; __aeabi_fmul
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptureCompareValue
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2uiz
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Update100Hz
+</UL>
+
+<P><STRONG><a name="[ff]"></a>bmi270_heater_set_duty</STRONG> (Thumb, 160 bytes, Stack size 32 bytes, task_temperature.o(.text.bmi270_heater_set_duty))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = bmi270_heater_set_duty &rArr; __aeabi_fmul
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Timer_setCaptureCompareValue
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2uiz
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Update100Hz
+</UL>
+
+<P><STRONG><a name="[100]"></a>heater_pid_update</STRONG> (Thumb, 268 bytes, Stack size 32 bytes, task_temperature.o(.text.heater_pid_update))
+<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = heater_pid_update &rArr; __aeabi_fdiv
+</UL>
+<BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmplt
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TaskTemperature_Update100Hz
+</UL>
+
+<P><STRONG><a name="[c2]"></a>record_is_valid</STRONG> (Thumb, 356 bytes, Stack size 72 bytes, flash_storage.o(.text.record_is_valid))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = record_is_valid &rArr; config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;config_sanitize
+<LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpeq
+</UL>
+<BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Load
+</UL>
+
+<P><STRONG><a name="[c3]"></a>config_sanitize</STRONG> (Thumb, 224 bytes, Stack size 24 bytes, flash_storage.o(.text.config_sanitize))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = config_sanitize &rArr; __aeabi_fcmplt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmplt
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+</UL>
+<BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;record_is_valid
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Save
+<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RuntimeConfig_Load
+</UL>
+
+<P><STRONG><a name="[b1]"></a>bmi088_attitude_update_output</STRONG> (Thumb, 176 bytes, Stack size 24 bytes, imu_attitude.o(.text.bmi088_attitude_update_output))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = bmi088_attitude_update_output &rArr; Mahony_Output &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_Output
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmplt
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_UpdateOutput
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_SetInitialAccel
+</UL>
+
+<P><STRONG><a name="[b5]"></a>update_axis</STRONG> (Thumb, 248 bytes, Stack size 32 bytes, imu_attitude.o(.text.update_axis))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = update_axis &rArr; __aeabi_fmul
+</UL>
+<BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ImuAttitude_Update
+</UL>
+
+<P><STRONG><a name="[7c]"></a>accel_read_single_reg</STRONG> (Thumb, 108 bytes, Stack size 24 bytes, bmi088_mspm0.o(.text.accel_read_single_reg))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = accel_read_single_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_transmitDataBlocking8
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_receiveDataBlocking8
+</UL>
+<BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ReadAccelChipId
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+</UL>
+
+<P><STRONG><a name="[7e]"></a>gyro_read_single_reg</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, bmi088_mspm0.o(.text.gyro_read_single_reg))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = gyro_read_single_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_transmitDataBlocking8
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_receiveDataBlocking8
+</UL>
+<BR>[Called By]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ReadGyroChipId
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+</UL>
+
+<P><STRONG><a name="[86]"></a>accel_read_multi_reg</STRONG> (Thumb, 132 bytes, Stack size 24 bytes, bmi088_mspm0.o(.text.accel_read_multi_reg))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = accel_read_multi_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_transmitDataBlocking8
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_receiveDataBlocking8
+</UL>
+<BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_ReadTemperatureRaw
+<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Read
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[81]"></a>gyro_read_multi_reg</STRONG> (Thumb, 96 bytes, Stack size 24 bytes, bmi088_mspm0.o(.text.gyro_read_multi_reg))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = gyro_read_multi_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_transmitDataBlocking8
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_receiveDataBlocking8
+</UL>
+<BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Read
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_StartupCalibrate
+</UL>
+
+<P><STRONG><a name="[7d]"></a>accel_write_single_reg</STRONG> (Thumb, 80 bytes, Stack size 24 bytes, bmi088_mspm0.o(.text.accel_write_single_reg))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = accel_write_single_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_transmitDataBlocking8
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_receiveDataBlocking8
+</UL>
+<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+</UL>
+
+<P><STRONG><a name="[7f]"></a>gyro_write_single_reg</STRONG> (Thumb, 80 bytes, Stack size 24 bytes, bmi088_mspm0.o(.text.gyro_write_single_reg))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = gyro_write_single_reg
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_transmitDataBlocking8
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_receiveDataBlocking8
+</UL>
+<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI088_Init
+</UL>
+
+<P><STRONG><a name="[93]"></a>read_regs</STRONG> (Thumb, 128 bytes, Stack size 24 bytes, bmi270_mspm0.o(.text.read_regs))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = read_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_transmitDataBlocking8
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_receiveDataBlocking8
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_ReadTemperature
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Read
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_ReadChipId
+<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calibrate_gyro_offset
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;capture_config_status
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enter_config_load_mode
+<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_chip_id_retry
+</UL>
+
+<P><STRONG><a name="[91]"></a>read_chip_id_retry</STRONG> (Thumb, 172 bytes, Stack size 40 bytes, bmi270_mspm0.o(.text.read_chip_id_retry))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = read_chip_id_retry &rArr; read_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+</UL>
+
+<P><STRONG><a name="[92]"></a>write_regs</STRONG> (Thumb, 96 bytes, Stack size 24 bytes, bmi270_mspm0.o(.text.write_regs))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = write_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_transmitDataBlocking8
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_SPI_receiveDataBlocking8
+</UL>
+<BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;upload_config_file
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enter_config_load_mode
+</UL>
+
+<P><STRONG><a name="[94]"></a>enter_config_load_mode</STRONG> (Thumb, 200 bytes, Stack size 40 bytes, bmi270_mspm0.o(.text.enter_config_load_mode))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = enter_config_load_mode &rArr; write_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_regs
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+</UL>
+
+<P><STRONG><a name="[95]"></a>upload_config_file</STRONG> (Thumb, 188 bytes, Stack size 32 bytes, bmi270_mspm0.o(.text.upload_config_file))
+<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = upload_config_file &rArr; write_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+</UL>
+
+<P><STRONG><a name="[96]"></a>capture_config_status</STRONG> (Thumb, 164 bytes, Stack size 48 bytes, bmi270_mspm0.o(.text.capture_config_status))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = capture_config_status &rArr; read_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+</UL>
+
+<P><STRONG><a name="[97]"></a>calibrate_gyro_offset</STRONG> (Thumb, 240 bytes, Stack size 56 bytes, bmi270_mspm0.o(.text.calibrate_gyro_offset))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = calibrate_gyro_offset &rArr; read_regs
+</UL>
+<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DL_Common_delayCycles
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_regs
+</UL>
+<BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BMI270_Init
+</UL>
+
+<P><STRONG><a name="[be]"></a>mahony_update_internal</STRONG> (Thumb, 1024 bytes, Stack size 64 bytes, mahony_filter.o(.text.mahony_update_internal))
+<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = mahony_update_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_RotationMatrixUpdate
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_UpdateFast
+</UL>
+
+<P><STRONG><a name="[bf]"></a>mahony_update_gyro_only_internal</STRONG> (Thumb, 592 bytes, Stack size 64 bytes, mahony_filter.o(.text.mahony_update_gyro_only_internal))
+<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = mahony_update_gyro_only_internal &rArr; atan2f &rArr; __mathlib_flt_infnan2 &rArr; __aeabi_fadd
+</UL>
+<BR>[Calls]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan2f
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;asinf
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpgt
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_RotationMatrixUpdate
+</UL>
+<BR>[Called By]<UL><LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mahony_UpdateGyroOnlyFast
+</UL>
+
+<P><STRONG><a name="[51]"></a>_dadd1</STRONG> (Thumb, 290 bytes, Stack size 20 bytes, daddsub.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_drsb
+<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub
+<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd
+</UL>
+
+<P><STRONG><a name="[50]"></a>_dsub1</STRONG> (Thumb, 470 bytes, Stack size 40 bytes, daddsub.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_drsb
+<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub
+<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd
+</UL>
+
+<P><STRONG><a name="[124]"></a>_fadd1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, faddsub.o(x$fpl$fadd), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fsub
+<LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_frsb
+</UL>
+
+<P><STRONG><a name="[122]"></a>_fsub1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, faddsub.o(x$fpl$fsub), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_frsb
+<LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fadd
+</UL>
+
+<P><STRONG><a name="[61]"></a>_fp_digits</STRONG> (Thumb, 412 bytes, Stack size 96 bytes, _printf_fp_dec.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = _fp_digits &rArr; _btod_etento &rArr; _btod_emul &rArr; btod_internal_mul &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_ediv
+<LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_emul
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_d2e
+<LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_etento
+<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ll_udiv10
+</UL>
+<BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec_real
+</UL>
+
+<P><STRONG><a name="[20]"></a>_printf_input_char</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, _printf_char_common.o(.text))
+<BR>[Address Reference Count : 1]<UL><LI> _printf_char_common.o(.text)
+</UL>
+<P><STRONG><a name="[6d]"></a>btod_internal_mul</STRONG> (Thumb, 492 bytes, Stack size 56 bytes, btod.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = btod_internal_mul &rArr; __ARM_common_ll_muluu
+</UL>
+<BR>[Calls]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_common_ll_muluu
+</UL>
+<BR>[Called By]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_emuld
+<LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_emul
+</UL>
+
+<P><STRONG><a name="[70]"></a>btod_internal_div</STRONG> (Thumb, 520 bytes, Stack size 64 bytes, btod.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = btod_internal_div
+</UL>
+<BR>[Called By]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_edivd
+<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_ediv
+</UL>
+<P>
+<H3>
+Undefined Global Symbols
+</H3>
+<P><STRONG><a name="[77]"></a>_call_atexit_fns</STRONG> (ARM, 0 bytes, Stack size 0 bytes, UNDEFINED)
+<BR><BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
+</UL>
+
+<P><STRONG><a name="[6a]"></a>_printf_mbtowc</STRONG> (ARM, 0 bytes, Stack size 0 bytes, UNDEFINED)
+<BR><BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_cs_common
+</UL>
+
+<P><STRONG><a name="[42]"></a>_printf_post_padding</STRONG> (ARM, 0 bytes, Stack size 0 bytes, UNDEFINED)
+<BR><BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_infnan
+<LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec_real
+<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_common
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_str
+</UL>
+
+<P><STRONG><a name="[41]"></a>_printf_pre_padding</STRONG> (ARM, 0 bytes, Stack size 0 bytes, UNDEFINED)
+<BR><BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_infnan
+<LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec_real
+<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_common
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_str
+</UL>
+
+<P><STRONG><a name="[43]"></a>_printf_truncate_signed</STRONG> (ARM, 0 bytes, Stack size 0 bytes, UNDEFINED)
+<BR><BR>[Called By]<UL><LI><a href="#[2b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_dec
+</UL>
+
+<P><STRONG><a name="[44]"></a>_printf_truncate_unsigned</STRONG> (ARM, 0 bytes, Stack size 0 bytes, UNDEFINED)
+<BR><BR>[Called By]<UL><LI><a href="#[2b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_dec
+</UL>
+<HR></body></html>

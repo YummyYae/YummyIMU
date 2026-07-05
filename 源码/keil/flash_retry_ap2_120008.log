@@ -1,0 +1,7 @@
+Load "C:\\Users\\CTY\\Desktop\\M0\\ti\\keil\\Objects\\ncontroller.axf" 
+Info: Debug/System power-up request sent 
+Info: executing SWD power up 
+Info: Current state of access point is: 0 
+Info: Current state of access point is: 120008 
+Error: Flash Download failed  -  Target DLL has been cancelled
+Flash Load finished at 00:20:09

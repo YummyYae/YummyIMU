@@ -1,4 +1,4 @@
-<img src="assets/product.png" alt="产品图" width="220" align="right">
+<img src="用户手册/assets/product.png" alt="产品图" width="220" align="right">
 
 # 双 IMU 融合恒温姿态模块用户手册
 

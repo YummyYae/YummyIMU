@@ -8,6 +8,7 @@
 #define STATUS_LED_IOMUX IOMUX_PINCM44
 #define STATUS_LED_ALARM_BLINK_MS 100U
 #define STATUS_LED_WAIT_BLINK_MS 600U
+#define STATUS_LED_CAL_BLINK_MS 3000U
 
 /*
  * LED 任务流程：
@@ -32,6 +33,13 @@ void TaskLED_Set(uint8_t on)
     } else {
         DL_GPIO_setPins(STATUS_LED_PORT, STATUS_LED_PIN);
     }
+}
+
+void TaskLED_UpdateCalibrationStatus(void)
+{
+    uint8_t blink_on = (((gSystemTickMs / STATUS_LED_CAL_BLINK_MS) & 1U) == 0U) ? 1U : 0U;
+
+    TaskLED_Set(blink_on);
 }
 
 /*

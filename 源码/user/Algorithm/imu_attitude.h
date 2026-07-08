@@ -34,22 +34,17 @@ typedef struct {
     float Yaw;
 } IMU_Attitude_t;
 
-extern INS_t BMI088;
-extern IMU_Attitude_t BMI270;
-extern IMU_Attitude_t VirtualIMU;
-extern Axis3f DualGyroKalman_Omega;
-extern Axis3f DualGyroKalman_Accel;
-extern Axis3f BMI088BoardAccel;
-extern Axis3f BMI088BoardGyro;
-extern Axis3f BMI270BoardAccel;
-extern Axis3f BMI270BoardGyro;
-
 Axis3f ImuAttitude_BMI088AccelToBoard(void);
 Axis3f ImuAttitude_BMI270AccelToBoard(void);
 Axis3f ImuAttitude_BMI088GyroToBoard(void);
 Axis3f ImuAttitude_BMI270GyroToBoard(void);
+void ImuAttitude_GetBMI088Result(INS_t *out);
+void ImuAttitude_GetBMI270Result(IMU_Attitude_t *out);
+void ImuAttitude_GetFusedResult(IMU_Attitude_t *out);
 void ImuAttitude_Init(void);
 void ImuAttitude_SetDebugMode(uint8_t enable);
+void ImuAttitude_SetInputMask(uint8_t mask);
+void ImuAttitude_SetYawErrorDegPerTurn(float bmi088_error, float bmi270_error);
 void ImuAttitude_SetInitialAccel(Axis3f bmi088_accel, Axis3f bmi270_accel);
 void ImuAttitude_Update(float dt);
 void ImuAttitude_UpdateOutput(void);

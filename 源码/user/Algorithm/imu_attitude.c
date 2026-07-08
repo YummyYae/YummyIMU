@@ -4,12 +4,14 @@
 #include "bmi270_mspm0.h"
 
 #include <math.h>
+#include <stddef.h>
 #include <stdint.h>
 
-INS_t BMI088;
-IMU_Attitude_t BMI270;
+static INS_t BMI088;
+static IMU_Attitude_t BMI270;
 
 #define ENABLE_REAL_IMU_ATTITUDE_SOLVERS 1
+/* Real-IMU solvers are compiled in: USE outputs VirtualIMU only, DEBUG outputs all three angles. */
 
 static void fused_attitude_init(void);
 static void fused_attitude_set_initial_accel(Axis3f accel);
@@ -17,9 +19,9 @@ static void fused_attitude_update(float dt);
 static void fused_attitude_update_output(void);
 
 /*
- * 旧的两颗真实 IMU 独立姿态解算代码先保留在这里，但当前固件不参与编译。
- * 以后需要恢复 BMI088/BMI270 独立角度输出时，将 ENABLE_REAL_IMU_ATTITUDE_SOLVERS 改为 1，
- * 再在 ImuAttitude_* 入口里重新打开对应调用即可。
+ * 真实 IMU 独立姿态解算当前参与编译。
+ * USE 模式只输出 VirtualIMU；DEBUG 模式会同时输出 BMI088、BMI270/BMI220 与 VirtualIMU。
+ * 若以后确认不再需要真实 IMU 独立解算，可将 ENABLE_REAL_IMU_ATTITUDE_SOLVERS 改为 0。
  */
 #if ENABLE_REAL_IMU_ATTITUDE_SOLVERS
 #define BMI088_MAHONY_KP 0.0f
@@ -40,6 +42,10 @@ static float wrap_pi(float angle)
 {
     const float pi = 3.1415926f;
     const float two_pi = 6.2831852f;
+
+    if ((angle != angle) || (angle > 1000000.0f) || (angle < -1000000.0f)) {
+        return 0.0f;
+    }
 
     while (angle > pi) {
         angle -= two_pi;
@@ -80,9 +86,7 @@ static void bmi088_attitude_update(float dt)
         BMI088.Gyro[i] = BMI088Sensor.Gyro[i];
     }
 
-    gyro.x = BMI088Sensor.Gyro[0];
-    gyro.y = BMI088Sensor.Gyro[1];
-    gyro.z = BMI088Sensor.Gyro[2];
+    gyro = ImuAttitude_BMI088GyroToBoard();
 
     if (BMI088Sensor.LastGyroSaturated != 0U) {
         return;
@@ -103,7 +107,7 @@ static void bmi088_attitude_update_output(void)
 {
     Mahony_Output(&gMahony);
 
-    BMI088.Pitch = wrap_pi(gMahony.roll + 0.0305f);
+    BMI088.Pitch = wrap_pi(gMahony.roll);
     BMI088.Roll = gMahony.pitch;
     BMI088.Yaw = gMahony.yaw;
 
@@ -220,14 +224,9 @@ static void bmi270_attitude_update_output(void)
 
 #define DUAL_GYRO_AXIS_COUNT 3U
 #define DUAL_GYRO_STATE_SIZE 3U
-
-#define DUAL_GYRO_Q_OMEGA_PER_SEC  0.0200f
-#define DUAL_GYRO_Q_BIAS_PER_SEC   0.000002f
-#define DUAL_GYRO_R_BMI088         0.000030f
-#define DUAL_GYRO_R_BMI220         0.000045f
-#define DUAL_GYRO_R_BMI220_GATED   0.250000f
-#define DUAL_GYRO_R_BMI220_REJECTED 1000.000000f
-#define DUAL_GYRO_R_STATIC         0.000001f
+#define IMU_ATTITUDE_MASK_BMI088 0x01U
+#define IMU_ATTITUDE_MASK_BMI270 0x02U
+#define IMU_ATTITUDE_MASK_DUAL   (IMU_ATTITUDE_MASK_BMI088 | IMU_ATTITUDE_MASK_BMI270)
 
 #define DUAL_GYRO_GRAVITY          9.80665f
 #define DUAL_GYRO_ACC_STATIC_LIMIT 1.50f
@@ -253,35 +252,58 @@ static void bmi270_attitude_update_output(void)
 
 typedef struct {
     float x[DUAL_GYRO_STATE_SIZE];
-    float p[DUAL_GYRO_STATE_SIZE][DUAL_GYRO_STATE_SIZE];
     uint8_t initialized;
-} DualGyroAxisKalman_t;
+} DualGyroAxisFusion_t;
 
-Axis3f DualGyroKalman_Omega;
-Axis3f DualGyroKalman_Accel;
-Axis3f BMI088BoardAccel;
-Axis3f BMI088BoardGyro;
-Axis3f BMI270BoardAccel;
-Axis3f BMI270BoardGyro;
-IMU_Attitude_t VirtualIMU;
+static Axis3f DualGyroFusion_Omega;
+static Axis3f DualGyroFusion_Accel;
+static Axis3f BMI088BoardAccel;
+static Axis3f BMI088BoardGyro;
+static Axis3f BMI270BoardAccel;
+static Axis3f BMI270BoardGyro;
+static IMU_Attitude_t VirtualIMU;
 
-static DualGyroAxisKalman_t gDualGyroKalman[DUAL_GYRO_AXIS_COUNT];
+static DualGyroAxisFusion_t gDualGyroFusion[DUAL_GYRO_AXIS_COUNT];
 static MahonyFilter_t gFusedMahony;
 static uint8_t gRealImuAttitudeSolversEnabled;
+static uint8_t gInputMask = IMU_ATTITUDE_MASK_DUAL;
+static float gBMI088YawScale = 1.0f;
+static float gBMI270YawScale = 1.0f;
 
 static float vector_norm_sq(Axis3f value)
 {
     return (value.x * value.x) + (value.y * value.y) + (value.z * value.z);
 }
 
+static float yaw_error_to_scale(float error_deg_per_turn)
+{
+    float denominator = 360.0f + error_deg_per_turn;
+
+    if ((denominator < 330.0f) || (denominator > 390.0f)) {
+        return 1.0f;
+    }
+
+    return 360.0f / denominator;
+}
+
+void ImuAttitude_SetYawErrorDegPerTurn(float bmi088_error, float bmi270_error)
+{
+    gBMI088YawScale = yaw_error_to_scale(bmi088_error);
+    gBMI270YawScale = yaw_error_to_scale(bmi270_error);
+}
+
 Axis3f ImuAttitude_BMI270GyroToBoard(void)
 {
     Axis3f sensor;
+    Axis3f board;
 
     sensor.x = BMI270Sensor.Gyro[0];
     sensor.y = BMI270Sensor.Gyro[1];
     sensor.z = BMI270Sensor.Gyro[2];
-    return bmi270_sensor_to_board(sensor);
+    board = bmi270_sensor_to_board(sensor);
+    board.z *= gBMI270YawScale;
+
+    return board;
 }
 
 Axis3f ImuAttitude_BMI270AccelToBoard(void)
@@ -300,7 +322,7 @@ Axis3f ImuAttitude_BMI088GyroToBoard(void)
 
     gyro.x = BMI088Sensor.Gyro[0];
     gyro.y = BMI088Sensor.Gyro[1];
-    gyro.z = BMI088Sensor.Gyro[2];
+    gyro.z = BMI088Sensor.Gyro[2] * gBMI088YawScale;
 
     return gyro;
 }
@@ -414,80 +436,7 @@ static void update_virtual_attitude_from_filter(IMU_Attitude_t *attitude, const 
     attitude->Yaw = filter->yaw;
 }
 
-static void kalman_axis_init(DualGyroAxisKalman_t *filter, float gyro1, float gyro2)
-{
-    filter->x[0] = gyro1;
-    filter->x[1] = 0.0f;
-    filter->x[2] = gyro2 - gyro1;
-
-    for (uint8_t row = 0U; row < DUAL_GYRO_STATE_SIZE; row++) {
-        for (uint8_t col = 0U; col < DUAL_GYRO_STATE_SIZE; col++) {
-            filter->p[row][col] = 0.0f;
-        }
-    }
-
-    filter->p[0][0] = 0.0500f;
-    filter->p[1][1] = 0.0100f;
-    filter->p[2][2] = 0.0100f;
-    filter->initialized = 1U;
-}
-
-static void kalman_predict(DualGyroAxisKalman_t *filter, float dt)
-{
-    filter->p[0][0] += DUAL_GYRO_Q_OMEGA_PER_SEC * dt;
-    filter->p[1][1] += DUAL_GYRO_Q_BIAS_PER_SEC * dt;
-    filter->p[2][2] += DUAL_GYRO_Q_BIAS_PER_SEC * dt;
-}
-
-static void kalman_update_scalar(DualGyroAxisKalman_t *filter, const float h[DUAL_GYRO_STATE_SIZE],
-                                 float measurement, float measurement_noise)
-{
-    float ph_t[DUAL_GYRO_STATE_SIZE];
-    float hp[DUAL_GYRO_STATE_SIZE];
-    float innovation = measurement;
-    float innovation_cov = measurement_noise;
-    float gain[DUAL_GYRO_STATE_SIZE];
-
-    for (uint8_t i = 0U; i < DUAL_GYRO_STATE_SIZE; i++) {
-        innovation -= h[i] * filter->x[i];
-    }
-
-    for (uint8_t row = 0U; row < DUAL_GYRO_STATE_SIZE; row++) {
-        ph_t[row] = 0.0f;
-        hp[row] = 0.0f;
-        for (uint8_t col = 0U; col < DUAL_GYRO_STATE_SIZE; col++) {
-            ph_t[row] += filter->p[row][col] * h[col];
-            hp[row] += h[col] * filter->p[col][row];
-        }
-        innovation_cov += h[row] * ph_t[row];
-    }
-
-    if (innovation_cov <= 0.0f) {
-        return;
-    }
-
-    for (uint8_t i = 0U; i < DUAL_GYRO_STATE_SIZE; i++) {
-        gain[i] = ph_t[i] / innovation_cov;
-        filter->x[i] += gain[i] * innovation;
-    }
-
-    for (uint8_t row = 0U; row < DUAL_GYRO_STATE_SIZE; row++) {
-        for (uint8_t col = 0U; col < DUAL_GYRO_STATE_SIZE; col++) {
-            filter->p[row][col] -= gain[row] * hp[col];
-        }
-    }
-
-    for (uint8_t row = 0U; row < DUAL_GYRO_STATE_SIZE; row++) {
-        for (uint8_t col = (uint8_t)(row + 1U); col < DUAL_GYRO_STATE_SIZE; col++) {
-            float symmetric = 0.5f * (filter->p[row][col] + filter->p[col][row]);
-
-            filter->p[row][col] = symmetric;
-            filter->p[col][row] = symmetric;
-        }
-    }
-}
-
-static float update_axis(DualGyroAxisKalman_t *filter, float gyro1, float gyro2, float dt,
+static float update_axis(DualGyroAxisFusion_t *filter, float gyro1, float gyro2, float dt,
                          uint8_t stationary, uint8_t gyro1_usable, uint8_t gyro2_usable)
 {
     float relative_bias;
@@ -540,15 +489,15 @@ static float update_axis(DualGyroAxisKalman_t *filter, float gyro1, float gyro2,
 static void fused_attitude_init(void)
 {
     for (uint8_t axis = 0U; axis < DUAL_GYRO_AXIS_COUNT; axis++) {
-        gDualGyroKalman[axis].initialized = 0U;
+        gDualGyroFusion[axis].initialized = 0U;
     }
 
-    DualGyroKalman_Omega.x = 0.0f;
-    DualGyroKalman_Omega.y = 0.0f;
-    DualGyroKalman_Omega.z = 0.0f;
-    DualGyroKalman_Accel.x = 0.0f;
-    DualGyroKalman_Accel.y = 0.0f;
-    DualGyroKalman_Accel.z = DUAL_GYRO_GRAVITY;
+    DualGyroFusion_Omega.x = 0.0f;
+    DualGyroFusion_Omega.y = 0.0f;
+    DualGyroFusion_Omega.z = 0.0f;
+    DualGyroFusion_Accel.x = 0.0f;
+    DualGyroFusion_Accel.y = 0.0f;
+    DualGyroFusion_Accel.z = DUAL_GYRO_GRAVITY;
     Mahony_Init(&gFusedMahony, 0.20f, 0.0f, 0.0010f);
     reset_virtual_attitude(&VirtualIMU);
 }
@@ -565,38 +514,47 @@ static void fused_attitude_update(float dt)
     Axis3f gyro2 = ImuAttitude_BMI270GyroToBoard();
     Axis3f accel1 = ImuAttitude_BMI088AccelToBoard();
     Axis3f accel2 = ImuAttitude_BMI270AccelToBoard();
-    uint8_t bmi088_gyro_usable = (BMI088Sensor.LastGyroSaturated == 0U) ? 1U : 0U;
-    uint8_t bmi220_gyro_usable = (BMI270Sensor.LastGyroSaturated == 0U) ? 1U : 0U;
-    uint8_t bmi088_accel_usable = (BMI088Sensor.LastAccelSaturated == 0U) ? 1U : 0U;
-    uint8_t bmi220_accel_usable = (BMI270Sensor.LastAccelSaturated == 0U) ? 1U : 0U;
+    uint8_t bmi088_gyro_usable = (((gInputMask & IMU_ATTITUDE_MASK_BMI088) != 0U) &&
+                                  (BMI088Sensor.LastGyroSaturated == 0U)) ? 1U : 0U;
+    uint8_t bmi220_gyro_usable = (((gInputMask & IMU_ATTITUDE_MASK_BMI270) != 0U) &&
+                                  (BMI270Sensor.LastGyroSaturated == 0U)) ? 1U : 0U;
+    uint8_t bmi088_accel_usable = (((gInputMask & IMU_ATTITUDE_MASK_BMI088) != 0U) &&
+                                   (BMI088Sensor.LastAccelSaturated == 0U)) ? 1U : 0U;
+    uint8_t bmi220_accel_usable = (((gInputMask & IMU_ATTITUDE_MASK_BMI270) != 0U) &&
+                                   (BMI270Sensor.LastAccelSaturated == 0U)) ? 1U : 0U;
     uint8_t stationary = is_stationary(gyro1, gyro2, accel1, accel2,
                                        (bmi088_gyro_usable != 0U) && (bmi088_accel_usable != 0U),
                                        (bmi220_gyro_usable != 0U) && (bmi220_accel_usable != 0U));
     uint8_t accel_correction_usable;
 
-    DualGyroKalman_Omega.x = update_axis(&gDualGyroKalman[0], gyro1.x, gyro2.x, dt, stationary,
-                                          bmi088_gyro_usable, bmi220_gyro_usable);
-    DualGyroKalman_Omega.y = update_axis(&gDualGyroKalman[1], gyro1.y, gyro2.y, dt, stationary,
-                                          bmi088_gyro_usable, bmi220_gyro_usable);
-    DualGyroKalman_Omega.z = update_axis(&gDualGyroKalman[2], gyro1.z, gyro2.z, dt, stationary,
-                                          bmi088_gyro_usable, bmi220_gyro_usable);
-    DualGyroKalman_Accel = blend_accel(accel1, accel2, bmi088_accel_usable, bmi220_accel_usable);
+    DualGyroFusion_Omega.x = update_axis(&gDualGyroFusion[0], gyro1.x, gyro2.x, dt, stationary,
+                                           bmi088_gyro_usable, bmi220_gyro_usable);
+    DualGyroFusion_Omega.y = update_axis(&gDualGyroFusion[1], gyro1.y, gyro2.y, dt, stationary,
+                                           bmi088_gyro_usable, bmi220_gyro_usable);
+    DualGyroFusion_Omega.z = update_axis(&gDualGyroFusion[2], gyro1.z, gyro2.z, dt, stationary,
+                                           bmi088_gyro_usable, bmi220_gyro_usable);
+    DualGyroFusion_Accel = blend_accel(accel1, accel2, bmi088_accel_usable, bmi220_accel_usable);
     BMI088BoardGyro = gyro1;
     BMI270BoardGyro = gyro2;
     BMI088BoardAccel = accel1;
     BMI270BoardAccel = accel2;
 
     gFusedMahony.dt = dt;
-    accel_correction_usable = (stationary != 0U) &&
-                              (bmi088_accel_usable != 0U) &&
-                              (bmi220_accel_usable != 0U) &&
-                              (accel_vectors_agree(accel1, accel2) != 0U) &&
-                              (accel_is_valid_for_mahony(DualGyroKalman_Accel) != 0U);
+    if ((gInputMask & IMU_ATTITUDE_MASK_DUAL) == IMU_ATTITUDE_MASK_DUAL) {
+        accel_correction_usable = (stationary != 0U) &&
+                                  (bmi088_accel_usable != 0U) &&
+                                  (bmi220_accel_usable != 0U) &&
+                                  (accel_vectors_agree(accel1, accel2) != 0U) &&
+                                  (accel_is_valid_for_mahony(DualGyroFusion_Accel) != 0U);
+    } else {
+        accel_correction_usable = (accel_is_valid_for_mahony(DualGyroFusion_Accel) != 0U) &&
+                                  (vector_norm_sq(DualGyroFusion_Omega) <= DUAL_GYRO_RATE_STATIC_SQ);
+    }
 
     if (accel_correction_usable != 0U) {
-        Mahony_UpdateFast(&gFusedMahony, DualGyroKalman_Omega, DualGyroKalman_Accel);
+        Mahony_UpdateFast(&gFusedMahony, DualGyroFusion_Omega, DualGyroFusion_Accel);
     } else {
-        Mahony_UpdateGyroOnlyFast(&gFusedMahony, DualGyroKalman_Omega);
+        Mahony_UpdateGyroOnlyFast(&gFusedMahony, DualGyroFusion_Omega);
     }
 }
 
@@ -635,6 +593,15 @@ void ImuAttitude_SetDebugMode(uint8_t enable)
     gRealImuAttitudeSolversEnabled = (enable != 0U) ? 1U : 0U;
 }
 
+void ImuAttitude_SetInputMask(uint8_t mask)
+{
+    mask &= IMU_ATTITUDE_MASK_DUAL;
+    if (mask == 0U) {
+        mask = IMU_ATTITUDE_MASK_DUAL;
+    }
+    gInputMask = mask;
+}
+
 void ImuAttitude_SetInitialAccel(Axis3f bmi088_accel, Axis3f bmi270_accel)
 {
     Axis3f fused_accel;
@@ -646,20 +613,38 @@ void ImuAttitude_SetInitialAccel(Axis3f bmi088_accel, Axis3f bmi270_accel)
     }
 #endif
 
-    fused_accel.x = 0.5f * (bmi088_accel.x + bmi270_accel.x);
-    fused_accel.y = 0.5f * (bmi088_accel.y + bmi270_accel.y);
-    fused_accel.z = 0.5f * (bmi088_accel.z + bmi270_accel.z);
+    if ((gInputMask & IMU_ATTITUDE_MASK_DUAL) == IMU_ATTITUDE_MASK_DUAL) {
+        fused_accel.x = 0.5f * (bmi088_accel.x + bmi270_accel.x);
+        fused_accel.y = 0.5f * (bmi088_accel.y + bmi270_accel.y);
+        fused_accel.z = 0.5f * (bmi088_accel.z + bmi270_accel.z);
+    } else if ((gInputMask & IMU_ATTITUDE_MASK_BMI088) != 0U) {
+        fused_accel = bmi088_accel;
+    } else if ((gInputMask & IMU_ATTITUDE_MASK_BMI270) != 0U) {
+        fused_accel = bmi270_accel;
+    } else {
+        fused_accel.x = 0.0f;
+        fused_accel.y = 0.0f;
+        fused_accel.z = DUAL_GYRO_GRAVITY;
+    }
     fused_attitude_set_initial_accel(fused_accel);
 }
 
 void ImuAttitude_Update(float dt)
 {
-    BMI088_Read(&BMI088Sensor);
-    BMI270_Read(&BMI270Sensor);
+    if ((gInputMask & IMU_ATTITUDE_MASK_BMI088) != 0U) {
+        BMI088_Read(&BMI088Sensor);
+    }
+    if ((gInputMask & IMU_ATTITUDE_MASK_BMI270) != 0U) {
+        BMI270_Read(&BMI270Sensor);
+    }
 #if ENABLE_REAL_IMU_ATTITUDE_SOLVERS
     if (gRealImuAttitudeSolversEnabled != 0U) {
-        bmi088_attitude_update(dt);
-        bmi270_attitude_update(dt);
+        if ((gInputMask & IMU_ATTITUDE_MASK_BMI088) != 0U) {
+            bmi088_attitude_update(dt);
+        }
+        if ((gInputMask & IMU_ATTITUDE_MASK_BMI270) != 0U) {
+            bmi270_attitude_update(dt);
+        }
     }
 #endif
     fused_attitude_update(dt);
@@ -674,4 +659,25 @@ void ImuAttitude_UpdateOutput(void)
     }
 #endif
     fused_attitude_update_output();
+}
+
+void ImuAttitude_GetBMI088Result(INS_t *out)
+{
+    if (out != NULL) {
+        *out = BMI088;
+    }
+}
+
+void ImuAttitude_GetBMI270Result(IMU_Attitude_t *out)
+{
+    if (out != NULL) {
+        *out = BMI270;
+    }
+}
+
+void ImuAttitude_GetFusedResult(IMU_Attitude_t *out)
+{
+    if (out != NULL) {
+        *out = VirtualIMU;
+    }
 }

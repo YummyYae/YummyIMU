@@ -5,14 +5,24 @@
 #include "ti_msp_dl_config.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 
 extern volatile uint32_t gSystemTickMs;
 
 BMI270_Data_t BMI270Sensor;
 BMI270_Debug_t BMI270_Debug;
+#ifdef DEBUG_REGISTER_DUMP
 uint8_t BMI270_RegDumpAfterReset[128];
 uint8_t BMI270_RegDumpAfterConfig[128];
 uint8_t BMI270_RegDumpAfterPower[128];
+#define BMI270_DUMP_AFTER_RESET  BMI270_RegDumpAfterReset
+#define BMI270_DUMP_AFTER_CONFIG BMI270_RegDumpAfterConfig
+#define BMI270_DUMP_AFTER_POWER  BMI270_RegDumpAfterPower
+#else
+#define BMI270_DUMP_AFTER_RESET  NULL
+#define BMI270_DUMP_AFTER_CONFIG NULL
+#define BMI270_DUMP_AFTER_POWER  NULL
+#endif
 
 #define BMI270_REG_CHIP_ID         0x00U
 #define BMI270_REG_ERR_REG         0x02U
@@ -182,6 +192,10 @@ static void upload_config_file(const uint8_t *config, uint16_t size)
 
 static void dump_registers(uint8_t *dump)
 {
+    if (dump == NULL) {
+        return;
+    }
+
     for (uint8_t reg = 0U; reg < 128U; reg++) {
         dump[reg] = read_reg(reg);
         delay_ms(1U);
@@ -233,7 +247,7 @@ static uint8_t capture_config_status(uint8_t error)
     BMI270Sensor.InternalStatus = read_reg(BMI270_REG_INTERNAL_STATUS);
     BMI270_Debug.InternalStatus = BMI270Sensor.InternalStatus;
     BMI270_Debug.ErrorReg = read_reg(BMI270_REG_ERR_REG);
-    dump_registers(BMI270_RegDumpAfterConfig);
+    dump_registers(BMI270_DUMP_AFTER_CONFIG);
 
     if ((BMI270Sensor.InternalStatus & BMI270_INIT_STATUS_MASK) != BMI270_INIT_OK) {
         error |= BMI270_CONFIG_LOAD_ERROR;
@@ -314,7 +328,7 @@ static uint8_t init_bmi220(uint8_t error)
         error |= BMI270_SENSOR_CONFIG_ERROR;
     }
 
-    dump_registers(BMI270_RegDumpAfterPower);
+    dump_registers(BMI270_DUMP_AFTER_POWER);
     calibrate_gyro_offset();
     BMI270Sensor.InitError = error;
     return error;
@@ -351,10 +365,11 @@ static uint8_t init_bmi270(uint8_t error)
     if ((BMI270_Debug.PwrCtrlAfterEnable & BMI270_PWR_CTRL_ACC_GYR) != BMI270_PWR_CTRL_ACC_GYR) {
         error |= BMI270_POWER_CONFIG_ERROR;
     }
-    if ((BMI270_Debug.AccRangeAfterWrite & 0x03U) != BMI270_ACC_RANGE_8G) {
+    if (((BMI270_Debug.AccRangeAfterWrite & 0x03U) != BMI270_ACC_RANGE_8G) ||
+        ((BMI270_Debug.GyrRangeAfterWrite & 0x07U) != BMI270_GYR_RANGE_2000DPS)) {
         error |= BMI270_SENSOR_CONFIG_ERROR;
     }
-    dump_registers(BMI270_RegDumpAfterPower);
+    dump_registers(BMI270_DUMP_AFTER_POWER);
     calibrate_gyro_offset();
 
     BMI270Sensor.InitError = error;
@@ -380,7 +395,7 @@ uint8_t BMI270_Init(void)
 
     chip_id_valid_after_reset = read_chip_id_retry(&BMI270Sensor.ChipId);
     BMI270_Debug.ChipIdAfterReset = BMI270Sensor.ChipId;
-    dump_registers(BMI270_RegDumpAfterReset);
+    dump_registers(BMI270_DUMP_AFTER_RESET);
     if ((!chip_id_valid_before_reset) && (!chip_id_valid_after_reset)) {
         error |= BMI270_NO_SENSOR;
     }

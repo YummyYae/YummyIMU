@@ -53,9 +53,11 @@ typedef enum {
 
 extern BMI270_Data_t BMI270Sensor;
 extern BMI270_Debug_t BMI270_Debug;
+#ifdef DEBUG_REGISTER_DUMP
 extern uint8_t BMI270_RegDumpAfterReset[128];
 extern uint8_t BMI270_RegDumpAfterConfig[128];
 extern uint8_t BMI270_RegDumpAfterPower[128];
+#endif
 
 uint8_t BMI270_Init(void);
 void BMI270_Read(BMI270_Data_t *BMI270Sensor);

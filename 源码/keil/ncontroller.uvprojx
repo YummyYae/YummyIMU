@@ -565,6 +565,11 @@
               <FilePath>..\user\Algorithm\imu_attitude.c</FilePath>
             </File>
             <File>
+              <FileName>gyro_bias_calibration.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Algorithm\gyro_bias_calibration.c</FilePath>
+            </File>
+            <File>
               <FileName>bmi088_mspm0.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\BSP\bmi088_mspm0.c</FilePath>
@@ -633,6 +638,11 @@
               <FileName>imu_attitude.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\user\Algorithm\imu_attitude.h</FilePath>
+            </File>
+            <File>
+              <FileName>gyro_bias_calibration.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Algorithm\gyro_bias_calibration.h</FilePath>
             </File>
             <File>
               <FileName>bmi088_mspm0.h</FileName>

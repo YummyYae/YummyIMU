@@ -1,3 +1,4 @@
+#define FIRMWARE_VERSION "1.3"
 #include "board_mspm0.h"
 #include "task_temperature.h"
 #include "task_imu.h"
@@ -6,6 +7,11 @@
 #include "task_serial.h"
 
 #include "ti_msp_dl_config.h"
+
+const char *Firmware_GetVersion(void)
+{
+    return FIRMWARE_VERSION;
+}
 
 /*
  * 主流程说明：

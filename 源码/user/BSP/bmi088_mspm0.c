@@ -4,6 +4,7 @@
 #include "ti_msp_dl_config.h"
 #include <math.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 extern volatile uint32_t gSystemTickMs;
 
@@ -271,6 +272,7 @@ static void calibrate_gyro_offset(BMI088_Data_t *BMI088Sensor)
     uint8_t buf[8];
     float gyro_sum[3] = {0.0f, 0.0f, 0.0f};
     const uint16_t samples = 1000U;
+    uint16_t valid_samples = 0U;
 
     use_saved_offsets(BMI088Sensor);
 
@@ -280,13 +282,18 @@ static void calibrate_gyro_offset(BMI088_Data_t *BMI088Sensor)
             gyro_sum[0] += (float) ((int16_t) ((buf[3] << 8) | buf[2])) * BMI088_GYRO_2000_SEN;
             gyro_sum[1] += (float) ((int16_t) ((buf[5] << 8) | buf[4])) * BMI088_GYRO_2000_SEN;
             gyro_sum[2] += (float) ((int16_t) ((buf[7] << 8) | buf[6])) * BMI088_GYRO_2000_SEN;
+            valid_samples++;
         }
         delay_ms(1);
     }
 
-    BMI088Sensor->GyroOffset[0] = gyro_sum[0] / (float) samples;
-    BMI088Sensor->GyroOffset[1] = gyro_sum[1] / (float) samples;
-    BMI088Sensor->GyroOffset[2] = gyro_sum[2] / (float) samples;
+    if (valid_samples == 0U) {
+        return;
+    }
+
+    BMI088Sensor->GyroOffset[0] = gyro_sum[0] / (float) valid_samples;
+    BMI088Sensor->GyroOffset[1] = gyro_sum[1] / (float) valid_samples;
+    BMI088Sensor->GyroOffset[2] = gyro_sum[2] / (float) valid_samples;
 }
 
 uint8_t BMI088_StartupCalibrate(void)
@@ -414,13 +421,13 @@ uint8_t BMI088_Init(uint8_t calibrate)
     for (uint32_t i = 0; i < 3U; i++) {
         error = bmi088_accel_init();
         error |= bmi088_gyro_init();
-        if (error != BMI088_NO_SENSOR) {
+        if (error == BMI088_NO_ERROR) {
             break;
         }
         delay_ms(10);
     }
 
-    if (calibrate != 0U) {
+    if ((error == BMI088_NO_ERROR) && (calibrate != 0U)) {
         if (BMI088_StartupCalibrate() == 0U) {
             calibrate_gyro_offset(&BMI088Sensor);
         }
@@ -454,7 +461,7 @@ void BMI088_Read(BMI088_Data_t *BMI088Sensor)
     if ((raw >= BMI088_RAW_SATURATION_LIMIT) || (raw <= -BMI088_RAW_SATURATION_LIMIT)) {
         accel_saturated = 1U;
     }
-    BMI088Sensor->Accel[2] = (float) raw * BMI088_ACCEL_6G_SEN * BMI088Sensor->AccelScale;
+    BMI088Sensor->Accel[2] = ((float) raw * BMI088_ACCEL_6G_SEN * BMI088Sensor->AccelScale) - BMI088Sensor->AccelOffset[2];
 
     gyro_read_multi_reg(BMI088_GYRO_CHIP_ID, buf, 8);
     if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE) {
@@ -498,13 +505,13 @@ void BMI088_ReadTemperatureRaw(uint8_t *temp_m, uint8_t *temp_l, int16_t *raw)
         raw_value -= 2048;
     }
 
-    if (temp_m != 0) {
+    if (temp_m != NULL) {
         *temp_m = buf[0];
     }
-    if (temp_l != 0) {
+    if (temp_l != NULL) {
         *temp_l = buf[1];
     }
-    if (raw != 0) {
+    if (raw != NULL) {
         *raw = raw_value;
     }
 }
@@ -513,7 +520,7 @@ float BMI088_ReadTemperature(void)
 {
     int16_t raw;
 
-    BMI088_ReadTemperatureRaw(0, 0, &raw);
+    BMI088_ReadTemperatureRaw(NULL, NULL, &raw);
     BMI088Sensor.Temperature = ((float)raw * BMI088_TEMP_FACTOR) + BMI088_TEMP_OFFSET;
     return BMI088Sensor.Temperature;
 }

@@ -4,6 +4,8 @@
 #include "bmi270_mspm0.h"
 #include "ti_msp_dl_config.h"
 
+#include <stddef.h>
+
 #define HEATER_PWM_PERIOD 1001U
 #define HEATER_PWM_LOAD_VALUE (HEATER_PWM_PERIOD - 1U)
 #define HEATER_PID_DT 0.10f
@@ -235,17 +237,25 @@ void TaskTemperature_SampleSensorsFromInterrupt(RuntimeState_t *state)
     }
     divider = 0U;
 
-    bmi270_temp = BMI270_ReadTemperature();
-    bmi270_valid = ((bmi270_temp > IMU_TEMPERATURE_MIN_C) &&
-                    (bmi270_temp < IMU_TEMPERATURE_READ_MAX_C)) ? 1U : 0U;
+    if ((state->active_imu_mask & IMU_MASK_BMI270) != 0U) {
+        bmi270_temp = BMI270_ReadTemperature();
+        bmi270_valid = ((bmi270_temp > IMU_TEMPERATURE_MIN_C) &&
+                        (bmi270_temp < IMU_TEMPERATURE_READ_MAX_C)) ? 1U : 0U;
+    } else {
+        bmi270_valid = 0U;
+    }
 
-    BMI088_ReadTemperatureRaw(&state->bmi088_temp_msb, &state->bmi088_temp_lsb, &state->bmi088_temp_raw);
-    bmi088_temp = ((float)state->bmi088_temp_raw * BMI088_TEMP_FACTOR) + BMI088_TEMP_OFFSET;
-    BMI088Sensor.Temperature = bmi088_temp;
-    state->accel_chip_id = BMI088_ReadAccelChipId();
-    bmi088_valid = ((bmi088_temp > IMU_TEMPERATURE_MIN_C) &&
-                    (bmi088_temp < IMU_TEMPERATURE_READ_MAX_C) &&
-                    (state->accel_chip_id == 0x1EU)) ? 1U : 0U;
+    if ((state->active_imu_mask & IMU_MASK_BMI088) != 0U) {
+        BMI088_ReadTemperatureRaw(&state->bmi088_temp_msb, &state->bmi088_temp_lsb, &state->bmi088_temp_raw);
+        bmi088_temp = ((float)state->bmi088_temp_raw * BMI088_TEMP_FACTOR) + BMI088_TEMP_OFFSET;
+        BMI088Sensor.Temperature = bmi088_temp;
+        state->accel_chip_id = BMI088_ReadAccelChipId();
+        bmi088_valid = ((bmi088_temp > IMU_TEMPERATURE_MIN_C) &&
+                        (bmi088_temp < IMU_TEMPERATURE_READ_MAX_C) &&
+                        (state->accel_chip_id == 0x1EU)) ? 1U : 0U;
+    } else {
+        bmi088_valid = 0U;
+    }
 
     state->bmi088_temperature_valid = bmi088_valid;
     state->bmi270_temperature_valid = bmi270_valid;
@@ -281,8 +291,7 @@ void TaskTemperature_Update100Hz(RuntimeState_t *state)
     uint8_t bmi270_valid = state->bmi270_temperature_valid;
     static uint8_t control_divider;
 
-    if ((state->bmi088_init_error != 0U) || (state->bmi270_init_error != 0U) ||
-        (state->accel_chip_id == 0U) || (state->gyro_chip_id == 0U) || (state->bmi270_chip_id == 0U)) {
+    if (state->active_imu_mask == 0U) {
         heater_pid_reset(&state->bmi088_heater_pid_integral, &state->bmi088_heater_pid_last_error);
         heater_pid_reset(&state->bmi270_heater_pid_integral, &state->bmi270_heater_pid_last_error);
         bmi088_heater_set_duty(state, 0.0f);
@@ -290,12 +299,14 @@ void TaskTemperature_Update100Hz(RuntimeState_t *state)
         return;
     }
 
-    if ((bmi088_valid == 0U) || (bmi088_temp >= IMU_TEMPERATURE_SAFE_MAX_C)) {
+    if (((state->active_imu_mask & IMU_MASK_BMI088) == 0U) ||
+        (bmi088_valid == 0U) || (bmi088_temp >= IMU_TEMPERATURE_SAFE_MAX_C)) {
         heater_pid_reset(&state->bmi088_heater_pid_integral, &state->bmi088_heater_pid_last_error);
         bmi088_heater_set_duty(state, 0.0f);
     }
 
-    if ((bmi270_valid == 0U) || (bmi270_temp >= IMU_TEMPERATURE_SAFE_MAX_C)) {
+    if (((state->active_imu_mask & IMU_MASK_BMI270) == 0U) ||
+        (bmi270_valid == 0U) || (bmi270_temp >= IMU_TEMPERATURE_SAFE_MAX_C)) {
         heater_pid_reset(&state->bmi270_heater_pid_integral, &state->bmi270_heater_pid_last_error);
         bmi270_heater_set_duty(state, 0.0f);
     }
@@ -306,7 +317,8 @@ void TaskTemperature_Update100Hz(RuntimeState_t *state)
     }
     control_divider = 0U;
 
-    if ((bmi088_valid != 0U) && (state->bmi088_temperature_filter_valid != 0U)) {
+    if (((state->active_imu_mask & IMU_MASK_BMI088) != 0U) &&
+        (bmi088_valid != 0U) && (state->bmi088_temperature_filter_valid != 0U)) {
         bmi088_heater_set_duty(state,
             heater_pid_update(state->runtime_config.target_temperature_c,
                               state->bmi088_temperature_filtered,
@@ -321,7 +333,8 @@ void TaskTemperature_Update100Hz(RuntimeState_t *state)
         bmi088_heater_set_duty(state, 0.0f);
     }
 
-    if ((bmi270_valid != 0U) && (state->bmi270_temperature_filter_valid != 0U)) {
+    if (((state->active_imu_mask & IMU_MASK_BMI270) != 0U) &&
+        (bmi270_valid != 0U) && (state->bmi270_temperature_filter_valid != 0U)) {
         bmi270_heater_set_duty(state,
             heater_pid_update(state->runtime_config.target_temperature_c,
                               state->bmi270_temperature_filtered,
@@ -343,7 +356,7 @@ void TaskTemperature_CalibrationService(void *context)
     RuntimeState_t *state = (RuntimeState_t *)context;
     static uint8_t update_divider;
 
-    if (state == (RuntimeState_t *)0) {
+    if (state == NULL) {
         return;
     }
 
@@ -357,14 +370,25 @@ void TaskTemperature_CalibrationService(void *context)
 
 uint8_t TaskTemperature_HaveFault(const RuntimeState_t *state)
 {
-    if ((state->bmi088_temperature_valid == 0U) || (state->bmi270_temperature_valid == 0U)) {
+    if (state == NULL) {
         return 1U;
     }
 
-    if ((BMI088Sensor.Temperature <= IMU_TEMPERATURE_MIN_C) ||
-        (BMI088Sensor.Temperature >= IMU_TEMPERATURE_SAFE_MAX_C) ||
-        (BMI270Sensor.Temperature <= IMU_TEMPERATURE_MIN_C) ||
-        (BMI270Sensor.Temperature >= IMU_TEMPERATURE_SAFE_MAX_C)) {
+    if (state->active_imu_mask == 0U) {
+        return 1U;
+    }
+
+    if (((state->active_imu_mask & IMU_MASK_BMI088) != 0U) &&
+        ((state->bmi088_temperature_valid == 0U) ||
+         (BMI088Sensor.Temperature <= IMU_TEMPERATURE_MIN_C) ||
+         (BMI088Sensor.Temperature >= IMU_TEMPERATURE_SAFE_MAX_C))) {
+        return 1U;
+    }
+
+    if (((state->active_imu_mask & IMU_MASK_BMI270) != 0U) &&
+        ((state->bmi270_temperature_valid == 0U) ||
+         (BMI270Sensor.Temperature <= IMU_TEMPERATURE_MIN_C) ||
+         (BMI270Sensor.Temperature >= IMU_TEMPERATURE_SAFE_MAX_C))) {
         return 1U;
     }
 
@@ -379,25 +403,40 @@ uint8_t TaskTemperature_IsReady(const RuntimeState_t *state, float tolerance_c)
     float bmi088_error;
     float bmi270_error;
 
-    if ((state->bmi088_temperature_valid == 0U) ||
-        (state->bmi270_temperature_valid == 0U) ||
-        (state->bmi088_temperature_filter_valid == 0U) ||
-        (state->bmi270_temperature_filter_valid == 0U)) {
+    if (state->active_imu_mask == 0U) {
         return 0U;
     }
 
-    bmi088_temp = state->bmi088_temperature_filtered;
-    bmi270_temp = state->bmi270_temperature_filtered;
-    bmi088_error = bmi088_temp - state->runtime_config.target_temperature_c;
-    bmi270_error = bmi270_temp - state->runtime_config.target_temperature_c;
-
-    if (bmi088_error < 0.0f) {
-        bmi088_error = -bmi088_error;
+    if ((state->active_imu_mask & IMU_MASK_BMI088) != 0U) {
+        if ((state->bmi088_temperature_valid == 0U) ||
+            (state->bmi088_temperature_filter_valid == 0U)) {
+            return 0U;
+        }
+        bmi088_temp = state->bmi088_temperature_filtered;
+        bmi088_error = bmi088_temp - state->runtime_config.target_temperature_c;
+        if (bmi088_error < 0.0f) {
+            bmi088_error = -bmi088_error;
+        }
+        if (bmi088_error >= tolerance_c) {
+            return 0U;
+        }
     }
-    if (bmi270_error < 0.0f) {
-        bmi270_error = -bmi270_error;
+
+    if ((state->active_imu_mask & IMU_MASK_BMI270) != 0U) {
+        if ((state->bmi270_temperature_valid == 0U) ||
+            (state->bmi270_temperature_filter_valid == 0U)) {
+            return 0U;
+        }
+        bmi270_temp = state->bmi270_temperature_filtered;
+        bmi270_error = bmi270_temp - state->runtime_config.target_temperature_c;
+        if (bmi270_error < 0.0f) {
+            bmi270_error = -bmi270_error;
+        }
+        if (bmi270_error >= tolerance_c) {
+            return 0U;
+        }
     }
 
-    return ((bmi088_error < tolerance_c) && (bmi270_error < tolerance_c)) ? 1U : 0U;
+    return 1U;
 }
 

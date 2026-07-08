@@ -5,9 +5,9 @@
 #include "task_temperature.h"
 #include "bmi088_mspm0.h"
 #include "bmi270_mspm0.h"
-#include "flash_storage.h"
+#include "board_mspm0.h"
+#include "gyro_bias_calibration.h"
 #include "imu_attitude.h"
-#include "ti_msp_dl_config.h"
 
 #include <stdio.h>
 
@@ -19,6 +19,8 @@
 #define TEMP_TUNING_FIRMWARE 0U
 #define AUTO_CAL_TEMP_TOLERANCE_C 2.0f
 #define AUTO_CAL_LOOP_MS 10U
+#define AUTO_CAL_MAX_WAIT_MS 300000U
+#define IMU_ERROR_REPORT_PERIOD_MS 1000U
 
 /*
  * IMU 任务流程：
@@ -30,29 +32,105 @@
  */
 
 static volatile uint8_t gImuInterruptUpdateEnabled;
-static volatile uint8_t gImuInterruptBusy;
 static volatile uint8_t gImuReportPending;
 static uint16_t gUartReportDivider;
+static uint8_t gTaskImuActiveMask;
+
+static uint8_t imu_source_required_mask(uint8_t source)
+{
+    if (source == RUNTIME_IMU_SOURCE_BMI088) {
+        return IMU_MASK_BMI088;
+    }
+
+    if (source == RUNTIME_IMU_SOURCE_BMI270) {
+        return IMU_MASK_BMI270;
+    }
+
+    if (source == RUNTIME_IMU_SOURCE_AUTO) {
+        return 0U;
+    }
+
+    return IMU_MASK_DUAL;
+}
+
+static uint8_t imu_present_mask(const RuntimeState_t *state)
+{
+    uint8_t mask = 0U;
+
+    if ((state->bmi088_init_error == 0U) &&
+        (state->accel_chip_id == BMI088_ACCEL_CHIP_ID) &&
+        (state->gyro_chip_id == BMI088_GYRO_CHIP_ID)) {
+        mask |= IMU_MASK_BMI088;
+    }
+
+    if ((state->bmi270_init_error == 0U) &&
+        ((state->bmi270_chip_id == BMI270_CHIP_ID_VALUE) ||
+         (state->bmi270_chip_id == BMI220_CHIP_ID_VALUE))) {
+        mask |= IMU_MASK_BMI270;
+    }
+
+    return mask;
+}
+
+static void imu_update_selection(RuntimeState_t *state)
+{
+    uint8_t present_mask = imu_present_mask(state);
+    uint8_t required_mask = imu_source_required_mask(state->runtime_config.imu_source);
+    uint8_t active_mask;
+
+    state->bmi088_present = ((present_mask & IMU_MASK_BMI088) != 0U) ? 1U : 0U;
+    state->bmi270_present = ((present_mask & IMU_MASK_BMI270) != 0U) ? 1U : 0U;
+    state->required_imu_mask = required_mask;
+
+    if (state->runtime_config.imu_source == RUNTIME_IMU_SOURCE_AUTO) {
+        active_mask = present_mask;
+    } else {
+        active_mask = ((present_mask & required_mask) == required_mask) ? required_mask : 0U;
+    }
+
+    state->active_imu_mask = active_mask;
+    gTaskImuActiveMask = active_mask;
+    if (active_mask != 0U) {
+        ImuAttitude_SetInputMask(active_mask);
+    }
+}
 
 static uint8_t imu_identity_has_fault(const RuntimeState_t *state)
 {
-    if ((state->bmi088_init_error != 0U) || (state->bmi270_init_error != 0U)) {
+    if ((state->required_imu_mask != 0U) &&
+        ((state->active_imu_mask & state->required_imu_mask) != state->required_imu_mask)) {
         return 1U;
     }
 
-    if ((state->accel_chip_id != BMI088_ACCEL_CHIP_ID) ||
-        (state->gyro_chip_id != BMI088_GYRO_CHIP_ID) ||
-        ((state->bmi270_chip_id != BMI270_CHIP_ID_VALUE) &&
-         (state->bmi270_chip_id != BMI220_CHIP_ID_VALUE))) {
+    if (state->active_imu_mask == 0U) {
         return 1U;
     }
 
     return 0U;
 }
 
+static void task_imu_write_fault_report(const RuntimeState_t *state)
+{
+    if ((state->required_imu_mask & IMU_MASK_BMI088) != 0U) {
+        if ((state->active_imu_mask & IMU_MASK_BMI088) == 0U) {
+            TaskSerial_Write("ERROR:BMI088_MISSING\n");
+        }
+    }
+
+    if ((state->required_imu_mask & IMU_MASK_BMI270) != 0U) {
+        if ((state->active_imu_mask & IMU_MASK_BMI270) == 0U) {
+            TaskSerial_Write("ERROR:BMI270_MISSING\n");
+        }
+    }
+
+    if (state->active_imu_mask == 0U) {
+        TaskSerial_Write("ERROR:NO_ACTIVE_IMU\n");
+    }
+}
+
 static void task_imu_delay_ms(uint32_t ms)
 {
-    DL_Common_delayCycles((CPUCLK_FREQ / 1000U) * ms);
+    Board_DelayMs(ms);
 }
 
 static uint8_t auto_calibration_wait_ready(RuntimeState_t *state)
@@ -70,10 +148,15 @@ static uint8_t auto_calibration_wait_ready(RuntimeState_t *state)
     while (TaskTemperature_IsReady(state, AUTO_CAL_TEMP_TOLERANCE_C) == 0U) {
         for (uint8_t i = 0U; i < AUTO_CAL_LOOP_MS; i++) {
             TaskTemperature_CalibrationService(state);
+            TaskLED_UpdateCalibrationStatus();
             task_imu_delay_ms(1U);
         }
 
         elapsed_ms += AUTO_CAL_LOOP_MS;
+        if (elapsed_ms >= AUTO_CAL_MAX_WAIT_MS) {
+            TaskSerial_Write("ERROR:TEMP_WAIT_TIMEOUT\n");
+            return 0U;
+        }
         if ((elapsed_ms % 1000U) == 0U) {
             (void) snprintf(line, sizeof(line),
                             "CAL_WAIT:T088=%.3f,T270=%.3f\n",
@@ -113,11 +196,13 @@ static void load_or_calibrate_bias(RuntimeState_t *state)
         return;
     }
     TaskSerial_Write("CAL:START\n");
+    TaskLED_UpdateCalibrationStatus();
     if (GyroBias_CalibrateWithService(&state->runtime_config.gyro_bias,
                                       0U,
                                       GYRO_BIAS_DEFAULT_RECORD_MS,
                                       TaskTemperature_CalibrationService,
-                                      state) != 0U) {
+                                      state,
+                                      GyroBias_CalibrationProgress) != 0U) {
         state->runtime_config.gyro_bias_valid = 1U;
         state->gyro_bias_valid = 1U;
         state->gyro_bias_calibrated = 1U;
@@ -141,16 +226,23 @@ void TaskIMU_Init(RuntimeState_t *state)
     state->gyro_chip_id = BMI088_ReadGyroChipId();
     state->bmi270_init_error = BMI270_Init();
     state->bmi270_chip_id = BMI270_ReadChipId();
-    load_or_calibrate_bias(state);
+    imu_update_selection(state);
+    if (TaskIMU_HaveFault(state) == 0U) {
+        load_or_calibrate_bias(state);
+    }
+    ImuAttitude_SetYawErrorDegPerTurn(state->runtime_config.bmi088_yaw_error_deg_per_turn,
+                                      state->runtime_config.bmi270_yaw_error_deg_per_turn);
     ImuAttitude_SetDebugMode(
         (state->runtime_config.output_mode == RUNTIME_OUTPUT_MODE_DEBUG) ? 1U : 0U);
     ImuAttitude_Init();
-    TaskIMU_AlignInitialAttitude();
+    if (TaskIMU_HaveFault(state) == 0U) {
+        TaskIMU_AlignInitialAttitude();
+    }
     for (uint8_t i = 0U; i < 10U; i++) {
         TaskTemperature_SampleSensorsFromInterrupt(state);
     }
-    DL_TimerG_startCounter(TIMERG6_1000hz_INST);
-    TaskIMU_EnableInterruptUpdate(1U);
+    Board_StartImuTimer();
+    TaskIMU_EnableInterruptUpdate((TaskIMU_HaveFault(state) == 0U) ? 1U : 0U);
 }
 
 /* 检查 IMU 初始化结果和芯片 ID，供 LED 状态和异常输出判断使用。 */
@@ -186,18 +278,31 @@ void TaskIMU_AlignInitialAttitude(void)
         Axis3f bmi088_sample;
         Axis3f bmi270_sample;
 
-        BMI088_Read(&BMI088Sensor);
-        BMI270_Read(&BMI270Sensor);
-        bmi270_sample = ImuAttitude_BMI270AccelToBoard();
+        if ((gTaskImuActiveMask & IMU_MASK_BMI088) != 0U) {
+            BMI088_Read(&BMI088Sensor);
+            bmi088_sample = ImuAttitude_BMI088AccelToBoard();
+        } else {
+            bmi088_sample.x = 0.0f;
+            bmi088_sample.y = 0.0f;
+            bmi088_sample.z = 9.80665f;
+        }
 
-        bmi088_sample = ImuAttitude_BMI088AccelToBoard();
+        if ((gTaskImuActiveMask & IMU_MASK_BMI270) != 0U) {
+            BMI270_Read(&BMI270Sensor);
+            bmi270_sample = ImuAttitude_BMI270AccelToBoard();
+        } else {
+            bmi270_sample.x = 0.0f;
+            bmi270_sample.y = 0.0f;
+            bmi270_sample.z = 9.80665f;
+        }
+
         bmi088_accel.x += bmi088_sample.x;
         bmi088_accel.y += bmi088_sample.y;
         bmi088_accel.z += bmi088_sample.z;
         bmi270_accel.x += bmi270_sample.x;
         bmi270_accel.y += bmi270_sample.y;
         bmi270_accel.z += bmi270_sample.z;
-        DL_Common_delayCycles(CPUCLK_FREQ / 1000U * STARTUP_ALIGN_SAMPLE_MS);
+        Board_DelayMs(STARTUP_ALIGN_SAMPLE_MS);
     }
 
     bmi088_accel.x /= (float)STARTUP_ALIGN_SAMPLES;
@@ -211,7 +316,7 @@ void TaskIMU_AlignInitialAttitude(void)
 
     for (uint32_t sample = 0U; sample < STARTUP_SETTLE_SAMPLES; sample++) {
         ImuAttitude_Update(IMU_UPDATE_DT_SECONDS);
-        DL_Common_delayCycles(CPUCLK_FREQ / 1000U);
+        Board_DelayMs(1U);
     }
 
     TaskIMU_UpdateOutputAngles();
@@ -237,46 +342,34 @@ void TaskIMU_WriteAngles(const RuntimeState_t *state)
                     state->runtime_config.target_temperature_c);
     TaskSerial_Write(line);
 #else
-    float bmi088_pitch;
-    float bmi088_roll;
-    float bmi088_yaw;
-    float bmi270_pitch;
-    float bmi270_roll;
-    float bmi270_yaw;
-    float virtual_pitch;
-    float virtual_roll;
-    float virtual_yaw;
+    INS_t bmi088_result;
+    IMU_Attitude_t bmi270_result;
+    IMU_Attitude_t virtual_result;
 
-    __disable_irq();
-    bmi088_pitch = BMI088.Pitch;
-    bmi088_roll = BMI088.Roll;
-    bmi088_yaw = BMI088.Yaw;
-    bmi270_pitch = BMI270.Pitch;
-    bmi270_roll = BMI270.Roll;
-    bmi270_yaw = BMI270.Yaw;
-    virtual_pitch = VirtualIMU.Pitch;
-    virtual_roll = VirtualIMU.Roll;
-    virtual_yaw = VirtualIMU.Yaw;
-    __enable_irq();
+    Board_EnterCritical();
+    ImuAttitude_GetBMI088Result(&bmi088_result);
+    ImuAttitude_GetBMI270Result(&bmi270_result);
+    ImuAttitude_GetFusedResult(&virtual_result);
+    Board_ExitCritical();
 
     if (state->runtime_config.output_mode == RUNTIME_OUTPUT_MODE_DEBUG) {
         (void) snprintf(line, sizeof(line),
                         "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
-                        bmi088_pitch * RAD2DEG,
-                        bmi088_roll * RAD2DEG,
-                        bmi088_yaw * RAD2DEG,
-                        bmi270_pitch * RAD2DEG,
-                        bmi270_roll * RAD2DEG,
-                        bmi270_yaw * RAD2DEG,
-                        virtual_pitch * RAD2DEG,
-                        virtual_roll * RAD2DEG,
-                        virtual_yaw * RAD2DEG);
+                        bmi088_result.Pitch * RAD2DEG,
+                        bmi088_result.Roll * RAD2DEG,
+                        bmi088_result.Yaw * RAD2DEG,
+                        bmi270_result.Pitch * RAD2DEG,
+                        bmi270_result.Roll * RAD2DEG,
+                        bmi270_result.Yaw * RAD2DEG,
+                        virtual_result.Pitch * RAD2DEG,
+                        virtual_result.Roll * RAD2DEG,
+                        virtual_result.Yaw * RAD2DEG);
     } else {
         (void) snprintf(line, sizeof(line),
                         "%.3f,%.3f,%.3f\n",
-                        virtual_pitch * RAD2DEG,
-                        virtual_roll * RAD2DEG,
-                        virtual_yaw * RAD2DEG);
+                        virtual_result.Pitch * RAD2DEG,
+                        virtual_result.Roll * RAD2DEG,
+                        virtual_result.Yaw * RAD2DEG);
     }
     TaskSerial_Write(line);
 #endif
@@ -288,12 +381,11 @@ void TaskIMU_WriteAngles(const RuntimeState_t *state)
  */
 void TaskIMU_EnableInterruptUpdate(uint8_t enable)
 {
-    __disable_irq();
+    Board_EnterCritical();
     gImuInterruptUpdateEnabled = (enable != 0U) ? 1U : 0U;
-    gImuInterruptBusy = 0U;
     gImuReportPending = 0U;
     gUartReportDivider = 0U;
-    __enable_irq();
+    Board_ExitCritical();
 }
 
 /*
@@ -303,14 +395,17 @@ void TaskIMU_EnableInterruptUpdate(uint8_t enable)
  */
 void TaskIMU_UpdateFromInterrupt(RuntimeState_t *state)
 {
+    uint32_t start_count;
+    uint32_t end_count;
+    uint32_t elapsed_ticks;
+
     if (gImuInterruptUpdateEnabled == 0U) {
         return;
     }
-    if (gImuInterruptBusy != 0U) {
-        gImuRuntimeStats.overrun_count++;
+    if (state->active_imu_mask == 0U) {
         return;
     }
-    gImuInterruptBusy = 1U;
+    start_count = Board_GetImuTimerCount();
 
     gImuRuntimeStats.update_count++;
 
@@ -324,7 +419,12 @@ void TaskIMU_UpdateFromInterrupt(RuntimeState_t *state)
         gImuReportPending = 1U;
     }
 
-    gImuInterruptBusy = 0U;
+    end_count = Board_GetImuTimerCount();
+    elapsed_ticks = Board_GetImuTimerElapsedTicks(start_count, end_count);
+    if (elapsed_ticks > Board_GetImuInterruptBudgetTicks()) {
+        gImuRuntimeStats.overrun_count++;
+    }
+
 }
 
 /*
@@ -343,11 +443,23 @@ void TaskIMU_Update1kHz(RuntimeState_t *state)
 void TaskIMU_ServiceReport(RuntimeState_t *state)
 {
     uint8_t report_pending;
+    static uint32_t last_error_report_tick;
 
-    __disable_irq();
+    if (TaskIMU_HaveFault(state) != 0U) {
+        TaskLED_UpdateSystemStatus(1U, 1U, 0U, 1U);
+        if ((int32_t)(gSystemTickMs - state->uart_report_resume_tick) >= 0) {
+            if ((uint32_t)(gSystemTickMs - last_error_report_tick) >= IMU_ERROR_REPORT_PERIOD_MS) {
+                last_error_report_tick = gSystemTickMs;
+                task_imu_write_fault_report(state);
+            }
+        }
+        return;
+    }
+
+    Board_EnterCritical();
     report_pending = gImuReportPending;
     gImuReportPending = 0U;
-    __enable_irq();
+    Board_ExitCritical();
 
     if (report_pending == 0U) {
         return;

@@ -8,6 +8,7 @@
 #include "bmi088_mspm0.h"
 #include "bmi270_mspm0.h"
 #include "flash_storage.h"
+#include "gyro_bias_calibration.h"
 #include "imu_attitude.h"
 
 #include <stddef.h>
@@ -27,6 +28,7 @@
 #define UART_DMA_RX_BUFFER_SIZE 256U
 #define UART_DMA_TX_CHUNK_SIZE  128U
 #define UART_RX_DRAIN_SIZE      16U
+#define UART_DMA_TX_TIMEOUT_MS   50U
 #define STATUS_BMI088_ACCEL_CHIP_ID 0x1EU
 #define STATUS_BMI088_GYRO_CHIP_ID  0x0FU
 #define UART_BUSY_TIMEOUT_CYCLES (CPUCLK_FREQ / 200U)
@@ -44,11 +46,16 @@ static uint8_t gUartDmaTxBuffer[UART_DMA_TX_CHUNK_SIZE];
 static uint8_t gUartRxDrainBuffer[UART_RX_DRAIN_SIZE];
 static uint16_t gUartDmaRxReadIndex;
 
+extern const char *Firmware_GetVersion(void);
+
 static void serial_uart_apply_config(uint32_t baud_rate);
 static uint8_t serial_uart_wait_idle(uint32_t timeout_cycles);
+static uint8_t serial_dma_wait_tx_idle(uint32_t timeout_ms);
 static void serial_dma_start_rx(void);
 static void serial_collect_byte(uint8_t rx);
 static void serial_reset_rx_parser(void);
+static char *skip_spaces(char *text);
+static uint8_t command_is_end(char *text);
 
 static void serial_uart_apply_config(uint32_t baud_rate)
 {
@@ -88,6 +95,21 @@ static uint8_t serial_uart_wait_idle(uint32_t timeout_cycles)
 }
 
 /* 配置 UART RX/TX DMA。RX 持续写入环形缓冲，前台只解析已经搬运好的字节。 */
+static uint8_t serial_dma_wait_tx_idle(uint32_t timeout_ms)
+{
+    uint32_t timeout_cycles = (CPUCLK_FREQ / 1000U) * timeout_ms;
+
+    while (DL_DMA_isChannelEnabled(DMA, UART_DMA_TX_CHANNEL)) {
+        if (timeout_cycles == 0U) {
+            DL_DMA_disableChannel(DMA, UART_DMA_TX_CHANNEL);
+            return 0U;
+        }
+        timeout_cycles--;
+    }
+
+    return 1U;
+}
+
 static void serial_dma_init(void)
 {
     DL_DMA_Config rx_config = {
@@ -168,16 +190,14 @@ void TaskSerial_Write(const char *text)
             chunk_len++;
         }
 
-        while (DL_DMA_isChannelEnabled(DMA, UART_DMA_TX_CHANNEL)) {
-        }
+        (void) serial_dma_wait_tx_idle(UART_DMA_TX_TIMEOUT_MS);
 
         DL_DMA_setSrcAddr(DMA, UART_DMA_TX_CHANNEL, (uint32_t)gUartDmaTxBuffer);
         DL_DMA_setDestAddr(DMA, UART_DMA_TX_CHANNEL, (uint32_t)&UART_OUT_INST->TXDATA);
         DL_DMA_setTransferSize(DMA, UART_DMA_TX_CHANNEL, chunk_len);
         DL_DMA_enableChannel(DMA, UART_DMA_TX_CHANNEL);
 
-        while (DL_DMA_isChannelEnabled(DMA, UART_DMA_TX_CHANNEL)) {
-        }
+        (void) serial_dma_wait_tx_idle(UART_DMA_TX_TIMEOUT_MS);
 
         (void) serial_uart_wait_idle(UART_BUSY_TIMEOUT_CYCLES);
         text += chunk_len;
@@ -238,6 +258,9 @@ static void serial_collect_byte(uint8_t rx)
     } else if ((rx >= 0x20U) && (rx <= 0x7EU) && (gRxIndex < (UART_RX_LINE_SIZE - 1U))) {
         gRxLine[gRxIndex++] = (char)rx;
     } else if ((rx < 0x20U) || (rx > 0x7EU)) {
+        if (gRxIndex != 0U) {
+            gCommandOverflow = 1U;
+        }
         gRxIndex = 0U;
     } else {
         gRxIndex = 0U;
@@ -317,41 +340,121 @@ static const char *status_bmi270_model_name(const RuntimeState_t *state)
     return "UNKNOWN";
 }
 
-static void serial_write_status_snapshot(RuntimeState_t *state)
+static const char *status_output_mode_name(uint8_t output_mode)
+{
+    return (output_mode == RUNTIME_OUTPUT_MODE_DEBUG) ? "DEBUG" : "USE";
+}
+
+static const char *status_imu_source_name(uint8_t imu_source)
+{
+    if (imu_source == RUNTIME_IMU_SOURCE_AUTO) {
+        return "AUTO";
+    }
+    if (imu_source == RUNTIME_IMU_SOURCE_BMI088) {
+        return "BMI088";
+    }
+    if (imu_source == RUNTIME_IMU_SOURCE_BMI270) {
+        return "BMI270";
+    }
+
+    return "DUAL";
+}
+
+static const char *status_active_imu_name(uint8_t active_mask)
+{
+    if (active_mask == IMU_MASK_DUAL) {
+        return "DUAL";
+    }
+    if (active_mask == IMU_MASK_BMI088) {
+        return "BMI088";
+    }
+    if (active_mask == IMU_MASK_BMI270) {
+        return "BMI270";
+    }
+
+    return "NONE";
+}
+
+static uint8_t status_load_flash_config(RuntimeConfig_t *flash_config)
+{
+    return RuntimeConfig_Load(flash_config);
+}
+
+static void serial_write_status_version(void)
+{
+    char line[32];
+
+    (void) snprintf(line, sizeof(line), "FW:%s\n", Firmware_GetVersion());
+    TaskSerial_Write(line);
+}
+
+static void serial_write_status_config(const RuntimeConfig_t *flash_config, uint8_t flash_config_valid)
 {
     char line[256];
-    RuntimeConfig_t flash_config;
-    uint8_t flash_config_valid;
-
-    flash_config_valid = RuntimeConfig_Load(&flash_config);
 
     if (flash_config_valid != 0U) {
         (void) snprintf(line, sizeof(line),
                         "BAUD:%lu\n"
                         "RATE:%lu\n"
                         "MODE:%s\n"
-                        "TARGET_TEMP:%.3f\n",
-                        (unsigned long) flash_config.baud_rate,
-                        (unsigned long) flash_config.report_rate_hz,
-                        (flash_config.output_mode == RUNTIME_OUTPUT_MODE_DEBUG) ? "DEBUG" : "USE",
-                        flash_config.target_temperature_c);
+                        "IMU_SOURCE:%s\n"
+                        "TARGET_TEMP:%.3f\n"
+                        "BMI088_YAW_ERR:%.3f\n"
+                        "BMI270_YAW_ERR:%.3f\n",
+                        (unsigned long) flash_config->baud_rate,
+                        (unsigned long) flash_config->report_rate_hz,
+                        status_output_mode_name(flash_config->output_mode),
+                        status_imu_source_name(flash_config->imu_source),
+                        flash_config->target_temperature_c,
+                        flash_config->bmi088_yaw_error_deg_per_turn,
+                        flash_config->bmi270_yaw_error_deg_per_turn);
     } else {
         (void) snprintf(line, sizeof(line),
                         "BAUD:INVALID\n"
                         "RATE:INVALID\n"
                         "MODE:INVALID\n"
-                        "TARGET_TEMP:INVALID\n");
+                        "IMU_SOURCE:INVALID\n"
+                        "TARGET_TEMP:INVALID\n"
+                        "BMI088_YAW_ERR:INVALID\n"
+                        "BMI270_YAW_ERR:INVALID\n");
     }
     TaskSerial_Write(line);
+}
+
+static void serial_write_status_imu(RuntimeState_t *state)
+{
+    char line[192];
 
     (void) snprintf(line, sizeof(line),
+                    "IMU_ACTIVE:%s\n"
                     "BMI088_MODEL:%s\n"
+                    "BMI088_PRESENT:%u\n"
                     "BMI270_MODEL:%s\n",
+                    status_active_imu_name(state->active_imu_mask),
                     status_bmi088_model_name(state),
+                    state->bmi088_present,
                     status_bmi270_model_name(state));
     TaskSerial_Write(line);
 
-    if ((flash_config_valid != 0U) && (flash_config.gyro_bias_valid != 0U)) {
+    (void) snprintf(line, sizeof(line), "BMI270_PRESENT:%u\n", state->bmi270_present);
+    TaskSerial_Write(line);
+
+    (void) snprintf(line, sizeof(line), "BMI088_TEMP:%.3f\n", BMI088Sensor.Temperature);
+    TaskSerial_Write(line);
+
+    if (state->bmi270_temperature_valid != 0U) {
+        (void) snprintf(line, sizeof(line), "BMI270_TEMP:%.3f\n", BMI270Sensor.Temperature);
+    } else {
+        (void) snprintf(line, sizeof(line), "BMI270_TEMP:INVALID\n");
+    }
+    TaskSerial_Write(line);
+}
+
+static void serial_write_status_bias(const RuntimeConfig_t *flash_config, uint8_t flash_config_valid)
+{
+    char line[256];
+
+    if ((flash_config_valid != 0U) && (flash_config->gyro_bias_valid != 0U)) {
         (void) snprintf(line, sizeof(line),
                         "BMI088_BIAS_X:%.6f\n"
                         "BMI088_BIAS_Y:%.6f\n"
@@ -359,12 +462,12 @@ static void serial_write_status_snapshot(RuntimeState_t *state)
                         "BMI270_BIAS_X:%.6f\n"
                         "BMI270_BIAS_Y:%.6f\n"
                         "BMI270_BIAS_Z:%.6f\n",
-                        flash_config.gyro_bias.bmi088[0],
-                        flash_config.gyro_bias.bmi088[1],
-                        flash_config.gyro_bias.bmi088[2],
-                        flash_config.gyro_bias.bmi270[0],
-                        flash_config.gyro_bias.bmi270[1],
-                        flash_config.gyro_bias.bmi270[2]);
+                        flash_config->gyro_bias.bmi088[0],
+                        flash_config->gyro_bias.bmi088[1],
+                        flash_config->gyro_bias.bmi088[2],
+                        flash_config->gyro_bias.bmi270[0],
+                        flash_config->gyro_bias.bmi270[1],
+                        flash_config->gyro_bias.bmi270[2]);
     } else {
         (void) snprintf(line, sizeof(line),
                         "BMI088_BIAS_X:INVALID\n"
@@ -375,10 +478,22 @@ static void serial_write_status_snapshot(RuntimeState_t *state)
                         "BMI270_BIAS_Z:INVALID\n");
     }
     TaskSerial_Write(line);
+}
+
+static void serial_write_status_heat(RuntimeState_t *state, const RuntimeConfig_t *flash_config,
+                                     uint8_t flash_config_valid)
+{
+    char line[160];
+
+    if (flash_config_valid != 0U) {
+        (void) snprintf(line, sizeof(line), "TARGET_TEMP:%.3f\n", flash_config->target_temperature_c);
+    } else {
+        (void) snprintf(line, sizeof(line), "TARGET_TEMP:INVALID\n");
+    }
+    TaskSerial_Write(line);
 
     (void) snprintf(line, sizeof(line), "BMI088_TEMP:%.3f\n", BMI088Sensor.Temperature);
     TaskSerial_Write(line);
-
     if (state->bmi270_temperature_valid != 0U) {
         (void) snprintf(line, sizeof(line), "BMI270_TEMP:%.3f\n", BMI270Sensor.Temperature);
     } else {
@@ -392,6 +507,11 @@ static void serial_write_status_snapshot(RuntimeState_t *state)
                     state->bmi088_heater_duty,
                     state->bmi270_heater_duty);
     TaskSerial_Write(line);
+}
+
+static void serial_write_status_diag(void)
+{
+    char line[192];
 
     (void) snprintf(line, sizeof(line),
                     "BMI088_GYRO_SAT:%lu\n"
@@ -407,6 +527,35 @@ static void serial_write_status_snapshot(RuntimeState_t *state)
                     (unsigned long) gImuRuntimeStats.update_count,
                     (unsigned long) gImuRuntimeStats.overrun_count);
     TaskSerial_Write(line);
+}
+
+static void serial_write_status_snapshot(RuntimeState_t *state, char *args)
+{
+    RuntimeConfig_t flash_config;
+    uint8_t flash_config_valid = status_load_flash_config(&flash_config);
+
+    args = skip_spaces(args);
+    serial_write_status_version();
+
+    if (*args == '\0') {
+        serial_write_status_config(&flash_config, flash_config_valid);
+        serial_write_status_imu(state);
+        return;
+    }
+
+    if ((strncmp(args, "CONFIG", 6U) == 0) && (command_is_end(args + 6) != 0U)) {
+        serial_write_status_config(&flash_config, flash_config_valid);
+    } else if ((strncmp(args, "IMU", 3U) == 0) && (command_is_end(args + 3) != 0U)) {
+        serial_write_status_imu(state);
+    } else if ((strncmp(args, "BIAS", 4U) == 0) && (command_is_end(args + 4) != 0U)) {
+        serial_write_status_bias(&flash_config, flash_config_valid);
+    } else if ((strncmp(args, "HEAT", 4U) == 0) && (command_is_end(args + 4) != 0U)) {
+        serial_write_status_heat(state, &flash_config, flash_config_valid);
+    } else if ((strncmp(args, "DIAG", 4U) == 0) && (command_is_end(args + 4) != 0U)) {
+        serial_write_status_diag();
+    } else {
+        TaskSerial_Write("ERROR:STATUS_ARG\n");
+    }
 }
 
 /* 对有效命令统一回复 OK，并回显收到的原始命令。 */
@@ -440,6 +589,7 @@ static char *skip_spaces(char *text)
 static uint8_t parse_u32_arg(char **text, uint32_t *value)
 {
     uint32_t result = 0U;
+    uint32_t digit;
     char *p = skip_spaces(*text);
 
     if ((*p < '0') || (*p > '9')) {
@@ -447,7 +597,12 @@ static uint8_t parse_u32_arg(char **text, uint32_t *value)
     }
 
     while ((*p >= '0') && (*p <= '9')) {
-        result = (result * 10U) + (uint32_t)(*p - '0');
+        digit = (uint32_t)(*p - '0');
+
+        if (result > ((0xFFFFFFFFUL - digit) / 10UL)) {
+            return 0U;
+        }
+        result = (result * 10U) + digit;
         p++;
     }
 
@@ -475,7 +630,12 @@ static uint8_t parse_temp_arg(char **text, float *value)
     }
 
     while ((*p >= '0') && (*p <= '9')) {
-        integer = (integer * 10) + (int32_t)(*p - '0');
+        int32_t digit = (int32_t)(*p - '0');
+
+        if (integer > ((1000 - digit) / 10)) {
+            return 0U;
+        }
+        integer = (integer * 10) + digit;
         p++;
     }
 
@@ -507,8 +667,16 @@ static uint8_t command_is_end(char *text)
 
 static uint8_t command_match(const char *text, const char *keyword, uint8_t length)
 {
-    if (strncmp(text, keyword, length) != 0) {
-        return 0U;
+    for (uint8_t i = 0U; i < length; i++) {
+        char ch = text[i];
+
+        if ((ch >= 'a') && (ch <= 'z')) {
+            ch = (char)(ch - 'a' + 'A');
+        }
+
+        if (ch != keyword[i]) {
+            return 0U;
+        }
     }
 
     return command_is_separator(text[length]);
@@ -529,7 +697,10 @@ static char *command_find_start(char *line)
             (command_match(p, "TEMP", 4U) != 0U) ||
             (command_match(p, "BAUD", 4U) != 0U) ||
             (command_match(p, "RATE", 4U) != 0U) ||
-            (command_match(p, "MODE", 4U) != 0U)) {
+            (command_match(p, "MODE", 4U) != 0U) ||
+            (command_match(p, "YAWCAL", 6U) != 0U) ||
+            (command_match(p, "LIST", 4U) != 0U) ||
+            (command_match(p, "IMU", 3U) != 0U)) {
             return p;
         }
         p++;
@@ -560,6 +731,20 @@ static void command_save_and_reset(RuntimeState_t *state, const char *reason)
  * 处理单条命令。
  * CAL/TEMP/BAUD/RATE 成功后自动保存并复位；STATUS 只查询，不写 Flash。
  */
+static void serial_write_command_list(void)
+{
+    TaskSerial_Write("COMMAND:LIST\n");
+    TaskSerial_Write("CAL <WAIT_S> <RECORD_S>\n");
+    TaskSerial_Write("TEMP <20-85C>\n");
+    TaskSerial_Write("BAUD <115200|230400|460800|921600>\n");
+    TaskSerial_Write("RATE <1-500HZ>\n");
+    TaskSerial_Write("MODE <USE|DEBUG>\n");
+    TaskSerial_Write("IMU <DUAL|BMI088|BMI270|AUTO>\n");
+    TaskSerial_Write("YAWCAL <BMI088_ERR> <BMI270_ERR>\n");
+    TaskSerial_Write("STATUS [CONFIG|IMU|BIAS|HEAT|DIAG]\n");
+    TaskSerial_Write("LIST\n");
+}
+
 static uint8_t command_handle(RuntimeState_t *state, char *line)
 {
     char *cmd = command_find_start(line);
@@ -588,7 +773,8 @@ static uint8_t command_handle(RuntimeState_t *state, char *line)
                                           wait_s * 1000U,
                                           record_s * 1000U,
                                           TaskTemperature_CalibrationService,
-                                          state) != 0U) {
+                                          state,
+                                          GyroBias_CalibrationProgress) != 0U) {
             state->runtime_config.gyro_bias_valid = 1U;
             state->gyro_bias_valid = 1U;
             state->gyro_bias_calibrated = 1U;
@@ -668,10 +854,53 @@ static uint8_t command_handle(RuntimeState_t *state, char *line)
         TaskSerial_Write("MODE:UPDATED\n");
         command_save_and_reset(state, "MODE");
         return 1U;
-    } else if ((command_match(p, "STATUS", 6U) != 0U) && (command_is_end(p + 6) != 0U)) {
+    } else if (command_match(p, "IMU", 3U) != 0U) {
+        p = skip_spaces(p + 3);
+        if ((strncmp(p, "DUAL", 4U) == 0) && (command_is_end(p + 4) != 0U)) {
+            state->runtime_config.imu_source = RUNTIME_IMU_SOURCE_DUAL;
+        } else if ((strncmp(p, "BMI088", 6U) == 0) && (command_is_end(p + 6) != 0U)) {
+            state->runtime_config.imu_source = RUNTIME_IMU_SOURCE_BMI088;
+        } else if ((strncmp(p, "BMI270", 6U) == 0) && (command_is_end(p + 6) != 0U)) {
+            state->runtime_config.imu_source = RUNTIME_IMU_SOURCE_BMI270;
+        } else if ((strncmp(p, "AUTO", 4U) == 0) && (command_is_end(p + 4) != 0U)) {
+            state->runtime_config.imu_source = RUNTIME_IMU_SOURCE_AUTO;
+        } else {
+            return 0U;
+        }
+
         TaskSerial_PauseReport(state);
         command_ack_echo(cmd);
-        serial_write_status_snapshot(state);
+        TaskSerial_Write("IMU:UPDATED\n");
+        command_save_and_reset(state, "IMU");
+        return 1U;
+    } else if (command_match(p, "YAWCAL", 6U) != 0U) {
+        float bmi088_error;
+        float bmi270_error;
+        p += 6;
+        if ((parse_temp_arg(&p, &bmi088_error) == 0U) ||
+            (parse_temp_arg(&p, &bmi270_error) == 0U) ||
+            (bmi088_error < -30.0f) || (bmi088_error > 30.0f) ||
+            (bmi270_error < -30.0f) || (bmi270_error > 30.0f) ||
+            (command_is_end(p) == 0U)) {
+            return 0U;
+        }
+
+        TaskSerial_PauseReport(state);
+        command_ack_echo(cmd);
+        state->runtime_config.bmi088_yaw_error_deg_per_turn = bmi088_error;
+        state->runtime_config.bmi270_yaw_error_deg_per_turn = bmi270_error;
+        TaskSerial_Write("YAWCAL:UPDATED\n");
+        command_save_and_reset(state, "YAWCAL");
+        return 1U;
+    } else if (command_match(p, "STATUS", 6U) != 0U) {
+        TaskSerial_PauseReport(state);
+        command_ack_echo(cmd);
+        serial_write_status_snapshot(state, p + 6);
+        return 1U;
+    } else if (command_match(p, "LIST", 4U) != 0U) {
+        TaskSerial_PauseReport(state);
+        command_ack_echo(cmd);
+        serial_write_command_list();
         return 1U;
     }
 
@@ -698,6 +927,8 @@ uint8_t TaskSerial_PollCommand(RuntimeState_t *state)
 /* 零漂整定过程中的进度回调，每秒输出剩余时间。 */
 void GyroBias_CalibrationProgress(uint32_t elapsed_ms, uint32_t total_ms)
 {
+    TaskLED_UpdateCalibrationStatus();
+
     if ((elapsed_ms % 1000U) == 0U) {
         char line[64];
         uint32_t remaining_s = (total_ms - elapsed_ms + 999U) / 1000U;

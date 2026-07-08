@@ -71,17 +71,10 @@ uint8_t RuntimeState_TakeTemperatureUpdate(void)
     return 1U;
 }
 
-/* IMU 已迁移到 1kHz 中断直接执行；该函数保留为空，兼容旧调用。 */
-uint8_t RuntimeState_TakeImuUpdate(void)
-{
-    return 0U;
-}
-
 /* 清空启动或整定期间的 IMU 统计兼容入口。 */
 void RuntimeState_ClearImuUpdates(void)
 {
-    __disable_irq();
-    __enable_irq();
+    RuntimeState_ClearImuRuntimeStats();
 }
 
 /* IMU 初始化完成后清空运行统计，让 STATUS 只反映稳定运行阶段的负载情况。 */

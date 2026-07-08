@@ -17,7 +17,22 @@ void GROUP1_IRQHandler(void)
 
 void UART2_IRQHandler(void)
 {
-    while (DL_UART_Main_getPendingInterrupt(UART_OUT_INST) != DL_UART_MAIN_IIDX_NO_INTERRUPT) {
+    uint8_t guard = 32U;
+
+    while ((DL_UART_Main_getPendingInterrupt(UART_OUT_INST) != DL_UART_MAIN_IIDX_NO_INTERRUPT) &&
+           (guard > 0U)) {
+        while (!DL_UART_Main_isRXFIFOEmpty(UART_OUT_INST)) {
+            (void) DL_UART_Main_receiveData(UART_OUT_INST);
+        }
+        DL_UART_Main_clearInterruptStatus(UART_OUT_INST, 0xFFFFFFFFUL);
+        guard--;
+    }
+
+    if (guard == 0U) {
+        while (!DL_UART_Main_isRXFIFOEmpty(UART_OUT_INST)) {
+            (void) DL_UART_Main_receiveData(UART_OUT_INST);
+        }
+        DL_UART_Main_clearInterruptStatus(UART_OUT_INST, 0xFFFFFFFFUL);
     }
 }
 

@@ -19,6 +19,55 @@ void Board_EnableInterrupts(void)
     NVIC_EnableIRQ(TIMERG6_1000hz_INST_INT_IRQN);
 }
 
+void Board_EnterCritical(void)
+{
+    __disable_irq();
+}
+
+void Board_ExitCritical(void)
+{
+    __enable_irq();
+}
+
+void Board_DelayMs(uint32_t ms)
+{
+    DL_Common_delayCycles((CPUCLK_FREQ / 1000U) * ms);
+}
+
+void Board_StartImuTimer(void)
+{
+    DL_TimerG_startCounter(TIMERG6_1000hz_INST);
+}
+
+uint32_t Board_GetImuTimerCount(void)
+{
+    return DL_TimerG_getTimerCount(TIMERG6_1000hz_INST);
+}
+
+uint32_t Board_GetImuTimerElapsedTicks(uint32_t start_count, uint32_t end_count)
+{
+    uint32_t period_ticks = TIMERG6_1000hz_INST_LOAD_VALUE + 1U;
+
+    if (DL_TimerG_getCounterMode(TIMERG6_1000hz_INST) == DL_TIMER_COUNT_MODE_DOWN) {
+        if (start_count >= end_count) {
+            return start_count - end_count;
+        }
+
+        return start_count + period_ticks - end_count;
+    }
+
+    if (end_count >= start_count) {
+        return end_count - start_count;
+    }
+
+    return end_count + period_ticks - start_count;
+}
+
+uint32_t Board_GetImuInterruptBudgetTicks(void)
+{
+    return (TIMERG6_1000hz_INST_LOAD_VALUE + 1U) * 8U / 10U;
+}
+
 void Board_ResetAfterSave(void)
 {
     for (uint32_t i = 0U; i < (CPUCLK_FREQ / 100U); i++) {

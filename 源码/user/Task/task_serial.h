@@ -14,6 +14,6 @@ uint8_t TaskSerial_TakeCommand(char line[UART_RX_LINE_SIZE]);
 uint8_t TaskSerial_TakeOverflow(void);
 uint8_t TaskSerial_PollCommand(RuntimeState_t *ctx);
 void TaskSerial_PauseReport(RuntimeState_t *ctx);
+void GyroBias_CalibrationProgress(uint32_t elapsed_ms, uint32_t total_ms);
 
 #endif
-

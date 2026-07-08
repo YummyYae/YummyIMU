@@ -10,6 +10,10 @@
 #define UART_DIAGNOSTIC_HEARTBEAT 0U
 #define COMMAND_REPORT_PAUSE_MS 3000U
 
+#define IMU_MASK_BMI088 0x01U
+#define IMU_MASK_BMI270 0x02U
+#define IMU_MASK_DUAL   (IMU_MASK_BMI088 | IMU_MASK_BMI270)
+
 typedef struct {
     uint32_t update_count;
     uint32_t overrun_count;
@@ -30,6 +34,10 @@ typedef struct {
     uint8_t bmi270_temperature_filter_valid;
     uint8_t bmi088_temp_msb;
     uint8_t bmi088_temp_lsb;
+    uint8_t bmi088_present;
+    uint8_t bmi270_present;
+    uint8_t active_imu_mask;
+    uint8_t required_imu_mask;
     int16_t bmi088_temp_raw;
     float bmi088_temperature_filtered;
     float bmi270_temperature_filtered;
@@ -54,7 +62,6 @@ uint8_t RuntimeState_BaudRateIsSupported(uint32_t baud_rate);
 void RuntimeState_OnSysTick(void);
 void RuntimeState_OnTemperatureTick(void);
 uint8_t RuntimeState_TakeTemperatureUpdate(void);
-uint8_t RuntimeState_TakeImuUpdate(void);
 void RuntimeState_ClearImuUpdates(void);
 void RuntimeState_ClearImuRuntimeStats(void);
 void RuntimeState_WaitForInterrupt(void);

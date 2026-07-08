@@ -1,7 +1,5 @@
 #include "flash_storage.h"
 
-#include "bmi088_mspm0.h"
-#include "bmi270_mspm0.h"
 #include "ti_msp_dl_config.h"
 
 #include <stddef.h>
@@ -12,13 +10,12 @@
 #define CONFIG_SLOT_SIZE     64U
 #define CONFIG_SLOT_COUNT    (CONFIG_FLASH_SIZE / CONFIG_SLOT_SIZE)
 #define CONFIG_MAGIC         0x30434647UL
-#define CONFIG_VERSION       3U
+#define CONFIG_VERSION       5U
+#define CONFIG_VERSION_V4    4U
+#define CONFIG_VERSION_V3    3U
 #define CONFIG_VERSION_V2    2U
-#define CONFIG_SAMPLE_MS     1U
 #define CONFIG_SLOT_WORDS    (CONFIG_SLOT_SIZE / 4U)
-
-extern volatile uint32_t gSystemTickMs;
-extern void GyroBias_CalibrationProgress(uint32_t elapsed_ms, uint32_t total_ms);
+#define YAW_ERROR_LIMIT_DEG_PER_TURN 30.0f
 
 typedef struct {
     uint32_t magic;
@@ -28,6 +25,26 @@ typedef struct {
     RuntimeConfig_t config;
     uint32_t crc32;
 } ConfigRecord_t;
+
+typedef struct {
+    uint32_t baud_rate;
+    uint32_t report_rate_hz;
+    float target_temperature_c;
+    uint8_t gyro_bias_valid;
+    uint8_t output_mode;
+    uint8_t imu_source;
+    uint8_t reserved[1];
+    GyroBiasData_t gyro_bias;
+} RuntimeConfigV4_t;
+
+typedef struct {
+    uint32_t magic;
+    uint16_t version;
+    uint16_t length;
+    uint32_t sequence;
+    RuntimeConfigV4_t config;
+    uint32_t crc32;
+} ConfigRecordV4_t;
 
 typedef struct {
     uint32_t baud_rate;
@@ -50,16 +67,8 @@ typedef struct {
 } ConfigRecordV2_t;
 
 typedef char ConfigRecordSizeCheck[(sizeof(ConfigRecord_t) <= CONFIG_SLOT_SIZE) ? 1 : -1];
+typedef char ConfigRecordV4SizeCheck[(sizeof(ConfigRecordV4_t) <= CONFIG_SLOT_SIZE) ? 1 : -1];
 typedef char ConfigRecordV2SizeCheck[(sizeof(ConfigRecordV2_t) <= CONFIG_SLOT_SIZE) ? 1 : -1];
-
-static void delay_ms(uint32_t ms)
-{
-    uint32_t start = gSystemTickMs;
-
-    while ((uint32_t)(gSystemTickMs - start) < ms) {
-        __WFI();
-    }
-}
 
 static uint32_t crc32_update(uint32_t crc, const uint8_t *data, uint32_t len)
 {
@@ -85,6 +94,11 @@ static uint32_t record_crc(const ConfigRecord_t *record)
 static uint32_t record_v2_crc(const ConfigRecordV2_t *record)
 {
     return crc32_update(0xFFFFFFFFUL, (const uint8_t *)record, offsetof(ConfigRecordV2_t, crc32)) ^ 0xFFFFFFFFUL;
+}
+
+static uint32_t record_v4_crc(const ConfigRecordV4_t *record)
+{
+    return crc32_update(0xFFFFFFFFUL, (const uint8_t *)record, offsetof(ConfigRecordV4_t, crc32)) ^ 0xFFFFFFFFUL;
 }
 
 static uint8_t bias_values_are_reasonable(const GyroBiasData_t *bias)
@@ -113,6 +127,20 @@ static uint8_t output_mode_is_supported(uint8_t output_mode)
             (output_mode == RUNTIME_OUTPUT_MODE_DEBUG));
 }
 
+static uint8_t imu_source_is_supported(uint8_t imu_source)
+{
+    return ((imu_source == RUNTIME_IMU_SOURCE_DUAL) ||
+            (imu_source == RUNTIME_IMU_SOURCE_BMI088) ||
+            (imu_source == RUNTIME_IMU_SOURCE_BMI270) ||
+            (imu_source == RUNTIME_IMU_SOURCE_AUTO));
+}
+
+static uint8_t yaw_error_is_supported(float error_deg_per_turn)
+{
+    return ((error_deg_per_turn >= -YAW_ERROR_LIMIT_DEG_PER_TURN) &&
+            (error_deg_per_turn <= YAW_ERROR_LIMIT_DEG_PER_TURN)) ? 1U : 0U;
+}
+
 static void config_sanitize(RuntimeConfig_t *config)
 {
     if (baud_rate_is_supported(config->baud_rate) == 0U) {
@@ -129,6 +157,18 @@ static void config_sanitize(RuntimeConfig_t *config)
 
     if (output_mode_is_supported(config->output_mode) == 0U) {
         config->output_mode = RUNTIME_CONFIG_DEFAULT_OUTPUT_MODE;
+    }
+
+    if (imu_source_is_supported(config->imu_source) == 0U) {
+        config->imu_source = RUNTIME_CONFIG_DEFAULT_IMU_SOURCE;
+    }
+
+    if (yaw_error_is_supported(config->bmi088_yaw_error_deg_per_turn) == 0U) {
+        config->bmi088_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
+    }
+
+    if (yaw_error_is_supported(config->bmi270_yaw_error_deg_per_turn) == 0U) {
+        config->bmi270_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
     }
 
     if ((config->gyro_bias_valid == 0U) || (bias_values_are_reasonable(&config->gyro_bias) == 0U)) {
@@ -152,10 +192,16 @@ static const ConfigRecordV2_t *slot_record_v2(uint32_t slot)
     return (const ConfigRecordV2_t *)(CONFIG_FLASH_ADDRESS + (slot * CONFIG_SLOT_SIZE));
 }
 
+static const ConfigRecordV4_t *slot_record_v4(uint32_t slot)
+{
+    return (const ConfigRecordV4_t *)(CONFIG_FLASH_ADDRESS + (slot * CONFIG_SLOT_SIZE));
+}
+
 static uint8_t record_is_valid(const ConfigRecord_t *record)
 {
     RuntimeConfig_t config;
     const ConfigRecordV2_t *record_v2;
+    const ConfigRecordV4_t *record_v4;
 
     if (record->magic != CONFIG_MAGIC) {
         return 0U;
@@ -172,7 +218,10 @@ static uint8_t record_is_valid(const ConfigRecord_t *record)
         if ((config.baud_rate != record->config.baud_rate) ||
             (config.report_rate_hz != record->config.report_rate_hz) ||
             (config.target_temperature_c != record->config.target_temperature_c) ||
-            (config.gyro_bias_valid != record->config.gyro_bias_valid)) {
+            (config.gyro_bias_valid != record->config.gyro_bias_valid) ||
+            (config.imu_source != record->config.imu_source) ||
+            (config.bmi088_yaw_error_deg_per_turn != record->config.bmi088_yaw_error_deg_per_turn) ||
+            (config.bmi270_yaw_error_deg_per_turn != record->config.bmi270_yaw_error_deg_per_turn)) {
             return 0U;
         }
 
@@ -182,6 +231,33 @@ static uint8_t record_is_valid(const ConfigRecord_t *record)
         }
 
         return 1U;
+    }
+
+    if ((record->version == CONFIG_VERSION_V4) || (record->version == CONFIG_VERSION_V3)) {
+        record_v4 = (const ConfigRecordV4_t *)record;
+        if ((record_v4->length != sizeof(ConfigRecordV4_t)) ||
+            (record_v4->crc32 != record_v4_crc(record_v4))) {
+            return 0U;
+        }
+
+        config.baud_rate = record_v4->config.baud_rate;
+        config.report_rate_hz = record_v4->config.report_rate_hz;
+        config.target_temperature_c = record_v4->config.target_temperature_c;
+        config.gyro_bias_valid = record_v4->config.gyro_bias_valid;
+        config.output_mode = record_v4->config.output_mode;
+        config.imu_source = record_v4->config.imu_source;
+        config.reserved[0] = 0U;
+        config.bmi088_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
+        config.bmi270_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
+        config.gyro_bias = record_v4->config.gyro_bias;
+        config_sanitize(&config);
+
+        return ((config.baud_rate == record_v4->config.baud_rate) &&
+                (config.report_rate_hz == record_v4->config.report_rate_hz) &&
+                (config.target_temperature_c == record_v4->config.target_temperature_c) &&
+                (config.gyro_bias_valid == record_v4->config.gyro_bias_valid) &&
+                (config.output_mode == record_v4->config.output_mode) &&
+                (config.imu_source == record_v4->config.imu_source)) ? 1U : 0U;
     }
 
     if (record->version != CONFIG_VERSION_V2) {
@@ -199,8 +275,10 @@ static uint8_t record_is_valid(const ConfigRecord_t *record)
     config.target_temperature_c = record_v2->config.target_temperature_c;
     config.gyro_bias_valid = record_v2->config.gyro_bias_valid;
     config.output_mode = RUNTIME_CONFIG_DEFAULT_OUTPUT_MODE;
+    config.imu_source = RUNTIME_CONFIG_DEFAULT_IMU_SOURCE;
     config.reserved[0] = 0U;
-    config.reserved[1] = 0U;
+    config.bmi088_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
+    config.bmi270_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
     config.gyro_bias = record_v2->config.gyro_bias;
     config_sanitize(&config);
 
@@ -233,7 +311,7 @@ static uint32_t latest_valid_slot(uint8_t *found)
         const ConfigRecord_t *record = slot_record(slot);
 
         if (record_is_valid(record) != 0U) {
-            if ((*found == 0U) || (record->sequence >= latest_sequence)) {
+            if ((*found == 0U) || ((int32_t)(record->sequence - latest_sequence) > 0)) {
                 latest_slot = slot;
                 latest_sequence = record->sequence;
                 *found = 1U;
@@ -251,8 +329,10 @@ void RuntimeConfig_Default(RuntimeConfig_t *config)
     config->target_temperature_c = RUNTIME_CONFIG_DEFAULT_TARGET_TEMP_C;
     config->gyro_bias_valid = 0U;
     config->output_mode = RUNTIME_CONFIG_DEFAULT_OUTPUT_MODE;
+    config->imu_source = RUNTIME_CONFIG_DEFAULT_IMU_SOURCE;
     config->reserved[0] = 0U;
-    config->reserved[1] = 0U;
+    config->bmi088_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
+    config->bmi270_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
 
     for (uint8_t axis = 0U; axis < 3U; axis++) {
         config->gyro_bias.bmi088[axis] = 0.0f;
@@ -266,6 +346,7 @@ uint8_t RuntimeConfig_Load(RuntimeConfig_t *config)
     uint32_t slot;
     const ConfigRecord_t *record;
     const ConfigRecordV2_t *record_v2;
+    const ConfigRecordV4_t *record_v4;
 
     RuntimeConfig_Default(config);
     slot = latest_valid_slot(&found);
@@ -276,6 +357,18 @@ uint8_t RuntimeConfig_Load(RuntimeConfig_t *config)
     record = slot_record(slot);
     if (record->version == CONFIG_VERSION) {
         *config = record->config;
+    } else if ((record->version == CONFIG_VERSION_V4) || (record->version == CONFIG_VERSION_V3)) {
+        record_v4 = slot_record_v4(slot);
+        config->baud_rate = record_v4->config.baud_rate;
+        config->report_rate_hz = record_v4->config.report_rate_hz;
+        config->target_temperature_c = record_v4->config.target_temperature_c;
+        config->gyro_bias_valid = record_v4->config.gyro_bias_valid;
+        config->output_mode = record_v4->config.output_mode;
+        config->imu_source = record_v4->config.imu_source;
+        config->reserved[0] = 0U;
+        config->bmi088_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
+        config->bmi270_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
+        config->gyro_bias = record_v4->config.gyro_bias;
     } else {
         record_v2 = slot_record_v2(slot);
         config->baud_rate = record_v2->config.baud_rate;
@@ -283,8 +376,10 @@ uint8_t RuntimeConfig_Load(RuntimeConfig_t *config)
         config->target_temperature_c = record_v2->config.target_temperature_c;
         config->gyro_bias_valid = record_v2->config.gyro_bias_valid;
         config->output_mode = RUNTIME_CONFIG_DEFAULT_OUTPUT_MODE;
+        config->imu_source = RUNTIME_CONFIG_DEFAULT_IMU_SOURCE;
         config->reserved[0] = 0U;
-        config->reserved[1] = 0U;
+        config->bmi088_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
+        config->bmi270_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
         config->gyro_bias = record_v2->config.gyro_bias;
     }
     config_sanitize(config);
@@ -305,7 +400,6 @@ uint8_t RuntimeConfig_Save(const RuntimeConfig_t *config)
     sanitized = *config;
     config_sanitize(&sanitized);
     sanitized.reserved[0] = 0U;
-    sanitized.reserved[1] = 0U;
 
     latest_slot = latest_valid_slot(&found);
     latest_sequence = (found != 0U) ? slot_record(latest_slot)->sequence : 0U;
@@ -355,73 +449,3 @@ uint8_t RuntimeConfig_Save(const RuntimeConfig_t *config)
     return 1U;
 }
 
-void GyroBias_Apply(const GyroBiasData_t *bias)
-{
-    for (uint8_t axis = 0U; axis < 3U; axis++) {
-        BMI088Sensor.GyroOffset[axis] = bias->bmi088[axis];
-        BMI270Sensor.GyroOffset[axis] = bias->bmi270[axis];
-    }
-}
-
-uint8_t GyroBias_CalibrateWithService(GyroBiasData_t *bias,
-                                      uint32_t wait_ms,
-                                      uint32_t record_ms,
-                                      GyroBiasServiceHook_t service,
-                                      void *service_context)
-{
-    double bmi088_sum[3] = {0.0, 0.0, 0.0};
-    double bmi270_sum[3] = {0.0, 0.0, 0.0};
-    uint32_t accepted_samples = 0U;
-    uint32_t total_ms = wait_ms + record_ms;
-
-    if ((wait_ms > 600000U) || (record_ms == 0U) || (record_ms > 600000U) || (total_ms < wait_ms)) {
-        return 0U;
-    }
-
-    for (uint8_t axis = 0U; axis < 3U; axis++) {
-        BMI088Sensor.GyroOffset[axis] = 0.0f;
-        BMI270Sensor.GyroOffset[axis] = 0.0f;
-    }
-
-    for (uint32_t elapsed = 0U; elapsed < total_ms; elapsed += CONFIG_SAMPLE_MS) {
-        BMI088_Read(&BMI088Sensor);
-        BMI270_Read(&BMI270Sensor);
-        GyroBias_CalibrationProgress(elapsed, total_ms);
-
-        if (elapsed >= wait_ms) {
-            for (uint8_t axis = 0U; axis < 3U; axis++) {
-                bmi088_sum[axis] += (double)BMI088Sensor.Gyro[axis];
-                bmi270_sum[axis] += (double)BMI270Sensor.Gyro[axis];
-            }
-            accepted_samples++;
-        }
-
-        if (service != NULL) {
-            service(service_context);
-        }
-
-        delay_ms(CONFIG_SAMPLE_MS);
-    }
-
-    GyroBias_CalibrationProgress(total_ms, total_ms);
-    if (accepted_samples == 0U) {
-        return 0U;
-    }
-
-    for (uint8_t axis = 0U; axis < 3U; axis++) {
-        bias->bmi088[axis] = (float)(bmi088_sum[axis] / (double)accepted_samples);
-        bias->bmi270[axis] = (float)(bmi270_sum[axis] / (double)accepted_samples);
-    }
-
-    if (bias_values_are_reasonable(bias) == 0U) {
-        return 0U;
-    }
-
-    GyroBias_Apply(bias);
-    return 1U;
-}
-
-uint8_t GyroBias_Calibrate(GyroBiasData_t *bias, uint32_t wait_ms, uint32_t record_ms)
-{
-    return GyroBias_CalibrateWithService(bias, wait_ms, record_ms, NULL, NULL);
-}

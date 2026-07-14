@@ -6,7 +6,11 @@
 #include "bmi088_mspm0.h"
 #include "bmi270_mspm0.h"
 #include "board_mspm0.h"
+#include "accel_six_calibration.h"
 #include "gyro_bias_calibration.h"
+#if RUNTIME_FEATURE_INS_ENABLED
+#include "inertial_navigation.h"
+#endif
 #include "imu_attitude.h"
 
 #include <stdio.h>
@@ -21,20 +25,106 @@
 #define AUTO_CAL_LOOP_MS 10U
 #define AUTO_CAL_MAX_WAIT_MS 300000U
 #define IMU_ERROR_REPORT_PERIOD_MS 1000U
+#define BINARY_ATTITUDE_HEADER 0xA5U
+#define BINARY_ATTITUDE_PACKET_SIZE 8U
+#define BINARY_ANGLE_SCALE 100.0f
 
 /*
  * IMU 任务流程：
- * 1. TaskIMU_Init() 初始化 BMI088 与 BMI270/BMI220，读取芯片 ID，并加载或整定零漂。
- * 2. 初始化姿态算法后，TaskIMU_AlignInitialAttitude() 采样静止加速度，建立初始姿态。
+ * 1. TaskIMU_Init() 初始化 BMI088 与 BMI270/BMI220，读取芯片 ID，并加载或整定陀螺零漂。
+ * 2. 从 Flash 加载六面加速度参数后，TaskIMU_AlignInitialAttitude() 使用同一份校正数据建立初始姿态。
  * 3. 运行阶段由 TIMERG6 1kHz 中断直接调用 TaskIMU_UpdateFromInterrupt()，在最高优先级里完成 SPI 读取和姿态积分。
- * 4. 中断只置位“需要回传”的标志，串口格式化和阻塞发送仍由 main 中的 TaskIMU_ServiceReport() 完成。
- * 5. 串口命令、温控和 Flash 操作都不会再改变 IMU 的积分节拍。
+ * 4. INS 模式在同一中断中完成融合采样的二维坐标变换、速度积分和位置积分。
+ * 5. 中断只置位“需要回传”的标志，串口格式化和阻塞发送仍由 main 中的 TaskIMU_ServiceReport() 完成。
+ * 6. 串口命令、温控和 Flash 操作都不会改变 IMU 的积分节拍。
  */
 
 static volatile uint8_t gImuInterruptUpdateEnabled;
 static volatile uint8_t gImuReportPending;
 static uint16_t gUartReportDivider;
 static uint8_t gTaskImuActiveMask;
+
+#if RUNTIME_FEATURE_INS_ENABLED
+static void task_imu_service_navigation_start_event(void)
+{
+    InertialNavigationStartEvent_t event;
+    uint8_t have_event;
+    char line[48];
+
+    if (InertialNavigation_HaveStartEvent() == 0U) {
+        return;
+    }
+
+    Board_EnterCritical();
+    have_event = InertialNavigation_TakeStartEvent(&event);
+    Board_ExitCritical();
+    if (have_event == 0U) {
+        return;
+    }
+
+    (void) snprintf(line, sizeof(line), "INS:STARTED:%lu\n",
+                    (unsigned long) event.update_count);
+    TaskSerial_Write(line);
+    if (event.moving != 0U) {
+        TaskSerial_Write("WARN:INS_START_MOVING\n");
+    }
+    if (event.bias_valid == 0U) {
+        TaskSerial_Write("WARN:INS_ACCEL_BIAS_INVALID\n");
+    }
+    if (event.heading_valid == 0U) {
+        TaskSerial_Write("WARN:INS_HEADING_INVALID\n");
+    }
+}
+#endif
+
+/* 将弧度角归一化到 [-180, 180)，并编码为 0.01 度分辨率的 int16。 */
+static int16_t binary_encode_angle(float angle_rad)
+{
+    float angle_deg = angle_rad * RAD2DEG;
+    float scaled;
+
+    if ((angle_deg != angle_deg) || (angle_deg > 720.0f) || (angle_deg < -720.0f)) {
+        return 0;
+    }
+    while (angle_deg >= 180.0f) {
+        angle_deg -= 360.0f;
+    }
+    while (angle_deg < -180.0f) {
+        angle_deg += 360.0f;
+    }
+
+    scaled = angle_deg * BINARY_ANGLE_SCALE;
+    return (scaled >= 0.0f) ? (int16_t)(scaled + 0.5f) : (int16_t)(scaled - 0.5f);
+}
+
+/* 按小端顺序写入一个有符号 16 位角度。 */
+static void binary_write_i16_le(uint8_t packet[BINARY_ATTITUDE_PACKET_SIZE],
+                                uint8_t offset,
+                                int16_t value)
+{
+    uint16_t encoded = (uint16_t)value;
+
+    packet[offset] = (uint8_t)(encoded & 0xFFU);
+    packet[offset + 1U] = (uint8_t)(encoded >> 8U);
+}
+
+/* 输出 A5 + Pitch/Roll/Yaw(int16, 0.01度, 小端) + 累加和校验。 */
+static void task_imu_write_binary_attitude(const IMU_Attitude_t *attitude)
+{
+    uint8_t packet[BINARY_ATTITUDE_PACKET_SIZE];
+    uint8_t checksum = 0U;
+
+    packet[0] = BINARY_ATTITUDE_HEADER;
+    binary_write_i16_le(packet, 1U, binary_encode_angle(attitude->Pitch));
+    binary_write_i16_le(packet, 3U, binary_encode_angle(attitude->Roll));
+    binary_write_i16_le(packet, 5U, binary_encode_angle(attitude->Yaw));
+
+    for (uint8_t i = 0U; i < (BINARY_ATTITUDE_PACKET_SIZE - 1U); i++) {
+        checksum = (uint8_t)(checksum + packet[i]);
+    }
+    packet[BINARY_ATTITUDE_PACKET_SIZE - 1U] = checksum;
+    TaskSerial_WriteBytes(packet, BINARY_ATTITUDE_PACKET_SIZE);
+}
 
 static uint8_t imu_source_required_mask(uint8_t source)
 {
@@ -112,18 +202,18 @@ static uint8_t imu_identity_has_fault(const RuntimeState_t *state)
 static void task_imu_write_fault_report(const RuntimeState_t *state)
 {
     if ((state->required_imu_mask & IMU_MASK_BMI088) != 0U) {
-        if ((state->active_imu_mask & IMU_MASK_BMI088) == 0U) {
+        if (state->bmi088_present == 0U) {
             TaskSerial_Write("ERROR:BMI088_MISSING\n");
         }
     }
 
     if ((state->required_imu_mask & IMU_MASK_BMI270) != 0U) {
-        if ((state->active_imu_mask & IMU_MASK_BMI270) == 0U) {
+        if (state->bmi270_present == 0U) {
             TaskSerial_Write("ERROR:BMI270_MISSING\n");
         }
     }
 
-    if (state->active_imu_mask == 0U) {
+    if ((state->bmi088_present == 0U) && (state->bmi270_present == 0U)) {
         TaskSerial_Write("ERROR:NO_ACTIVE_IMU\n");
     }
 }
@@ -174,7 +264,11 @@ static uint8_t auto_calibration_wait_ready(RuntimeState_t *state)
 
 static void load_or_calibrate_bias(RuntimeState_t *state)
 {
-    if (state->gyro_bias_valid != 0U) {
+    uint8_t calibration_mask = imu_present_mask(state);
+
+    if ((state->runtime_config.gyro_bias_valid != 0U) &&
+        ((state->runtime_config.gyro_calibrated_mask & state->active_imu_mask) ==
+         state->active_imu_mask)) {
         GyroBias_Apply(&state->runtime_config.gyro_bias);
         state->gyro_bias_valid = 1U;
         return;
@@ -198,12 +292,14 @@ static void load_or_calibrate_bias(RuntimeState_t *state)
     TaskSerial_Write("CAL:START\n");
     TaskLED_UpdateCalibrationStatus();
     if (GyroBias_CalibrateWithService(&state->runtime_config.gyro_bias,
+                                      calibration_mask,
                                       0U,
                                       GYRO_BIAS_DEFAULT_RECORD_MS,
                                       TaskTemperature_CalibrationService,
                                       state,
                                       GyroBias_CalibrationProgress) != 0U) {
         state->runtime_config.gyro_bias_valid = 1U;
+        state->runtime_config.gyro_calibrated_mask |= calibration_mask;
         state->gyro_bias_valid = 1U;
         state->gyro_bias_calibrated = 1U;
         (void) RuntimeConfig_Save(&state->runtime_config);
@@ -230,14 +326,23 @@ void TaskIMU_Init(RuntimeState_t *state)
     if (TaskIMU_HaveFault(state) == 0U) {
         load_or_calibrate_bias(state);
     }
+    ImuAttitude_SetAccelCalibration(state->runtime_config.accel_bias.bmi088,
+                                    state->runtime_config.accel_bias.bmi270,
+                                    state->runtime_config.accel_scale.bmi088,
+                                    state->runtime_config.accel_scale.bmi270,
+                                    state->runtime_config.accel_bias_valid);
     ImuAttitude_SetYawErrorDegPerTurn(state->runtime_config.bmi088_yaw_error_deg_per_turn,
                                       state->runtime_config.bmi270_yaw_error_deg_per_turn);
     ImuAttitude_SetDebugMode(
         (state->runtime_config.output_mode == RUNTIME_OUTPUT_MODE_DEBUG) ? 1U : 0U);
     ImuAttitude_Init();
+    AccelSixCalibration_Reset();
     if (TaskIMU_HaveFault(state) == 0U) {
         TaskIMU_AlignInitialAttitude();
     }
+#if RUNTIME_FEATURE_INS_ENABLED
+    InertialNavigation_Init();
+#endif
     for (uint8_t i = 0U; i < 10U; i++) {
         TaskTemperature_SampleSensorsFromInterrupt(state);
     }
@@ -261,6 +366,13 @@ uint8_t TaskIMU_HaveAlarm(const RuntimeState_t *state)
     if (TaskTemperature_HaveFault(state) != 0U) {
         return 1U;
     }
+
+#if RUNTIME_FEATURE_INS_ENABLED
+    if ((state->runtime_config.output_mode == RUNTIME_OUTPUT_MODE_INS) &&
+        (InertialNavigation_HaveFault() != 0U)) {
+        return 1U;
+    }
+#endif
 
     return 0U;
 }
@@ -327,7 +439,7 @@ void TaskIMU_UpdateOutputAngles(void)
     ImuAttitude_UpdateOutput();
 }
 
-/* 按历史上位机顺序输出九个角度：BMI088、BMI270/BMI220、VirtualIMU 各自的 Pitch、Roll、Yaw。 */
+/* 根据模式输出融合三角、调试九角、二进制姿态包或二维惯导位置与速度。 */
 void TaskIMU_WriteAngles(const RuntimeState_t *state)
 {
     char line[192];
@@ -345,6 +457,32 @@ void TaskIMU_WriteAngles(const RuntimeState_t *state)
     INS_t bmi088_result;
     IMU_Attitude_t bmi270_result;
     IMU_Attitude_t virtual_result;
+
+#if RUNTIME_FEATURE_INS_ENABLED
+    if (state->runtime_config.output_mode == RUNTIME_OUTPUT_MODE_INS) {
+        InertialNavigationSnapshot_t navigation;
+
+        TaskIMU_GetNavigationSnapshot(&navigation);
+        if (navigation.state == INERTIAL_NAVIGATION_RUNNING) {
+            (void) snprintf(line, sizeof(line),
+                            "%.3f,%.3f,%.3f,%.3f\n",
+                            navigation.position_m[0],
+                            navigation.position_m[1],
+                            navigation.velocity_mps[0],
+                            navigation.velocity_mps[1]);
+            TaskSerial_Write(line);
+        }
+        return;
+    }
+#endif
+
+    if (state->runtime_config.output_mode == RUNTIME_OUTPUT_MODE_BINARY) {
+        Board_EnterCritical();
+        ImuAttitude_GetFusedResult(&virtual_result);
+        Board_ExitCritical();
+        task_imu_write_binary_attitude(&virtual_result);
+        return;
+    }
 
     Board_EnterCritical();
     ImuAttitude_GetBMI088Result(&bmi088_result);
@@ -390,11 +528,14 @@ void TaskIMU_EnableInterruptUpdate(uint8_t enable)
 
 /*
  * 最高优先级 1kHz 中断入口。
- * 这里只做确定周期的工作：双 IMU SPI 读取、真实/虚拟姿态积分、输出分频标志。
+ * 这里只做确定周期的工作：双 IMU SPI 读取、姿态/二维惯导积分和输出分频标志。
  * 禁止在这里做 printf、Flash、串口阻塞发送或温控 SPI 读取。
  */
 void TaskIMU_UpdateFromInterrupt(RuntimeState_t *state)
 {
+#if RUNTIME_FEATURE_INS_ENABLED
+    ImuFusedSample_t fused_sample;
+#endif
     uint32_t start_count;
     uint32_t end_count;
     uint32_t elapsed_ticks;
@@ -410,12 +551,26 @@ void TaskIMU_UpdateFromInterrupt(RuntimeState_t *state)
     gImuRuntimeStats.update_count++;
 
     ImuAttitude_Update(IMU_UPDATE_DT_SECONDS);
+#if RUNTIME_FEATURE_INS_ENABLED
+    if (state->runtime_config.output_mode == RUNTIME_OUTPUT_MODE_INS) {
+        ImuAttitude_GetFusedSample(&fused_sample);
+        InertialNavigation_Update(&fused_sample,
+                                  IMU_UPDATE_DT_SECONDS,
+                                  gImuRuntimeStats.update_count);
+    }
+#endif
     TaskTemperature_SampleSensorsFromInterrupt(state);
 
     gUartReportDivider++;
     if (gUartReportDivider >= state->uart_report_ticks) {
         gUartReportDivider = 0U;
+#if RUNTIME_FEATURE_INS_ENABLED
+        if (state->runtime_config.output_mode != RUNTIME_OUTPUT_MODE_INS) {
+            ImuAttitude_UpdateOutput();
+        }
+#else
         ImuAttitude_UpdateOutput();
+#endif
         gImuReportPending = 1U;
     }
 
@@ -444,6 +599,11 @@ void TaskIMU_ServiceReport(RuntimeState_t *state)
 {
     uint8_t report_pending;
     static uint32_t last_error_report_tick;
+#if RUNTIME_FEATURE_INS_ENABLED
+    static uint32_t last_navigation_notice_tick;
+
+    task_imu_service_navigation_start_event();
+#endif
 
     if (TaskIMU_HaveFault(state) != 0U) {
         TaskLED_UpdateSystemStatus(1U, 1U, 0U, 1U);
@@ -465,6 +625,33 @@ void TaskIMU_ServiceReport(RuntimeState_t *state)
         return;
     }
 
+#if RUNTIME_FEATURE_INS_ENABLED
+    if (state->runtime_config.output_mode == RUNTIME_OUTPUT_MODE_INS) {
+        InertialNavigationSnapshot_t navigation;
+
+        TaskIMU_GetNavigationSnapshot(&navigation);
+        if (navigation.state != INERTIAL_NAVIGATION_RUNNING) {
+            if (((int32_t)(gSystemTickMs - state->uart_report_resume_tick) >= 0) &&
+                ((uint32_t)(gSystemTickMs - last_navigation_notice_tick) >=
+                 IMU_ERROR_REPORT_PERIOD_MS)) {
+                last_navigation_notice_tick = gSystemTickMs;
+                if (navigation.state == INERTIAL_NAVIGATION_FAULT) {
+                    TaskSerial_Write("ERROR:INS_DATA_INVALID\n");
+                } else if (navigation.state == INERTIAL_NAVIGATION_ALIGNING) {
+                    char line[48];
+
+                    (void) snprintf(line, sizeof(line), "INS:ALIGNING:%u/1000\n",
+                                    navigation.alignment_samples);
+                    TaskSerial_Write(line);
+                } else {
+                    TaskSerial_Write("INS:WAIT_START\n");
+                }
+            }
+            return;
+        }
+    }
+#endif
+
     if ((int32_t)(gSystemTickMs - state->uart_report_resume_tick) >= 0) {
         TaskLED_UpdateSystemStatus(1U,
                                    TaskIMU_HaveAlarm(state),
@@ -475,4 +662,31 @@ void TaskIMU_ServiceReport(RuntimeState_t *state)
         TaskLED_Set(0U);
     }
 }
+
+#if RUNTIME_FEATURE_INS_ENABLED
+/* INS START 的前台入口：只投递请求，真正清零由下一次 1kHz 中断完成。 */
+uint8_t TaskIMU_RequestNavigationStart(const RuntimeState_t *state)
+{
+    if ((state == NULL) ||
+        (state->runtime_config.output_mode != RUNTIME_OUTPUT_MODE_INS) ||
+        (TaskIMU_HaveFault(state) != 0U)) {
+        return 0U;
+    }
+
+    InertialNavigation_RequestStart();
+    return 1U;
+}
+
+/* 主循环读取惯导结果时短暂屏蔽中断，避免复制到一半被 1kHz 更新打断。 */
+void TaskIMU_GetNavigationSnapshot(InertialNavigationSnapshot_t *out)
+{
+    if (out == NULL) {
+        return;
+    }
+
+    Board_EnterCritical();
+    InertialNavigation_GetSnapshot(out);
+    Board_ExitCritical();
+}
+#endif
 

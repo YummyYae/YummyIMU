@@ -9,6 +9,7 @@
 
 void TaskSerial_ApplyBaud(uint32_t baud_rate);
 void TaskSerial_Write(const char *text);
+void TaskSerial_WriteBytes(const uint8_t *data, uint16_t length);
 void TaskSerial_CollectRx(void);
 uint8_t TaskSerial_TakeCommand(char line[UART_RX_LINE_SIZE]);
 uint8_t TaskSerial_TakeOverflow(void);

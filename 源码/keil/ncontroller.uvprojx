@@ -565,6 +565,16 @@
               <FilePath>..\user\Algorithm\imu_attitude.c</FilePath>
             </File>
             <File>
+              <FileName>inertial_navigation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Algorithm\inertial_navigation.c</FilePath>
+            </File>
+            <File>
+              <FileName>accel_six_calibration.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Algorithm\accel_six_calibration.c</FilePath>
+            </File>
+            <File>
               <FileName>gyro_bias_calibration.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\Algorithm\gyro_bias_calibration.c</FilePath>
@@ -638,6 +648,16 @@
               <FileName>imu_attitude.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\user\Algorithm\imu_attitude.h</FilePath>
+            </File>
+            <File>
+              <FileName>inertial_navigation.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Algorithm\inertial_navigation.h</FilePath>
+            </File>
+            <File>
+              <FileName>accel_six_calibration.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Algorithm\accel_six_calibration.h</FilePath>
             </File>
             <File>
               <FileName>gyro_bias_calibration.h</FileName>

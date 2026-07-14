@@ -7,6 +7,7 @@
 #include "task_temperature.h"
 #include "bmi088_mspm0.h"
 #include "bmi270_mspm0.h"
+#include "accel_six_calibration.h"
 #include "flash_storage.h"
 #include "gyro_bias_calibration.h"
 #include "imu_attitude.h"
@@ -19,9 +20,9 @@
  * 串口任务流程：
  * 1. UART 中断和主循环都会调用 TaskSerial_CollectRx()，把收到的字节拼成一行命令。
  * 2. 完整命令进入一个小型环形队列，主循环调用 TaskSerial_PollCommand() 逐条处理。
- * 3. 收到任何命令后，先暂停姿态回传 3 秒，关闭 LED，回复 OK 和 RECV 回显。
- * 4. CAL/TEMP/BAUD/RATE 成功后会立即写入 Flash 并复位。
- * 5. 姿态数据输出也在本任务中完成，但输出节拍由 IMU 任务的回传分频控制。
+ * 3. 普通命令暂停回传 3 秒并回复 OK/RECV，配置类命令成功后立即写入 Flash 并复位。
+ * 4. 姿态与惯导数据输出由 IMU 任务调度，串口任务只负责可靠发送和协议解析。
+ * 5. INS START 只投递实时清零请求，不写入 Flash，也不触发系统重启。
  */
 #define UART_DMA_RX_CHANNEL    0U
 #define UART_DMA_TX_CHANNEL    1U
@@ -204,6 +205,30 @@ void TaskSerial_Write(const char *text)
     }
 }
 
+/* 发送指定长度的原始字节，用于固定长度的二进制姿态数据包。 */
+void TaskSerial_WriteBytes(const uint8_t *data, uint16_t length)
+{
+    while ((data != NULL) && (length != 0U)) {
+        uint16_t chunk_len = length;
+
+        if (chunk_len > UART_DMA_TX_CHUNK_SIZE) {
+            chunk_len = UART_DMA_TX_CHUNK_SIZE;
+        }
+        (void) memcpy(gUartDmaTxBuffer, data, chunk_len);
+
+        (void) serial_dma_wait_tx_idle(UART_DMA_TX_TIMEOUT_MS);
+        DL_DMA_setSrcAddr(DMA, UART_DMA_TX_CHANNEL, (uint32_t)gUartDmaTxBuffer);
+        DL_DMA_setDestAddr(DMA, UART_DMA_TX_CHANNEL, (uint32_t)&UART_OUT_INST->TXDATA);
+        DL_DMA_setTransferSize(DMA, UART_DMA_TX_CHANNEL, chunk_len);
+        DL_DMA_enableChannel(DMA, UART_DMA_TX_CHANNEL);
+        (void) serial_dma_wait_tx_idle(UART_DMA_TX_TIMEOUT_MS);
+        (void) serial_uart_wait_idle(UART_BUSY_TIMEOUT_CYCLES);
+
+        data += chunk_len;
+        length -= chunk_len;
+    }
+}
+
 /*
  * 收集 UART RX 字节。
  * 遇到 CR/LF 时认为一行命令结束，并放入命令队列；队列满或行过长会置溢出标志。
@@ -342,7 +367,19 @@ static const char *status_bmi270_model_name(const RuntimeState_t *state)
 
 static const char *status_output_mode_name(uint8_t output_mode)
 {
-    return (output_mode == RUNTIME_OUTPUT_MODE_DEBUG) ? "DEBUG" : "USE";
+    if (output_mode == RUNTIME_OUTPUT_MODE_DEBUG) {
+        return "DEBUG";
+    }
+    if (output_mode == RUNTIME_OUTPUT_MODE_BINARY) {
+        return "BINARY";
+    }
+#if RUNTIME_FEATURE_INS_ENABLED
+    if (output_mode == RUNTIME_OUTPUT_MODE_INS) {
+        return "INS";
+    }
+#endif
+
+    return "USE";
 }
 
 static const char *status_imu_source_name(uint8_t imu_source)
@@ -455,6 +492,22 @@ static void serial_write_status_bias(const RuntimeConfig_t *flash_config, uint8_
     char line[256];
 
     if ((flash_config_valid != 0U) && (flash_config->gyro_bias_valid != 0U)) {
+        (void) snprintf(line, sizeof(line), "GYRO_CAL_IMU:%s\n",
+                        status_active_imu_name(flash_config->gyro_calibrated_mask));
+    } else {
+        (void) snprintf(line, sizeof(line), "GYRO_CAL_IMU:NONE\n");
+    }
+    TaskSerial_Write(line);
+
+    if ((flash_config_valid != 0U) && (flash_config->accel_bias_valid != 0U)) {
+        (void) snprintf(line, sizeof(line), "ACCEL_CAL_IMU:%s\n",
+                        status_active_imu_name(flash_config->accel_calibrated_mask));
+    } else {
+        (void) snprintf(line, sizeof(line), "ACCEL_CAL_IMU:NONE\n");
+    }
+    TaskSerial_Write(line);
+
+    if ((flash_config_valid != 0U) && (flash_config->gyro_bias_valid != 0U)) {
         (void) snprintf(line, sizeof(line),
                         "BMI088_BIAS_X:%.6f\n"
                         "BMI088_BIAS_Y:%.6f\n"
@@ -476,6 +529,56 @@ static void serial_write_status_bias(const RuntimeConfig_t *flash_config, uint8_
                         "BMI270_BIAS_X:INVALID\n"
                         "BMI270_BIAS_Y:INVALID\n"
                         "BMI270_BIAS_Z:INVALID\n");
+    }
+    TaskSerial_Write(line);
+
+    if ((flash_config_valid != 0U) && (flash_config->accel_bias_valid != 0U)) {
+        (void) snprintf(line, sizeof(line),
+                        "BMI088_ACCEL_OFFSET_X:%.6f\n"
+                        "BMI088_ACCEL_OFFSET_Y:%.6f\n"
+                        "BMI088_ACCEL_OFFSET_Z:%.6f\n"
+                        "BMI270_ACCEL_OFFSET_X:%.6f\n"
+                        "BMI270_ACCEL_OFFSET_Y:%.6f\n"
+                        "BMI270_ACCEL_OFFSET_Z:%.6f\n",
+                        flash_config->accel_bias.bmi088[0],
+                        flash_config->accel_bias.bmi088[1],
+                        flash_config->accel_bias.bmi088[2],
+                        flash_config->accel_bias.bmi270[0],
+                        flash_config->accel_bias.bmi270[1],
+                        flash_config->accel_bias.bmi270[2]);
+    } else {
+        (void) snprintf(line, sizeof(line),
+                        "BMI088_ACCEL_OFFSET_X:INVALID\n"
+                        "BMI088_ACCEL_OFFSET_Y:INVALID\n"
+                        "BMI088_ACCEL_OFFSET_Z:INVALID\n"
+                        "BMI270_ACCEL_OFFSET_X:INVALID\n"
+                        "BMI270_ACCEL_OFFSET_Y:INVALID\n"
+                        "BMI270_ACCEL_OFFSET_Z:INVALID\n");
+    }
+    TaskSerial_Write(line);
+
+    if ((flash_config_valid != 0U) && (flash_config->accel_bias_valid != 0U)) {
+        (void) snprintf(line, sizeof(line),
+                        "BMI088_ACCEL_SCALE_X:%.6f\n"
+                        "BMI088_ACCEL_SCALE_Y:%.6f\n"
+                        "BMI088_ACCEL_SCALE_Z:%.6f\n"
+                        "BMI270_ACCEL_SCALE_X:%.6f\n"
+                        "BMI270_ACCEL_SCALE_Y:%.6f\n"
+                        "BMI270_ACCEL_SCALE_Z:%.6f\n",
+                        flash_config->accel_scale.bmi088[0],
+                        flash_config->accel_scale.bmi088[1],
+                        flash_config->accel_scale.bmi088[2],
+                        flash_config->accel_scale.bmi270[0],
+                        flash_config->accel_scale.bmi270[1],
+                        flash_config->accel_scale.bmi270[2]);
+    } else {
+        (void) snprintf(line, sizeof(line),
+                        "BMI088_ACCEL_SCALE_X:INVALID\n"
+                        "BMI088_ACCEL_SCALE_Y:INVALID\n"
+                        "BMI088_ACCEL_SCALE_Z:INVALID\n"
+                        "BMI270_ACCEL_SCALE_X:INVALID\n"
+                        "BMI270_ACCEL_SCALE_Y:INVALID\n"
+                        "BMI270_ACCEL_SCALE_Z:INVALID\n");
     }
     TaskSerial_Write(line);
 }
@@ -527,7 +630,70 @@ static void serial_write_status_diag(void)
                     (unsigned long) gImuRuntimeStats.update_count,
                     (unsigned long) gImuRuntimeStats.overrun_count);
     TaskSerial_Write(line);
+    TaskSerial_Write((Board_HasExternalClockFault() != 0U) ?
+                         "CLOCK_SOURCE:SYSOSC_PLL\n" :
+                         "CLOCK_SOURCE:HFXT_PLL\n");
 }
+
+#if RUNTIME_FEATURE_INS_ENABLED
+static const char *status_navigation_state_name(uint8_t state)
+{
+    if (state == INERTIAL_NAVIGATION_RUNNING) {
+        return "RUNNING";
+    }
+    if (state == INERTIAL_NAVIGATION_FAULT) {
+        return "FAULT";
+    }
+    if (state == INERTIAL_NAVIGATION_ALIGNING) {
+        return "ALIGNING";
+    }
+
+    return "WAIT_START";
+}
+
+static uint32_t status_navigation_elapsed_ms(uint32_t updates)
+{
+    uint32_t seconds = updates / IMU_UPDATE_RATE_HZ;
+    uint32_t remainder = updates % IMU_UPDATE_RATE_HZ;
+
+    return (seconds * 1000U) + ((remainder * 1000U) / IMU_UPDATE_RATE_HZ);
+}
+
+/* 输出二维惯导的运行状态；位置单位为 m，速度单位为 m/s。 */
+static void serial_write_status_ins(void)
+{
+    InertialNavigationSnapshot_t navigation;
+    char line[320];
+
+    TaskIMU_GetNavigationSnapshot(&navigation);
+    (void) snprintf(line, sizeof(line),
+                    "INS_STATE:%s\n"
+                    "INS_ALIGN_SAMPLES:%u\n"
+                    "INS_TIME_MS:%lu\n"
+                    "INS_STATIONARY:%u\n"
+                    "INS_BIAS_VALID:%u\n"
+                    "INS_FAULT:%u\n"
+                    "INS_X:%.3f\n"
+                    "INS_Y:%.3f\n"
+                    "INS_VX:%.3f\n"
+                    "INS_VY:%.3f\n"
+                    "INS_BIAS_X:%.6f\n"
+                    "INS_BIAS_Y:%.6f\n",
+                    status_navigation_state_name(navigation.state),
+                    navigation.alignment_samples,
+                    (unsigned long) status_navigation_elapsed_ms(navigation.elapsed_updates),
+                    navigation.stationary,
+                    navigation.bias_valid,
+                    navigation.fault,
+                    navigation.position_m[0],
+                    navigation.position_m[1],
+                    navigation.velocity_mps[0],
+                    navigation.velocity_mps[1],
+                    navigation.accel_bias_earth_mps2[0],
+                    navigation.accel_bias_earth_mps2[1]);
+    TaskSerial_Write(line);
+}
+#endif
 
 static void serial_write_status_snapshot(RuntimeState_t *state, char *args)
 {
@@ -553,6 +719,12 @@ static void serial_write_status_snapshot(RuntimeState_t *state, char *args)
         serial_write_status_heat(state, &flash_config, flash_config_valid);
     } else if ((strncmp(args, "DIAG", 4U) == 0) && (command_is_end(args + 4) != 0U)) {
         serial_write_status_diag();
+    } else if ((strncmp(args, "INS", 3U) == 0) && (command_is_end(args + 3) != 0U)) {
+#if RUNTIME_FEATURE_INS_ENABLED
+        serial_write_status_ins();
+#else
+        TaskSerial_Write("ERROR:INS_DISABLED\n");
+#endif
     } else {
         TaskSerial_Write("ERROR:STATUS_ARG\n");
     }
@@ -693,6 +865,7 @@ static char *command_find_start(char *line)
 
     while (*p != '\0') {
         if ((command_match(p, "STATUS", 6U) != 0U) ||
+            (command_match(p, "ACCAL", 5U) != 0U) ||
             (command_match(p, "CAL", 3U) != 0U) ||
             (command_match(p, "TEMP", 4U) != 0U) ||
             (command_match(p, "BAUD", 4U) != 0U) ||
@@ -700,6 +873,7 @@ static char *command_find_start(char *line)
             (command_match(p, "MODE", 4U) != 0U) ||
             (command_match(p, "YAWCAL", 6U) != 0U) ||
             (command_match(p, "LIST", 4U) != 0U) ||
+            (command_match(p, "INS", 3U) != 0U) ||
             (command_match(p, "IMU", 3U) != 0U)) {
             return p;
         }
@@ -724,6 +898,55 @@ static void command_save_and_reset(RuntimeState_t *state, const char *reason)
         Board_ResetAfterSave();
     } else {
         TaskSerial_Write("ERROR:SAVE_FAILED\n");
+        TaskIMU_EnableInterruptUpdate((TaskIMU_HaveFault(state) == 0U) ? 1U : 0U);
+    }
+}
+
+/* 将六面标定步骤转换为稳定的协议文本，顺序固定为 +X、-X、+Y、-Y、+Z、-Z。 */
+static const char *accel_six_face_name(uint8_t face)
+{
+    static const char *const names[ACCEL_SIX_FACE_COUNT] = {
+        "+X", "-X", "+Y", "-Y", "+Z", "-Z"
+    };
+
+    if (face >= ACCEL_SIX_FACE_COUNT) {
+        return "DONE";
+    }
+    return names[face];
+}
+
+/* 回传下一面摆放要求；符号表示对应板坐标轴朝上时应读到正/负重力。 */
+static void serial_write_accel_six_prompt(void)
+{
+    char line[32];
+
+    (void) snprintf(line, sizeof(line), "ACCAL:PLACE:%s\n",
+                    accel_six_face_name(AccelSixCalibration_GetExpectedFace()));
+    TaskSerial_Write(line);
+}
+
+/* 六面采集阻塞前台期间持续刷新校准灯态，温控由独立服务钩子维持。 */
+static void accel_six_progress(uint32_t elapsed_ms, uint32_t total_ms)
+{
+    (void) total_ms;
+    if ((elapsed_ms % 100U) == 0U) {
+        TaskLED_UpdateCalibrationStatus();
+    }
+}
+
+/* 把算法层错误转换为可直接用于上位机判断的串口错误码。 */
+static void serial_write_accel_six_error(AccelSixResult_t result)
+{
+    if (result == ACCEL_SIX_RESULT_NOT_ACTIVE) {
+        TaskSerial_Write("ERROR:ACCAL_NOT_ACTIVE\n");
+    } else if (result == ACCEL_SIX_RESULT_INVALID_SENSOR) {
+        TaskSerial_Write("ERROR:ACCAL_SENSOR_INVALID\n");
+    } else if (result == ACCEL_SIX_RESULT_MOVING) {
+        TaskSerial_Write("ERROR:ACCAL_MOVING\n");
+    } else if (result == ACCEL_SIX_RESULT_WRONG_FACE) {
+        TaskSerial_Write("ERROR:ACCAL_WRONG_FACE\n");
+    } else {
+        TaskSerial_Write("ERROR:ACCAL_SOLVE_FAILED\n");
     }
 }
 
@@ -735,13 +958,26 @@ static void serial_write_command_list(void)
 {
     TaskSerial_Write("COMMAND:LIST\n");
     TaskSerial_Write("CAL <WAIT_S> <RECORD_S>\n");
+    TaskSerial_Write("ACCAL START\n");
+    TaskSerial_Write("ACCAL CAPTURE  ORDER:+X,-X,+Y,-Y,+Z,-Z\n");
     TaskSerial_Write("TEMP <20-85C>\n");
     TaskSerial_Write("BAUD <115200|230400|460800|921600>\n");
-    TaskSerial_Write("RATE <1-500HZ>\n");
-    TaskSerial_Write("MODE <USE|DEBUG>\n");
+    TaskSerial_Write("RATE <1|2|4|5|8|10|20|25|40|50|100|125|200|250|500|1000>\n");
+#if RUNTIME_FEATURE_INS_ENABLED
+    TaskSerial_Write("RATE_LIMIT USE:500 DEBUG:100 BINARY:1000 INS:100\n");
+    TaskSerial_Write("MODE <USE|DEBUG|BINARY|INS>\n");
+#else
+    TaskSerial_Write("RATE_LIMIT USE:500 DEBUG:100 BINARY:1000\n");
+    TaskSerial_Write("MODE <USE|DEBUG|BINARY>\n");
+#endif
     TaskSerial_Write("IMU <DUAL|BMI088|BMI270|AUTO>\n");
     TaskSerial_Write("YAWCAL <BMI088_ERR> <BMI270_ERR>\n");
+#if RUNTIME_FEATURE_INS_ENABLED
+    TaskSerial_Write("INS START\n");
+    TaskSerial_Write("STATUS [CONFIG|IMU|BIAS|HEAT|DIAG|INS]\n");
+#else
     TaskSerial_Write("STATUS [CONFIG|IMU|BIAS|HEAT|DIAG]\n");
+#endif
     TaskSerial_Write("LIST\n");
 }
 
@@ -754,7 +990,64 @@ static uint8_t command_handle(RuntimeState_t *state, char *line)
         return 0U;
     }
 
-    if (command_match(p, "CAL", 3U) != 0U) {
+    if (command_match(p, "ACCAL", 5U) != 0U) {
+        AccelSixResult_t result;
+
+        p = skip_spaces(p + 5);
+        if ((command_match(p, "START", 5U) != 0U) &&
+            (command_is_end(p + 5) != 0U)) {
+            if (TaskIMU_HaveFault(state) != 0U) {
+                TaskSerial_Write("ERROR:IMU_INIT_FAILED\n");
+                return 1U;
+            }
+
+            TaskSerial_PauseReport(state);
+            command_ack_echo(cmd);
+            if (AccelSixCalibration_Start(state->active_imu_mask) == 0U) {
+                TaskSerial_Write("ERROR:ACCAL_START_FAILED\n");
+                return 1U;
+            }
+            TaskSerial_Write("ACCAL:START\n");
+            serial_write_accel_six_prompt();
+            return 1U;
+        }
+
+        if ((command_match(p, "CAPTURE", 7U) == 0U) ||
+            (command_is_end(p + 7) == 0U)) {
+            return 0U;
+        }
+
+        TaskSerial_PauseReport(state);
+        command_ack_echo(cmd);
+        if (AccelSixCalibration_IsActive() == 0U) {
+            TaskSerial_Write("ERROR:ACCAL_NOT_ACTIVE\n");
+            return 1U;
+        }
+
+        TaskSerial_Write("ACCAL:CAPTURE\n");
+        TaskIMU_EnableInterruptUpdate(0U);
+        result = AccelSixCalibration_Capture(&state->runtime_config.accel_bias,
+                                             &state->runtime_config.accel_scale,
+                                             TaskTemperature_CalibrationService,
+                                             state,
+                                             accel_six_progress);
+        TaskIMU_EnableInterruptUpdate(1U);
+        if (result == ACCEL_SIX_RESULT_CAPTURED) {
+            TaskSerial_Write("ACCAL:CAPTURED\n");
+            serial_write_accel_six_prompt();
+        } else if (result == ACCEL_SIX_RESULT_COMPLETE) {
+            state->runtime_config.accel_bias_valid = 1U;
+            state->runtime_config.accel_calibrated_mask |= state->active_imu_mask;
+            TaskSerial_Write("ACCAL:DONE\n");
+            command_save_and_reset(state, "ACCAL");
+        } else {
+            serial_write_accel_six_error(result);
+            if (AccelSixCalibration_IsActive() != 0U) {
+                serial_write_accel_six_prompt();
+            }
+        }
+        return 1U;
+    } else if (command_match(p, "CAL", 3U) != 0U) {
         uint32_t wait_s;
         uint32_t record_s;
         p += 3;
@@ -770,12 +1063,19 @@ static uint8_t command_handle(RuntimeState_t *state, char *line)
         TaskSerial_Write("CAL:START\n");
         TaskIMU_EnableInterruptUpdate(0U);
         if (GyroBias_CalibrateWithService(&state->runtime_config.gyro_bias,
+                                          (uint8_t)(((state->bmi088_present != 0U) ?
+                                                         IMU_BIAS_SENSOR_BMI088 : 0U) |
+                                                    ((state->bmi270_present != 0U) ?
+                                                         IMU_BIAS_SENSOR_BMI270 : 0U)),
                                           wait_s * 1000U,
                                           record_s * 1000U,
                                           TaskTemperature_CalibrationService,
                                           state,
                                           GyroBias_CalibrationProgress) != 0U) {
             state->runtime_config.gyro_bias_valid = 1U;
+            state->runtime_config.gyro_calibrated_mask |=
+                (uint8_t)(((state->bmi088_present != 0U) ? IMU_BIAS_SENSOR_BMI088 : 0U) |
+                          ((state->bmi270_present != 0U) ? IMU_BIAS_SENSOR_BMI270 : 0U));
             state->gyro_bias_valid = 1U;
             state->gyro_bias_calibrated = 1U;
             TaskIMU_AlignInitialAttitude();
@@ -827,7 +1127,8 @@ static uint8_t command_handle(RuntimeState_t *state, char *line)
         uint32_t report_rate;
         p += 4;
         if ((parse_u32_arg(&p, &report_rate) == 0U) ||
-            (report_rate < 1U) || (report_rate > 500U) ||
+            (RuntimeConfig_ReportRateIsSupported(state->runtime_config.output_mode,
+                                                 report_rate) == 0U) ||
             (command_is_end(p) == 0U)) {
             return 0U;
         }
@@ -840,17 +1141,44 @@ static uint8_t command_handle(RuntimeState_t *state, char *line)
         command_save_and_reset(state, "RATE");
         return 1U;
     } else if (command_match(p, "MODE", 4U) != 0U) {
+        uint32_t rate_limit;
+        uint8_t rate_clamped = 0U;
+
         p = skip_spaces(p + 4);
         if ((strncmp(p, "DEBUG", 5U) == 0) && (command_is_end(p + 5) != 0U)) {
             state->runtime_config.output_mode = RUNTIME_OUTPUT_MODE_DEBUG;
+        } else if ((strncmp(p, "BINARY", 6U) == 0) && (command_is_end(p + 6) != 0U)) {
+            state->runtime_config.output_mode = RUNTIME_OUTPUT_MODE_BINARY;
+        } else if ((strncmp(p, "INS", 3U) == 0) && (command_is_end(p + 3) != 0U)) {
+#if RUNTIME_FEATURE_INS_ENABLED
+            state->runtime_config.output_mode = RUNTIME_OUTPUT_MODE_INS;
+#else
+            TaskSerial_Write("ERROR:INS_DISABLED\n");
+            return 1U;
+#endif
         } else if ((strncmp(p, "USE", 3U) == 0) && (command_is_end(p + 3) != 0U)) {
             state->runtime_config.output_mode = RUNTIME_OUTPUT_MODE_USE;
         } else {
             return 0U;
         }
 
+        rate_limit = RuntimeConfig_GetReportRateLimit(state->runtime_config.output_mode);
+        if (state->runtime_config.report_rate_hz > rate_limit) {
+            state->runtime_config.report_rate_hz = rate_limit;
+            rate_clamped = 1U;
+        }
+        RuntimeState_UpdateReportRate(state);
+
         TaskSerial_PauseReport(state);
         command_ack_echo(cmd);
+        if (rate_clamped != 0U) {
+            char rate_line[32];
+
+            (void) snprintf(rate_line, sizeof(rate_line),
+                            "RATE:CLAMPED:%lu\n",
+                            (unsigned long) state->runtime_config.report_rate_hz);
+            TaskSerial_Write(rate_line);
+        }
         TaskSerial_Write("MODE:UPDATED\n");
         command_save_and_reset(state, "MODE");
         return 1U;
@@ -892,6 +1220,39 @@ static uint8_t command_handle(RuntimeState_t *state, char *line)
         TaskSerial_Write("YAWCAL:UPDATED\n");
         command_save_and_reset(state, "YAWCAL");
         return 1U;
+    } else if (command_match(p, "INS", 3U) != 0U) {
+#if RUNTIME_FEATURE_INS_ENABLED
+        p = skip_spaces(p + 3);
+        if ((command_match(p, "START", 5U) == 0U) ||
+            (command_is_end(p + 5) == 0U)) {
+            return 0U;
+        }
+
+        if (state->runtime_config.output_mode != RUNTIME_OUTPUT_MODE_INS) {
+            TaskSerial_Write("ERROR:INS_MODE_REQUIRED\n");
+            return 1U;
+        }
+#if RUNTIME_INS_REQUIRE_ACCEL_CALIBRATION
+        if ((state->runtime_config.accel_bias_valid == 0U) ||
+            ((state->runtime_config.accel_calibrated_mask & state->active_imu_mask) !=
+             state->active_imu_mask)) {
+            TaskSerial_Write("ERROR:ACCAL_REQUIRED\n");
+            return 1U;
+        }
+#endif
+        if (TaskIMU_RequestNavigationStart(state) == 0U) {
+            TaskSerial_Write("ERROR:IMU_INIT_FAILED\n");
+            return 1U;
+        }
+
+        /* 实时原点标记不暂停回传，也不写 Flash；中断将在下一采样点确认生效。 */
+        command_ack_echo(cmd);
+        TaskSerial_Write("INS:START_QUEUED\n");
+        return 1U;
+#else
+        TaskSerial_Write("ERROR:INS_DISABLED\n");
+        return 1U;
+#endif
     } else if (command_match(p, "STATUS", 6U) != 0U) {
         TaskSerial_PauseReport(state);
         command_ack_echo(cmd);

@@ -32,6 +32,10 @@ int main(void)
     /* 运行参数必须先从 Flash 读出，再按配置启动串口和温控。 */
     RuntimeState_LoadConfig(&gRuntimeState);
     TaskSerial_ApplyBaud(gRuntimeState.runtime_config.baud_rate);
+    if (Board_HasExternalClockFault() != 0U) {
+        TaskSerial_Write("ERROR:HFXT_STARTUP_TIMEOUT\n"
+                         "CLOCK_SOURCE:SYSOSC_PLL\n");
+    }
     TaskTemperature_Init(&gRuntimeState);
 
     /* 从这里开始，SysTick、串口、温控定时器中断可以投递调度事件。 */

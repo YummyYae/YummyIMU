@@ -24,19 +24,17 @@ void RuntimeState_LoadConfig(RuntimeState_t *ctx)
     RuntimeState_UpdateReportRate(ctx);
 }
 
-/* 根据 report_rate_hz 计算 IMU 1kHz 更新到串口输出之间的分频计数。 */
+/* 根据模式和 report_rate_hz 计算 IMU 1kHz 更新到串口输出之间的整数分频。 */
 void RuntimeState_UpdateReportRate(RuntimeState_t *ctx)
 {
     uint32_t rate = ctx->runtime_config.report_rate_hz;
 
-    if (rate == 0U) {
+    if (RuntimeConfig_ReportRateIsSupported(ctx->runtime_config.output_mode, rate) == 0U) {
         rate = RUNTIME_CONFIG_DEFAULT_REPORT_RATE_HZ;
+        ctx->runtime_config.report_rate_hz = rate;
     }
 
-    ctx->uart_report_ticks = (IMU_UPDATE_RATE_HZ + (rate / 2U)) / rate;
-    if (ctx->uart_report_ticks == 0U) {
-        ctx->uart_report_ticks = 1U;
-    }
+    ctx->uart_report_ticks = IMU_UPDATE_RATE_HZ / rate;
 }
 
 /* 限制可用波特率，避免命令设置到当前时钟配置无法稳定支持的数值。 */

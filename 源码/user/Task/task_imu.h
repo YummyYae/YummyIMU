@@ -3,6 +3,10 @@
 
 #include "runtime_state.h"
 
+#if RUNTIME_FEATURE_INS_ENABLED
+#include "inertial_navigation.h"
+#endif
+
 #include <stdint.h>
 
 void TaskIMU_Init(RuntimeState_t *state);
@@ -15,6 +19,10 @@ void TaskIMU_ServiceReport(RuntimeState_t *state);
 void TaskIMU_AlignInitialAttitude(void);
 void TaskIMU_UpdateOutputAngles(void);
 void TaskIMU_WriteAngles(const RuntimeState_t *state);
+#if RUNTIME_FEATURE_INS_ENABLED
+uint8_t TaskIMU_RequestNavigationStart(const RuntimeState_t *state);
+void TaskIMU_GetNavigationSnapshot(InertialNavigationSnapshot_t *out);
+#endif
 
 #endif
 

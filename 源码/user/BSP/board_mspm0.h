@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 void Board_InitHardware(void);
+uint8_t Board_HasExternalClockFault(void);
 void Board_EnableInterrupts(void);
 void Board_EnterCritical(void);
 void Board_ExitCritical(void);

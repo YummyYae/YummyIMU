@@ -261,12 +261,18 @@ static Axis3f BMI088BoardAccel;
 static Axis3f BMI088BoardGyro;
 static Axis3f BMI270BoardAccel;
 static Axis3f BMI270BoardGyro;
+static Axis3f gBMI088AccelOffsetBoard;
+static Axis3f gBMI270AccelOffsetBoard;
+static Axis3f gBMI088AccelScaleBoard;
+static Axis3f gBMI270AccelScaleBoard;
 static IMU_Attitude_t VirtualIMU;
 
 static DualGyroAxisFusion_t gDualGyroFusion[DUAL_GYRO_AXIS_COUNT];
 static MahonyFilter_t gFusedMahony;
 static uint8_t gRealImuAttitudeSolversEnabled;
 static uint8_t gInputMask = IMU_ATTITUDE_MASK_DUAL;
+static uint8_t gFusedSampleValid;
+static uint8_t gFusedStationary;
 static float gBMI088YawScale = 1.0f;
 static float gBMI270YawScale = 1.0f;
 
@@ -306,7 +312,7 @@ Axis3f ImuAttitude_BMI270GyroToBoard(void)
     return board;
 }
 
-Axis3f ImuAttitude_BMI270AccelToBoard(void)
+Axis3f ImuAttitude_BMI270RawAccelToBoard(void)
 {
     Axis3f sensor;
 
@@ -314,6 +320,16 @@ Axis3f ImuAttitude_BMI270AccelToBoard(void)
     sensor.y = BMI270Sensor.Accel[1];
     sensor.z = BMI270Sensor.Accel[2];
     return bmi270_sensor_to_board(sensor);
+}
+
+Axis3f ImuAttitude_BMI270AccelToBoard(void)
+{
+    Axis3f accel = ImuAttitude_BMI270RawAccelToBoard();
+
+    accel.x = (accel.x - gBMI270AccelOffsetBoard.x) * gBMI270AccelScaleBoard.x;
+    accel.y = (accel.y - gBMI270AccelOffsetBoard.y) * gBMI270AccelScaleBoard.y;
+    accel.z = (accel.z - gBMI270AccelOffsetBoard.z) * gBMI270AccelScaleBoard.z;
+    return accel;
 }
 
 Axis3f ImuAttitude_BMI088GyroToBoard(void)
@@ -327,7 +343,7 @@ Axis3f ImuAttitude_BMI088GyroToBoard(void)
     return gyro;
 }
 
-Axis3f ImuAttitude_BMI088AccelToBoard(void)
+Axis3f ImuAttitude_BMI088RawAccelToBoard(void)
 {
     Axis3f accel;
 
@@ -338,30 +354,117 @@ Axis3f ImuAttitude_BMI088AccelToBoard(void)
     return accel;
 }
 
-static uint8_t is_stationary(Axis3f gyro1, Axis3f gyro2, Axis3f accel1, Axis3f accel2,
-                             uint8_t bmi088_usable, uint8_t bmi220_usable)
+Axis3f ImuAttitude_BMI088AccelToBoard(void)
 {
-    float accel1_norm_sq = vector_norm_sq(accel1);
-    float accel2_norm_sq = vector_norm_sq(accel2);
+    Axis3f accel = ImuAttitude_BMI088RawAccelToBoard();
 
-    if ((bmi088_usable == 0U) || (bmi220_usable == 0U)) {
+    accel.x = (accel.x - gBMI088AccelOffsetBoard.x) * gBMI088AccelScaleBoard.x;
+    accel.y = (accel.y - gBMI088AccelOffsetBoard.y) * gBMI088AccelScaleBoard.y;
+    accel.z = (accel.z - gBMI088AccelOffsetBoard.z) * gBMI088AccelScaleBoard.z;
+    return accel;
+}
+
+static uint8_t accel_calibration_axis_is_valid(float offset, float scale)
+{
+    return ((offset == offset) && (scale == scale) &&
+            (offset >= -3.0f) && (offset <= 3.0f) &&
+            (scale >= 0.8f) && (scale <= 1.2f)) ? 1U : 0U;
+}
+
+void ImuAttitude_SetAccelCalibration(const float bmi088_offset[3],
+                                     const float bmi270_offset[3],
+                                     const float bmi088_scale[3],
+                                     const float bmi270_scale[3],
+                                     uint8_t valid)
+{
+    gBMI088AccelOffsetBoard.x = 0.0f;
+    gBMI088AccelOffsetBoard.y = 0.0f;
+    gBMI088AccelOffsetBoard.z = 0.0f;
+    gBMI270AccelOffsetBoard.x = 0.0f;
+    gBMI270AccelOffsetBoard.y = 0.0f;
+    gBMI270AccelOffsetBoard.z = 0.0f;
+    gBMI088AccelScaleBoard.x = 1.0f;
+    gBMI088AccelScaleBoard.y = 1.0f;
+    gBMI088AccelScaleBoard.z = 1.0f;
+    gBMI270AccelScaleBoard.x = 1.0f;
+    gBMI270AccelScaleBoard.y = 1.0f;
+    gBMI270AccelScaleBoard.z = 1.0f;
+
+    if ((valid == 0U) ||
+        (bmi088_offset == NULL) || (bmi270_offset == NULL) ||
+        (bmi088_scale == NULL) || (bmi270_scale == NULL)) {
+        return;
+    }
+
+    for (uint8_t axis = 0U; axis < 3U; axis++) {
+        if ((accel_calibration_axis_is_valid(bmi088_offset[axis], bmi088_scale[axis]) == 0U) ||
+            (accel_calibration_axis_is_valid(bmi270_offset[axis], bmi270_scale[axis]) == 0U)) {
+            return;
+        }
+    }
+
+    gBMI088AccelOffsetBoard.x = bmi088_offset[0];
+    gBMI088AccelOffsetBoard.y = bmi088_offset[1];
+    gBMI088AccelOffsetBoard.z = bmi088_offset[2];
+    gBMI270AccelOffsetBoard.x = bmi270_offset[0];
+    gBMI270AccelOffsetBoard.y = bmi270_offset[1];
+    gBMI270AccelOffsetBoard.z = bmi270_offset[2];
+    gBMI088AccelScaleBoard.x = bmi088_scale[0];
+    gBMI088AccelScaleBoard.y = bmi088_scale[1];
+    gBMI088AccelScaleBoard.z = bmi088_scale[2];
+    gBMI270AccelScaleBoard.x = bmi270_scale[0];
+    gBMI270AccelScaleBoard.y = bmi270_scale[1];
+    gBMI270AccelScaleBoard.z = bmi270_scale[2];
+}
+
+static uint8_t sensor_sample_is_stationary(Axis3f gyro, Axis3f accel, uint8_t usable)
+{
+    float accel_norm_sq;
+
+    if (usable == 0U) {
         return 0U;
     }
 
-    if ((accel1_norm_sq < DUAL_GYRO_GRAVITY_MIN_SQ) || (accel1_norm_sq > DUAL_GYRO_GRAVITY_MAX_SQ) ||
-        (accel2_norm_sq < DUAL_GYRO_GRAVITY_MIN_SQ) || (accel2_norm_sq > DUAL_GYRO_GRAVITY_MAX_SQ)) {
+    accel_norm_sq = vector_norm_sq(accel);
+    if ((accel_norm_sq < DUAL_GYRO_GRAVITY_MIN_SQ) ||
+        (accel_norm_sq > DUAL_GYRO_GRAVITY_MAX_SQ)) {
         return 0U;
     }
 
-    if ((vector_norm_sq(gyro1) > DUAL_GYRO_RATE_STATIC_SQ) ||
-        (vector_norm_sq(gyro2) > DUAL_GYRO_RATE_STATIC_SQ)) {
+    if (vector_norm_sq(gyro) > DUAL_GYRO_RATE_STATIC_SQ) {
         return 0U;
     }
 
     return 1U;
 }
 
-static Axis3f blend_accel(Axis3f accel1, Axis3f accel2, uint8_t bmi088_usable, uint8_t bmi220_usable)
+/* 按当前选择的 IMU 判断静止；单 IMU 模式不再被另一颗未启用传感器阻断。 */
+static uint8_t selected_inputs_are_stationary(Axis3f gyro1, Axis3f gyro2,
+                                               Axis3f accel1, Axis3f accel2,
+                                               uint8_t bmi088_usable,
+                                               uint8_t bmi220_usable)
+{
+    uint8_t have_input = 0U;
+
+    if ((gInputMask & IMU_ATTITUDE_MASK_BMI088) != 0U) {
+        have_input = 1U;
+        if (sensor_sample_is_stationary(gyro1, accel1, bmi088_usable) == 0U) {
+            return 0U;
+        }
+    }
+
+    if ((gInputMask & IMU_ATTITUDE_MASK_BMI270) != 0U) {
+        have_input = 1U;
+        if (sensor_sample_is_stationary(gyro2, accel2, bmi220_usable) == 0U) {
+            return 0U;
+        }
+    }
+
+    return have_input;
+}
+
+static Axis3f blend_accel(Axis3f accel1, Axis3f accel2,
+                           uint8_t bmi088_usable, uint8_t bmi220_usable)
 {
     Axis3f accel;
     float gravity_sq = DUAL_GYRO_GRAVITY * DUAL_GYRO_GRAVITY;
@@ -444,6 +547,23 @@ static float update_axis(DualGyroAxisFusion_t *filter, float gyro1, float gyro2,
     float difference;
     float alpha;
 
+    /* 单 IMU 模式没有可观测的相对偏置，直接使用所选传感器的已校准角速度。 */
+    if ((gInputMask & IMU_ATTITUDE_MASK_DUAL) != IMU_ATTITUDE_MASK_DUAL) {
+        filter->initialized = 1U;
+        filter->x[1] = 0.0f;
+        filter->x[2] = 0.0f;
+        if (stationary != 0U) {
+            filter->x[0] = 0.0f;
+        } else if (gyro1_usable != 0U) {
+            filter->x[0] = gyro1;
+        } else if (gyro2_usable != 0U) {
+            filter->x[0] = gyro2;
+        } else {
+            filter->x[0] = 0.0f;
+        }
+        return filter->x[0];
+    }
+
     if (filter->initialized == 0U) {
         filter->x[0] = gyro1;
         filter->x[1] = 0.0f;
@@ -498,6 +618,8 @@ static void fused_attitude_init(void)
     DualGyroFusion_Accel.x = 0.0f;
     DualGyroFusion_Accel.y = 0.0f;
     DualGyroFusion_Accel.z = DUAL_GYRO_GRAVITY;
+    gFusedSampleValid = 0U;
+    gFusedStationary = 0U;
     Mahony_Init(&gFusedMahony, 0.20f, 0.0f, 0.0010f);
     reset_virtual_attitude(&VirtualIMU);
 }
@@ -522,9 +644,10 @@ static void fused_attitude_update(float dt)
                                    (BMI088Sensor.LastAccelSaturated == 0U)) ? 1U : 0U;
     uint8_t bmi220_accel_usable = (((gInputMask & IMU_ATTITUDE_MASK_BMI270) != 0U) &&
                                    (BMI270Sensor.LastAccelSaturated == 0U)) ? 1U : 0U;
-    uint8_t stationary = is_stationary(gyro1, gyro2, accel1, accel2,
-                                       (bmi088_gyro_usable != 0U) && (bmi088_accel_usable != 0U),
-                                       (bmi220_gyro_usable != 0U) && (bmi220_accel_usable != 0U));
+    uint8_t stationary = selected_inputs_are_stationary(
+        gyro1, gyro2, accel1, accel2,
+        (uint8_t)((bmi088_gyro_usable != 0U) && (bmi088_accel_usable != 0U)),
+        (uint8_t)((bmi220_gyro_usable != 0U) && (bmi220_accel_usable != 0U)));
     uint8_t accel_correction_usable;
 
     DualGyroFusion_Omega.x = update_axis(&gDualGyroFusion[0], gyro1.x, gyro2.x, dt, stationary,
@@ -533,11 +656,15 @@ static void fused_attitude_update(float dt)
                                            bmi088_gyro_usable, bmi220_gyro_usable);
     DualGyroFusion_Omega.z = update_axis(&gDualGyroFusion[2], gyro1.z, gyro2.z, dt, stationary,
                                            bmi088_gyro_usable, bmi220_gyro_usable);
-    DualGyroFusion_Accel = blend_accel(accel1, accel2, bmi088_accel_usable, bmi220_accel_usable);
+    DualGyroFusion_Accel = blend_accel(accel1, accel2,
+                                       bmi088_accel_usable, bmi220_accel_usable);
     BMI088BoardGyro = gyro1;
     BMI270BoardGyro = gyro2;
     BMI088BoardAccel = accel1;
     BMI270BoardAccel = accel2;
+    gFusedSampleValid = (((bmi088_gyro_usable != 0U) || (bmi220_gyro_usable != 0U)) &&
+                         ((bmi088_accel_usable != 0U) || (bmi220_accel_usable != 0U))) ? 1U : 0U;
+    gFusedStationary = stationary;
 
     gFusedMahony.dt = dt;
     if ((gInputMask & IMU_ATTITUDE_MASK_DUAL) == IMU_ATTITUDE_MASK_DUAL) {
@@ -680,4 +807,21 @@ void ImuAttitude_GetFusedResult(IMU_Attitude_t *out)
     if (out != NULL) {
         *out = VirtualIMU;
     }
+}
+
+/* 返回当前 1kHz 融合状态；四元数直接取 Mahony 内部值，不等待欧拉角输出刷新。 */
+void ImuAttitude_GetFusedSample(ImuFusedSample_t *out)
+{
+    if (out == NULL) {
+        return;
+    }
+
+    out->q[0] = gFusedMahony.q0;
+    out->q[1] = gFusedMahony.q1;
+    out->q[2] = gFusedMahony.q2;
+    out->q[3] = gFusedMahony.q3;
+    out->gyro = DualGyroFusion_Omega;
+    out->accel = DualGyroFusion_Accel;
+    out->valid = gFusedSampleValid;
+    out->stationary = gFusedStationary;
 }

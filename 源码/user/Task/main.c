@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "1.3"
+#define FIRMWARE_VERSION "1.4.1"
 #include "board_mspm0.h"
 #include "task_temperature.h"
 #include "task_imu.h"

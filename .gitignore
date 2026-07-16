@@ -1,0 +1,5 @@
+# Keil/MDK generated files for the STM32H7 reference example.
+/参考例程/Example_STM32H7/MDK-ARM/CtrBoard-H7_UART/*
+!/参考例程/Example_STM32H7/MDK-ARM/CtrBoard-H7_UART/CtrBoard-H7_UART.axf
+!/参考例程/Example_STM32H7/MDK-ARM/CtrBoard-H7_UART/CtrBoard-H7_UART.hex
+/参考例程/Example_STM32H7/MDK-ARM/startup_stm32h723xx.lst

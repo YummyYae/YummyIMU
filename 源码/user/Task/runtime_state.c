@@ -1,5 +1,7 @@
 #include "runtime_state.h"
 
+#include "flash_storage.h"
+#include "gyro_bias_calibration.h"
 #include "ti_msp_dl_config.h"
 
 RuntimeState_t gRuntimeState;
@@ -19,9 +21,32 @@ static volatile uint8_t gPendingTemperatureUpdate;
 /* 从 Flash 加载运行配置，并根据配置计算串口回传分频。 */
 void RuntimeState_LoadConfig(RuntimeState_t *ctx)
 {
-    (void) RuntimeConfig_Load(&ctx->runtime_config);
+    uint8_t config_loaded = RuntimeConfig_Load(&ctx->runtime_config);
+
+    ctx->runtime_config_save_pending = 0U;
+
+    /* 评分标准升级后仅在 RAM 中重算，避免在 IMU 探测前执行 Flash 写入。 */
+    if ((config_loaded != 0U) &&
+        (GyroBias_RecalculateScores(&ctx->runtime_config) != 0U)) {
+        ctx->runtime_config_save_pending = 1U;
+    }
     ctx->gyro_bias_valid = ctx->runtime_config.gyro_bias_valid;
     RuntimeState_UpdateReportRate(ctx);
+}
+
+/* IMU 探测结束后再提交启动阶段产生的配置迁移，避免改变传感器上电时序。 */
+uint8_t RuntimeState_SavePendingConfig(RuntimeState_t *ctx)
+{
+    if (ctx->runtime_config_save_pending == 0U) {
+        return 1U;
+    }
+
+    if (RuntimeConfig_Save(&ctx->runtime_config) == 0U) {
+        return 0U;
+    }
+
+    ctx->runtime_config_save_pending = 0U;
+    return 1U;
 }
 
 /* 根据模式和 report_rate_hz 计算 IMU 1kHz 更新到串口输出之间的整数分频。 */
@@ -67,12 +92,6 @@ uint8_t RuntimeState_TakeTemperatureUpdate(void)
 
     gPendingTemperatureUpdate = 0U;
     return 1U;
-}
-
-/* 清空启动或整定期间的 IMU 统计兼容入口。 */
-void RuntimeState_ClearImuUpdates(void)
-{
-    RuntimeState_ClearImuRuntimeStats();
 }
 
 /* IMU 初始化完成后清空运行统计，让 STATUS 只反映稳定运行阶段的负载情况。 */

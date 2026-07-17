@@ -11,13 +11,15 @@
 #define CONFIG_SLOT_COUNT    (CONFIG_FLASH_SIZE / CONFIG_SLOT_SIZE)
 #define CONFIG_SLOT_WORDS    (CONFIG_SLOT_SIZE / 4U)
 #define CONFIG_MAGIC         0x30434647UL
-#define CONFIG_VERSION       7U
+#define CONFIG_VERSION       8U
 
 #define GYRO_BIAS_LIMIT_RADPS        0.35f
 #define ACCEL_BIAS_LIMIT_MPS2        3.0f
 #define ACCEL_SCALE_MIN              0.8f
 #define ACCEL_SCALE_MAX              1.2f
 #define YAW_ERROR_LIMIT_DEG_PER_TURN 30.0f
+/* 兼容旧版 0-100 分记录；加载后会按新 0-90 标准自动重算并保存。 */
+#define GYRO_SCORE_LEGACY_MAX        100U
 
 typedef struct {
     uint32_t magic;
@@ -28,7 +30,8 @@ typedef struct {
     uint32_t crc32;
 } ConfigRecord_t;
 
-typedef char ConfigRecordSizeCheck[(sizeof(ConfigRecord_t) <= CONFIG_SLOT_SIZE) ? 1 : -1];
+/* Flash 槽与记录必须严格等长，避免结构体变化后遗留字节或跨槽写入。 */
+typedef char ConfigRecordSizeCheck[(sizeof(ConfigRecord_t) == CONFIG_SLOT_SIZE) ? 1 : -1];
 
 static uint32_t crc32_update(uint32_t crc, const uint8_t *data, uint32_t len)
 {
@@ -141,41 +144,9 @@ static uint8_t yaw_error_is_supported(float error_deg_per_turn)
             (error_deg_per_turn <= YAW_ERROR_LIMIT_DEG_PER_TURN)) ? 1U : 0U;
 }
 
-uint32_t RuntimeConfig_GetReportRateLimit(uint8_t output_mode)
-{
-    if (output_mode == RUNTIME_OUTPUT_MODE_DEBUG) {
-        return RUNTIME_REPORT_RATE_DEBUG_MAX_HZ;
-    }
-    if (output_mode == RUNTIME_OUTPUT_MODE_BINARY) {
-        return RUNTIME_REPORT_RATE_BINARY_MAX_HZ;
-    }
-#if RUNTIME_FEATURE_INS_ENABLED
-    if (output_mode == RUNTIME_OUTPUT_MODE_INS) {
-        return RUNTIME_REPORT_RATE_INS_MAX_HZ;
-    }
-#endif
-
-    return RUNTIME_REPORT_RATE_USE_MAX_HZ;
-}
-
-uint8_t RuntimeConfig_ReportRateIsSupported(uint8_t output_mode,
-                                            uint32_t report_rate_hz)
-{
-    uint32_t rate_limit = RuntimeConfig_GetReportRateLimit(output_mode);
-
-    if ((report_rate_hz == 0U) || (report_rate_hz > rate_limit)) {
-        return 0U;
-    }
-
-    return ((RUNTIME_REPORT_RATE_BASE_HZ % report_rate_hz) == 0U) ? 1U : 0U;
-}
-
 static void config_sanitize(RuntimeConfig_t *config)
 {
     uint32_t rate_limit;
-
-    config->reserved[0] = 0U;
-    config->reserved[1] = 0U;
 
     if (baud_rate_is_supported(config->baud_rate) == 0U) {
         config->baud_rate = RUNTIME_CONFIG_DEFAULT_BAUD_RATE;
@@ -216,12 +187,30 @@ static void config_sanitize(RuntimeConfig_t *config)
         (gyro_bias_values_are_reasonable(&config->gyro_bias) == 0U)) {
         config->gyro_bias_valid = 0U;
         config->gyro_calibrated_mask = 0U;
+        config->bmi088_gyro_score = RUNTIME_GYRO_SCORE_INVALID;
+        config->bmi270_gyro_score = RUNTIME_GYRO_SCORE_INVALID;
         for (uint8_t axis = 0U; axis < 3U; axis++) {
             config->gyro_bias.bmi088[axis] = 0.0f;
             config->gyro_bias.bmi270[axis] = 0.0f;
+            config->gyro_variance.bmi088[axis] = 0U;
+            config->gyro_variance.bmi270[axis] = 0U;
         }
     } else {
         config->gyro_bias_valid = 1U;
+        if (((config->gyro_calibrated_mask & RUNTIME_GYRO_CAL_BMI088) == 0U) ||
+            (config->bmi088_gyro_score > GYRO_SCORE_LEGACY_MAX)) {
+            config->bmi088_gyro_score = RUNTIME_GYRO_SCORE_INVALID;
+            for (uint8_t axis = 0U; axis < 3U; axis++) {
+                config->gyro_variance.bmi088[axis] = 0U;
+            }
+        }
+        if (((config->gyro_calibrated_mask & RUNTIME_GYRO_CAL_BMI270) == 0U) ||
+            (config->bmi270_gyro_score > GYRO_SCORE_LEGACY_MAX)) {
+            config->bmi270_gyro_score = RUNTIME_GYRO_SCORE_INVALID;
+            for (uint8_t axis = 0U; axis < 3U; axis++) {
+                config->gyro_variance.bmi270[axis] = 0U;
+            }
+        }
     }
 
     config->accel_calibrated_mask &= RUNTIME_ACCEL_CAL_DUAL;
@@ -292,36 +281,6 @@ static uint32_t latest_valid_slot(uint8_t *found)
     }
 
     return latest_slot;
-}
-
-void RuntimeConfig_Default(RuntimeConfig_t *config)
-{
-    if (config == NULL) {
-        return;
-    }
-
-    config->baud_rate = RUNTIME_CONFIG_DEFAULT_BAUD_RATE;
-    config->report_rate_hz = RUNTIME_CONFIG_DEFAULT_REPORT_RATE_HZ;
-    config->target_temperature_c = RUNTIME_CONFIG_DEFAULT_TARGET_TEMP_C;
-    config->gyro_bias_valid = 0U;
-    config->accel_bias_valid = 0U;
-    config->gyro_calibrated_mask = 0U;
-    config->accel_calibrated_mask = 0U;
-    config->output_mode = RUNTIME_CONFIG_DEFAULT_OUTPUT_MODE;
-    config->imu_source = RUNTIME_CONFIG_DEFAULT_IMU_SOURCE;
-    config->reserved[0] = 0U;
-    config->reserved[1] = 0U;
-    config->bmi088_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
-    config->bmi270_yaw_error_deg_per_turn = RUNTIME_CONFIG_DEFAULT_YAW_ERR_DEG;
-
-    for (uint8_t axis = 0U; axis < 3U; axis++) {
-        config->gyro_bias.bmi088[axis] = 0.0f;
-        config->gyro_bias.bmi270[axis] = 0.0f;
-        config->accel_bias.bmi088[axis] = 0.0f;
-        config->accel_bias.bmi270[axis] = 0.0f;
-        config->accel_scale.bmi088[axis] = 1.0f;
-        config->accel_scale.bmi270[axis] = 1.0f;
-    }
 }
 
 uint8_t RuntimeConfig_Load(RuntimeConfig_t *config)

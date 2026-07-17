@@ -187,6 +187,7 @@ def markdown_to_html(markdown: str, title_image_uri: str) -> str:
   }}
   h2, h3 {{ color: #182230; break-after: avoid-page; page-break-after: avoid; }}
   h2 {{ margin: 10pt 0 5pt; font-size: 16.2pt; line-height: 1.3; }}
+  h2:last-of-type {{ break-before: page; page-break-before: always; }}
   h3 {{ margin: 7pt 0 4pt; font-size: 11.6pt; line-height: 1.35; }}
   p {{ margin: 0 0 5pt; orphans: 2; widows: 2; }}
   ul, ol {{ margin: 2pt 0 7pt; padding-left: 19pt; }}

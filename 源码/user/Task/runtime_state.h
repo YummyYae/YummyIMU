@@ -1,7 +1,7 @@
 #ifndef RUNTIME_STATE_H
 #define RUNTIME_STATE_H
 
-#include "flash_storage.h"
+#include "runtime_config.h"
 
 #include <stdint.h>
 
@@ -28,6 +28,7 @@ typedef struct {
     uint8_t bmi270_chip_id;
     uint8_t gyro_bias_valid;
     uint8_t gyro_bias_calibrated;
+    uint8_t runtime_config_save_pending;
     uint8_t bmi088_temperature_valid;
     uint8_t bmi270_temperature_valid;
     uint8_t bmi088_temperature_filter_valid;
@@ -57,12 +58,12 @@ extern volatile uint32_t gSystemTickMs;
 extern volatile ImuRuntimeStats_t gImuRuntimeStats;
 
 void RuntimeState_LoadConfig(RuntimeState_t *ctx);
+uint8_t RuntimeState_SavePendingConfig(RuntimeState_t *ctx);
 void RuntimeState_UpdateReportRate(RuntimeState_t *ctx);
 uint8_t RuntimeState_BaudRateIsSupported(uint32_t baud_rate);
 void RuntimeState_OnSysTick(void);
 void RuntimeState_OnTemperatureTick(void);
 uint8_t RuntimeState_TakeTemperatureUpdate(void);
-void RuntimeState_ClearImuUpdates(void);
 void RuntimeState_ClearImuRuntimeStats(void);
 void RuntimeState_WaitForInterrupt(void);
 

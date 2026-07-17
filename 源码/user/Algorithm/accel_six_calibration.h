@@ -1,7 +1,7 @@
 #ifndef ACCEL_SIX_CALIBRATION_H
 #define ACCEL_SIX_CALIBRATION_H
 
-#include "flash_storage.h"
+#include "runtime_config.h"
 
 #include <stdint.h>
 

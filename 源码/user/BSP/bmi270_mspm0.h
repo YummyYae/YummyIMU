@@ -5,6 +5,7 @@
 
 #define BMI270_CHIP_ID_VALUE 0x24U
 #define BMI220_CHIP_ID_VALUE 0x26U
+#define BMI260_CHIP_ID_VALUE 0x27U
 #define BMI270_ALT_CHIP_ID_VALUE BMI220_CHIP_ID_VALUE
 
 #define BMI270_ACCEL_8G_SEN (9.80665f * 8.0f / 32768.0f)
@@ -40,7 +41,15 @@ typedef struct {
     uint8_t CompatVariant;
     uint8_t CompatDataNonZero;
     uint8_t StatusAfterEnable;
-    uint8_t Reserved;
+    uint8_t ChipIdFinal;
+    uint8_t IdValidReads;
+    uint8_t IdNoResponseReads;
+    uint8_t IdOtherReads;
+    uint8_t IdTransitions;
+    uint8_t IdFirstObserved;
+    uint8_t IdLastObserved;
+    uint8_t IdReadCount;
+    uint8_t IdValidModelMask;
 } BMI270_Debug_t;
 
 typedef enum {
@@ -49,6 +58,8 @@ typedef enum {
     BMI270_CONFIG_LOAD_ERROR = 0x02,
     BMI270_POWER_CONFIG_ERROR = 0x04,
     BMI270_SENSOR_CONFIG_ERROR = 0x08,
+    BMI270_LINK_UNSTABLE_ERROR = 0x10,
+    BMI270_UNSUPPORTED_ID_ERROR = 0x20,
 } BMI270_Error_t;
 
 extern BMI270_Data_t BMI270Sensor;

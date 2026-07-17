@@ -1,6 +1,5 @@
 #include "board_mspm0.h"
 #include "runtime_state.h"
-#include "task_serial.h"
 #include "task_imu.h"
 
 #include "ti_msp_dl_config.h"
@@ -55,21 +54,5 @@ void TIMG6_IRQHandler(void)
 void NMI_Handler(void)
 {
     Board_HandleNmi();
-}
-
-void duty_1000hz(void)
-{
-}
-
-void duty_200hz(void)
-{
-}
-
-void duty_100hz(void)
-{
-}
-
-void duty_10hz(void)
-{
 }
 

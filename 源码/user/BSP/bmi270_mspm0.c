@@ -1,6 +1,7 @@
 ﻿#include "bmi270_mspm0.h"
 
 #include "bmi220_config_file.h"
+#include "bmi260_config_file.h"
 #include "bmi270_config_file.h"
 #include "ti_msp_dl_config.h"
 
@@ -50,8 +51,8 @@ uint8_t BMI270_RegDumpAfterPower[128];
 #define BMI270_ACC_RANGE_8G        0x02U
 #define BMI270_GYR_RANGE_2000DPS   0x00U
 #define BMI270_PWR_CTRL_ACC_GYR    0x06U
-#define BMI220_PWR_CONF_FIFO_WAKE  0x02U
-#define BMI220_PWR_CTRL_ALL_ON     0x0EU
+#define BMI2XX_PWR_CONF_FIFO_WAKE  0x02U
+#define BMI2XX_PWR_CTRL_ALL_ON     0x0EU
 #define BMI270_RAW_SATURATION_LIMIT 32000
 
 #define BMI270_CONFIG_CHUNK_LEN    256U
@@ -60,32 +61,94 @@ uint8_t BMI270_RegDumpAfterPower[128];
 #define BMI220_CONFIG_LOAD_DELAY   140U
 #define BMI270_SOFT_RESET_DELAY    50U
 #define BMI270_GYRO_OFFSET_SAMPLES 1000U
+#define BMI270_ID_PROBE_SAMPLES    6U
+#define BMI270_ID_MIN_VALID_READS  2U
 
 #define BMI270_DEBUG_VARIANT_BMI270 0U
 #define BMI270_DEBUG_VARIANT_BMI220 1U
+#define BMI270_DEBUG_VARIANT_BMI260 2U
 
 static void delay_ms(uint32_t ms);
 static uint8_t read_reg(uint8_t reg);
 static uint8_t init_bmi220(uint8_t error);
+static uint8_t init_bmi260(uint8_t error);
 static uint8_t init_bmi270(uint8_t error);
 static void calibrate_gyro_offset(void);
 
 static bool is_valid_chip_id(uint8_t chip_id)
 {
-    return (chip_id == BMI270_CHIP_ID_VALUE) || (chip_id == BMI220_CHIP_ID_VALUE);
+    return (chip_id == BMI270_CHIP_ID_VALUE) ||
+           (chip_id == BMI220_CHIP_ID_VALUE) ||
+           (chip_id == BMI260_CHIP_ID_VALUE);
+}
+
+static uint8_t chip_id_model_mask(uint8_t chip_id)
+{
+    if (chip_id == BMI270_CHIP_ID_VALUE) {
+        return 0x01U;
+    }
+    if (chip_id == BMI220_CHIP_ID_VALUE) {
+        return 0x02U;
+    }
+    if (chip_id == BMI260_CHIP_ID_VALUE) {
+        return 0x04U;
+    }
+    return 0U;
+}
+
+static void debug_record_chip_id(uint8_t chip_id)
+{
+    uint8_t model_mask = chip_id_model_mask(chip_id);
+
+    if (BMI270_Debug.IdReadCount == 0U) {
+        BMI270_Debug.IdFirstObserved = chip_id;
+    } else if (chip_id != BMI270_Debug.IdLastObserved) {
+        BMI270_Debug.IdTransitions++;
+    }
+
+    if (model_mask != 0U) {
+        BMI270_Debug.IdValidReads++;
+        BMI270_Debug.IdValidModelMask |= model_mask;
+    } else if ((chip_id == 0x00U) || (chip_id == 0xFFU)) {
+        BMI270_Debug.IdNoResponseReads++;
+    } else {
+        BMI270_Debug.IdOtherReads++;
+    }
+
+    BMI270_Debug.IdLastObserved = chip_id;
+    BMI270_Debug.IdReadCount++;
 }
 
 static bool read_chip_id_retry(uint8_t *chip_id)
 {
-    for (uint8_t i = 0U; i < 10U; i++) {
+    uint8_t selected_id = 0U;
+    uint8_t valid_reads = 0U;
+    uint8_t valid_model_mask = 0U;
+    uint8_t last_id = 0U;
+
+    for (uint8_t i = 0U; i < BMI270_ID_PROBE_SAMPLES; i++) {
         (void) read_reg(BMI270_REG_CHIP_ID);
         delay_ms(2U);
-        *chip_id = read_reg(BMI270_REG_CHIP_ID);
-        if (is_valid_chip_id(*chip_id)) {
-            return true;
+        last_id = read_reg(BMI270_REG_CHIP_ID);
+        debug_record_chip_id(last_id);
+        if (is_valid_chip_id(last_id)) {
+            if (selected_id == 0U) {
+                selected_id = last_id;
+            }
+            valid_reads++;
+            valid_model_mask |= chip_id_model_mask(last_id);
         }
     }
 
+    if ((valid_reads >= BMI270_ID_MIN_VALID_READS) &&
+        ((valid_model_mask == 0x01U) ||
+         (valid_model_mask == 0x02U) ||
+         (valid_model_mask == 0x04U))) {
+        *chip_id = selected_id;
+        return true;
+    }
+
+    *chip_id = last_id;
     return false;
 }
 
@@ -212,6 +275,9 @@ static void clear_debug_state(void)
     BMI270Sensor.AccelSaturationCount = 0U;
     BMI270Sensor.LastGyroSaturated = 0U;
     BMI270Sensor.LastAccelSaturated = 0U;
+    BMI270Sensor.ChipId = 0U;
+    BMI270Sensor.InternalStatus = 0U;
+    BMI270Sensor.InitError = BMI270_NO_ERROR;
 
     BMI270_Debug.ChipIdBeforeReset = 0U;
     BMI270_Debug.ChipIdAfterReset = 0U;
@@ -228,12 +294,20 @@ static void clear_debug_state(void)
     BMI270_Debug.CompatVariant = BMI270_DEBUG_VARIANT_BMI270;
     BMI270_Debug.CompatDataNonZero = 0U;
     BMI270_Debug.StatusAfterEnable = 0U;
-    BMI270_Debug.Reserved = 0U;
+    BMI270_Debug.ChipIdFinal = 0U;
+    BMI270_Debug.IdValidReads = 0U;
+    BMI270_Debug.IdNoResponseReads = 0U;
+    BMI270_Debug.IdOtherReads = 0U;
+    BMI270_Debug.IdTransitions = 0U;
+    BMI270_Debug.IdFirstObserved = 0U;
+    BMI270_Debug.IdLastObserved = 0U;
+    BMI270_Debug.IdReadCount = 0U;
+    BMI270_Debug.IdValidModelMask = 0U;
 }
 
-static void enter_config_load_mode(void)
+static void enter_config_load_mode(uint8_t power_conf)
 {
-    write_reg(BMI270_REG_PWR_CONF, 0x00U);
+    write_reg(BMI270_REG_PWR_CONF, power_conf);
     delay_ms(1U);
     BMI270_Debug.PwrConfAfterSuspend = read_reg(BMI270_REG_PWR_CONF);
 
@@ -268,7 +342,9 @@ static void wait_bmi270_config_ready(void)
 
 uint8_t BMI270_ReadChipId(void)
 {
-    return read_reg(BMI270_REG_CHIP_ID);
+    BMI270_Debug.ChipIdFinal = read_reg(BMI270_REG_CHIP_ID);
+    debug_record_chip_id(BMI270_Debug.ChipIdFinal);
+    return BMI270_Debug.ChipIdFinal;
 }
 
 uint8_t BMI270_ReadInternalStatus(void)
@@ -292,14 +368,14 @@ static uint8_t init_bmi220(uint8_t error)
 {
     BMI270_Debug.CompatVariant = BMI270_DEBUG_VARIANT_BMI220;
 
-    enter_config_load_mode();
+    enter_config_load_mode(0x00U);
     upload_config_file(gBmi220ConfigFile, BMI220_CONFIG_FILE_SIZE);
     write_reg(BMI270_REG_INIT_CTRL, 0x01U);
     delay_ms(BMI220_CONFIG_LOAD_DELAY);
     BMI270_Debug.InitCtrlAfterLoad = read_reg(BMI270_REG_INIT_CTRL);
     error = capture_config_status(error);
 
-    write_reg(BMI270_REG_PWR_CONF, BMI220_PWR_CONF_FIFO_WAKE);
+    write_reg(BMI270_REG_PWR_CONF, BMI2XX_PWR_CONF_FIFO_WAKE);
     delay_ms(1U);
     write_reg(BMI270_REG_GYR_CONF, BMI270_GYR_CONF_3200HZ_PERF);
     delay_ms(1U);
@@ -313,14 +389,60 @@ static uint8_t init_bmi220(uint8_t error)
     write_reg(BMI270_REG_ACC_RANGE, BMI270_ACC_RANGE_8G);
     delay_ms(1U);
     BMI270_Debug.AccRangeAfterWrite = read_reg(BMI270_REG_ACC_RANGE);
-    write_reg(BMI270_REG_PWR_CTRL, BMI220_PWR_CTRL_ALL_ON);
+    write_reg(BMI270_REG_PWR_CTRL, BMI2XX_PWR_CTRL_ALL_ON);
     delay_ms(100U);
 
     BMI270_Debug.PwrCtrlAfterEnable = read_reg(BMI270_REG_PWR_CTRL);
     BMI270_Debug.StatusAfterEnable = read_reg(BMI270_REG_STATUS);
     BMI270_Debug.CompatDataNonZero = 0U;
 
-    if ((BMI270_Debug.PwrCtrlAfterEnable & BMI220_PWR_CTRL_ALL_ON) != BMI220_PWR_CTRL_ALL_ON) {
+    if ((BMI270_Debug.PwrCtrlAfterEnable & BMI2XX_PWR_CTRL_ALL_ON) != BMI2XX_PWR_CTRL_ALL_ON) {
+        error |= BMI270_POWER_CONFIG_ERROR;
+    }
+    if (((BMI270_Debug.AccRangeAfterWrite & 0x03U) != BMI270_ACC_RANGE_8G) ||
+        ((BMI270_Debug.GyrRangeAfterWrite & 0x07U) != BMI270_GYR_RANGE_2000DPS)) {
+        error |= BMI270_SENSOR_CONFIG_ERROR;
+    }
+
+    dump_registers(BMI270_DUMP_AFTER_POWER);
+    calibrate_gyro_offset();
+    BMI270Sensor.InitError = error;
+    return error;
+}
+
+static uint8_t init_bmi260(uint8_t error)
+{
+    BMI270_Debug.CompatVariant = BMI270_DEBUG_VARIANT_BMI260;
+
+    /* BMI260 shares the BMI270 register map but requires its own 8 KiB firmware. */
+    enter_config_load_mode(BMI2XX_PWR_CONF_FIFO_WAKE);
+    upload_config_file(gBmi260ConfigFile, BMI260_CONFIG_FILE_SIZE);
+    write_reg(BMI270_REG_INIT_CTRL, 0x01U);
+    delay_ms(1U);
+    BMI270_Debug.InitCtrlAfterLoad = read_reg(BMI270_REG_INIT_CTRL);
+    wait_bmi270_config_ready();
+    error = capture_config_status(error);
+
+    write_reg(BMI270_REG_PWR_CONF, BMI2XX_PWR_CONF_FIFO_WAKE);
+    delay_ms(1U);
+    write_reg(BMI270_REG_ACC_CONF, BMI270_ACC_CONF_200HZ_PERF);
+    delay_ms(1U);
+    BMI270_Debug.AccConfAfterWrite = read_reg(BMI270_REG_ACC_CONF);
+    write_reg(BMI270_REG_ACC_RANGE, BMI270_ACC_RANGE_8G);
+    delay_ms(1U);
+    BMI270_Debug.AccRangeAfterWrite = read_reg(BMI270_REG_ACC_RANGE);
+    write_reg(BMI270_REG_GYR_CONF, BMI270_GYR_CONF_3200HZ_PERF);
+    delay_ms(1U);
+    BMI270_Debug.GyrConfAfterWrite = read_reg(BMI270_REG_GYR_CONF);
+    write_reg(BMI270_REG_GYR_RANGE, BMI270_GYR_RANGE_2000DPS);
+    delay_ms(1U);
+    BMI270_Debug.GyrRangeAfterWrite = read_reg(BMI270_REG_GYR_RANGE);
+    write_reg(BMI270_REG_PWR_CTRL, BMI2XX_PWR_CTRL_ALL_ON);
+    delay_ms(50U);
+
+    BMI270_Debug.PwrCtrlAfterEnable = read_reg(BMI270_REG_PWR_CTRL);
+    BMI270_Debug.StatusAfterEnable = read_reg(BMI270_REG_STATUS);
+    if ((BMI270_Debug.PwrCtrlAfterEnable & BMI2XX_PWR_CTRL_ALL_ON) != BMI2XX_PWR_CTRL_ALL_ON) {
         error |= BMI270_POWER_CONFIG_ERROR;
     }
     if (((BMI270_Debug.AccRangeAfterWrite & 0x03U) != BMI270_ACC_RANGE_8G) ||
@@ -336,7 +458,7 @@ static uint8_t init_bmi220(uint8_t error)
 
 static uint8_t init_bmi270(uint8_t error)
 {
-    enter_config_load_mode();
+    enter_config_load_mode(0x00U);
     upload_config_file(gBmi270ConfigFile, BMI270_CONFIG_FILE_SIZE);
     write_reg(BMI270_REG_INIT_CTRL, 0x01U);
     delay_ms(1U);
@@ -395,13 +517,39 @@ uint8_t BMI270_Init(void)
 
     chip_id_valid_after_reset = read_chip_id_retry(&BMI270Sensor.ChipId);
     BMI270_Debug.ChipIdAfterReset = BMI270Sensor.ChipId;
+    BMI270_Debug.ChipIdFinal = BMI270Sensor.ChipId;
     dump_registers(BMI270_DUMP_AFTER_RESET);
-    if ((!chip_id_valid_before_reset) && (!chip_id_valid_after_reset)) {
-        error |= BMI270_NO_SENSOR;
+
+    if (!chip_id_valid_after_reset) {
+        if (chip_id_valid_before_reset) {
+            error |= BMI270_LINK_UNSTABLE_ERROR;
+        } else if ((BMI270_Debug.IdOtherReads != 0U) &&
+                   (BMI270_Debug.IdNoResponseReads == 0U) &&
+                   (BMI270_Debug.IdTransitions == 0U)) {
+            error |= BMI270_UNSUPPORTED_ID_ERROR;
+        } else if (BMI270_Debug.IdOtherReads != 0U) {
+            error |= BMI270_LINK_UNSTABLE_ERROR;
+        } else {
+            error |= BMI270_NO_SENSOR;
+        }
+
+        BMI270Sensor.InitError = error;
+        return error;
+    }
+
+    if (chip_id_valid_before_reset &&
+        (BMI270_Debug.ChipIdBeforeReset != BMI270_Debug.ChipIdAfterReset)) {
+        error |= BMI270_LINK_UNSTABLE_ERROR;
+        BMI270Sensor.InitError = error;
+        return error;
     }
 
     if (BMI270Sensor.ChipId == BMI220_CHIP_ID_VALUE) {
         return init_bmi220(error);
+    }
+
+    if (BMI270Sensor.ChipId == BMI260_CHIP_ID_VALUE) {
+        return init_bmi260(error);
     }
 
     return init_bmi270(error);

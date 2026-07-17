@@ -7,6 +7,8 @@
 #define BOARD_SYSOSC_FREQUENCY_HZ       32000000U
 #define BOARD_HFXT_STARTUP_TIMEOUT_MS   20U
 
+extern volatile uint32_t gSystemTickMs;
+
 static volatile uint8_t gBoardExternalClockFault;
 
 static const DL_SYSCTL_SYSPLLConfig gBoardExternalClockPllConfig = {
@@ -130,6 +132,11 @@ void Board_DelayMs(uint32_t ms)
     DL_Common_delayCycles((CPUCLK_FREQ / 1000U) * ms);
 }
 
+uint32_t Board_GetSystemTickMs(void)
+{
+    return gSystemTickMs;
+}
+
 void Board_StartImuTimer(void)
 {
     DL_TimerG_startCounter(TIMERG6_1000hz_INST);
@@ -164,13 +171,18 @@ uint32_t Board_GetImuInterruptBudgetTicks(void)
     return (TIMERG6_1000hz_INST_LOAD_VALUE + 1U) * 8U / 10U;
 }
 
-void Board_ResetAfterSave(void)
+void Board_SystemReset(void)
 {
     for (uint32_t i = 0U; i < (CPUCLK_FREQ / 100U); i++) {
         __NOP();
     }
 
     NVIC_SystemReset();
+}
+
+void Board_ResetAfterSave(void)
+{
+    Board_SystemReset();
 }
 
 void Board_HandleGroup1Irq(void)

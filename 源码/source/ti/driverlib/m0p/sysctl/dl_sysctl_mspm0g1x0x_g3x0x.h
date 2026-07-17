@@ -2693,7 +2693,7 @@ __STATIC_INLINE void DL_SYSCTL_disableHFCLKStartupMonitor(void)
     SYSCTL->SOCLOCK.HFCLKCLKCFG &= ~(SYSCTL_HFCLKCLKCFG_HFCLKFLTCHK_MASK);
 }
 
-/**
+/**1
  *  @brief  Retrieves the calibration constant of the temperature sensor to be
  *          used in temperature calculation.
  *

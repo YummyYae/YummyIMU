@@ -2,6 +2,8 @@
 
 #include "bmi088_mspm0.h"
 #include "bmi270_mspm0.h"
+#include "board_mspm0.h"
+#include "temperature_drift.h"
 #include "ti_msp_dl_config.h"
 
 #include <stddef.h>
@@ -36,6 +38,7 @@
  * 6. 采样温度先做一阶低通，PID 只以 10Hz 更新，避免 BMI088 0.125 摄氏度量化台阶扰动输出。
  * 7. BMI088 与 BMI270 使用独立 PID 参数；两路都在低于目标 3 摄氏度以上时全开升温。
  * 8. 任一路关断时直接切回 GPIO 低电平，避免 PWM 比较值或极性错误导致误加热。
+ * 9. TDRIFT 测试临时生成线性升温目标，并输出两颗 IMU 的同步温度与原始角速度均值；结束后恢复原目标。
  */
 
 /* 将 0.0-1.0 的占空比转换为 down-count edge PWM 比较值。 */
@@ -201,9 +204,11 @@ static float heater_pid_update(float target_temp,
     return output / 100.0f;
 }
 
+
 /* 初始化加热 PWM 与 100Hz 温控定时器。 */
 void TaskTemperature_Init(RuntimeState_t *state)
 {
+    TemperatureDrift_Init();
     heater_pid_reset(&state->bmi088_heater_pid_integral, &state->bmi088_heater_pid_last_error);
     heater_pid_reset(&state->bmi270_heater_pid_integral, &state->bmi270_heater_pid_last_error);
     state->bmi088_temperature_filter_valid = 0U;
@@ -290,6 +295,8 @@ void TaskTemperature_Update100Hz(RuntimeState_t *state)
     uint8_t bmi088_valid = state->bmi088_temperature_valid;
     uint8_t bmi270_valid = state->bmi270_temperature_valid;
     static uint8_t control_divider;
+
+    TemperatureDrift_Service100Hz(state);
 
     if (state->active_imu_mask == 0U) {
         heater_pid_reset(&state->bmi088_heater_pid_integral, &state->bmi088_heater_pid_last_error);

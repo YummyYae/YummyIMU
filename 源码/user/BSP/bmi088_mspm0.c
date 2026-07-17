@@ -9,6 +9,7 @@
 extern volatile uint32_t gSystemTickMs;
 
 BMI088_Data_t BMI088Sensor;
+BMI088_Debug_t BMI088_Debug;
 
 static const uint8_t accel_init_table[][3] = {
     {BMI088_ACC_PWR_CTRL, BMI088_ACC_ENABLE_ACC_ON, BMI088_ACC_PWR_CTRL_ERROR},
@@ -27,6 +28,58 @@ static const uint8_t gyro_init_table[][3] = {
     {BMI088_GYRO_INT3_INT4_IO_CONF, BMI088_GYRO_INT3_GPIO_PP | BMI088_GYRO_INT3_GPIO_HIGH, BMI088_GYRO_INT3_INT4_IO_CONF_ERROR},
     {BMI088_GYRO_INT3_INT4_IO_MAP, BMI088_GYRO_DRDY_IO_INT3, BMI088_GYRO_INT3_INT4_IO_MAP_ERROR},
 };
+
+static void debug_record_chip_id(uint8_t chip_id,
+                                 uint8_t expected_id,
+                                 uint8_t *valid_reads,
+                                 uint8_t *no_response_reads,
+                                 uint8_t *other_reads,
+                                 uint8_t *transitions,
+                                 uint8_t *last_id,
+                                 uint8_t *read_count)
+{
+    if ((*read_count != 0U) && (chip_id != *last_id)) {
+        (*transitions)++;
+    }
+
+    if (chip_id == expected_id) {
+        (*valid_reads)++;
+    } else if ((chip_id == 0x00U) || (chip_id == 0xFFU)) {
+        (*no_response_reads)++;
+    } else {
+        (*other_reads)++;
+    }
+
+    *last_id = chip_id;
+    (*read_count)++;
+}
+
+static void clear_debug_state(void)
+{
+    BMI088_Debug = (BMI088_Debug_t){0};
+}
+
+static void prepare_accel_init_attempt(void)
+{
+    BMI088_Debug.AccelInitError = BMI088_NO_SENSOR;
+    BMI088_Debug.AccelChipIdBeforeReset = 0U;
+    BMI088_Debug.AccelChipIdAfterReset = 0U;
+    BMI088_Debug.AccelFirstFailReg = 0U;
+    BMI088_Debug.AccelFirstFailExpected = 0U;
+    BMI088_Debug.AccelFirstFailRead = 0U;
+    BMI088_Debug.AccelConfigFailureMask = 0U;
+}
+
+static void prepare_gyro_init_attempt(void)
+{
+    BMI088_Debug.GyroInitError = BMI088_NO_SENSOR;
+    BMI088_Debug.GyroChipIdBeforeReset = 0U;
+    BMI088_Debug.GyroChipIdAfterReset = 0U;
+    BMI088_Debug.GyroFirstFailReg = 0U;
+    BMI088_Debug.GyroFirstFailExpected = 0U;
+    BMI088_Debug.GyroFirstFailRead = 0U;
+    BMI088_Debug.GyroConfigFailureMask = 0U;
+}
 
 static void delay_ms(uint32_t ms)
 {
@@ -158,6 +211,36 @@ static uint8_t gyro_read_single_reg(uint8_t reg)
     return data;
 }
 
+static uint8_t accel_read_chip_id_debug(void)
+{
+    uint8_t chip_id = accel_read_single_reg(BMI088_ACC_CHIP_ID);
+
+    debug_record_chip_id(chip_id,
+                         BMI088_ACC_CHIP_ID_VALUE,
+                         &BMI088_Debug.AccelIdValidReads,
+                         &BMI088_Debug.AccelIdNoResponseReads,
+                         &BMI088_Debug.AccelIdOtherReads,
+                         &BMI088_Debug.AccelIdTransitions,
+                         &BMI088_Debug.AccelLastObservedId,
+                         &BMI088_Debug.AccelIdReadCount);
+    return chip_id;
+}
+
+static uint8_t gyro_read_chip_id_debug(void)
+{
+    uint8_t chip_id = gyro_read_single_reg(BMI088_GYRO_CHIP_ID);
+
+    debug_record_chip_id(chip_id,
+                         BMI088_GYRO_CHIP_ID_VALUE,
+                         &BMI088_Debug.GyroIdValidReads,
+                         &BMI088_Debug.GyroIdNoResponseReads,
+                         &BMI088_Debug.GyroIdOtherReads,
+                         &BMI088_Debug.GyroIdTransitions,
+                         &BMI088_Debug.GyroLastObservedId,
+                         &BMI088_Debug.GyroIdReadCount);
+    return chip_id;
+}
+
 static void gyro_read_multi_reg(uint8_t reg, uint8_t *buf, uint8_t len)
 {
     cs_gyro_low();
@@ -167,23 +250,33 @@ static void gyro_read_multi_reg(uint8_t reg, uint8_t *buf, uint8_t len)
 
 uint8_t BMI088_ReadAccelChipId(void)
 {
-    return accel_read_single_reg(BMI088_ACC_CHIP_ID);
+    BMI088_Debug.AccelFinalChipId = accel_read_chip_id_debug();
+    return BMI088_Debug.AccelFinalChipId;
 }
 
 uint8_t BMI088_ReadGyroChipId(void)
 {
-    return gyro_read_single_reg(BMI088_GYRO_CHIP_ID);
+    BMI088_Debug.GyroFinalChipId = gyro_read_chip_id_debug();
+    return BMI088_Debug.GyroFinalChipId;
 }
 
 static uint8_t bmi088_accel_init(void)
 {
     uint8_t error = BMI088_NO_ERROR;
+    uint8_t chip_id;
+
+    prepare_accel_init_attempt();
 
     (void) accel_read_single_reg(BMI088_ACC_CHIP_ID);
     delay_ms(1);
-    if (accel_read_single_reg(BMI088_ACC_CHIP_ID) != BMI088_ACC_CHIP_ID_VALUE) {
+    chip_id = accel_read_chip_id_debug();
+    BMI088_Debug.AccelChipIdBeforeReset = chip_id;
+    if (chip_id != BMI088_ACC_CHIP_ID_VALUE) {
         delay_ms(1);
-        if (accel_read_single_reg(BMI088_ACC_CHIP_ID) != BMI088_ACC_CHIP_ID_VALUE) {
+        chip_id = accel_read_chip_id_debug();
+        BMI088_Debug.AccelChipIdBeforeReset = chip_id;
+        if (chip_id != BMI088_ACC_CHIP_ID_VALUE) {
+            BMI088_Debug.AccelInitError = BMI088_NO_SENSOR;
             return BMI088_NO_SENSOR;
         }
     }
@@ -193,31 +286,52 @@ static uint8_t bmi088_accel_init(void)
 
     (void) accel_read_single_reg(BMI088_ACC_CHIP_ID);
     delay_ms(1);
-    if (accel_read_single_reg(BMI088_ACC_CHIP_ID) != BMI088_ACC_CHIP_ID_VALUE) {
+    chip_id = accel_read_chip_id_debug();
+    BMI088_Debug.AccelChipIdAfterReset = chip_id;
+    if (chip_id != BMI088_ACC_CHIP_ID_VALUE) {
+        BMI088_Debug.AccelInitError = BMI088_NO_SENSOR;
         return BMI088_NO_SENSOR;
     }
 
     for (uint32_t i = 0; i < (sizeof(accel_init_table) / sizeof(accel_init_table[0])); i++) {
+        uint8_t readback;
+
         accel_write_single_reg(accel_init_table[i][0], accel_init_table[i][1]);
         delay_ms(1);
+        readback = accel_read_single_reg(accel_init_table[i][0]);
 
-        if (accel_read_single_reg(accel_init_table[i][0]) != accel_init_table[i][1]) {
-            error |= accel_init_table[i][2];
+        if (readback != accel_init_table[i][1]) {
+            BMI088_Debug.AccelConfigFailureMask |= (uint8_t)(1U << i);
+            if (error == BMI088_NO_ERROR) {
+                error = accel_init_table[i][2];
+                BMI088_Debug.AccelFirstFailReg = accel_init_table[i][0];
+                BMI088_Debug.AccelFirstFailExpected = accel_init_table[i][1];
+                BMI088_Debug.AccelFirstFailRead = readback;
+            }
         }
     }
 
+    BMI088_Debug.AccelInitError = error;
     return error;
 }
 
 static uint8_t bmi088_gyro_init(void)
 {
     uint8_t error = BMI088_NO_ERROR;
+    uint8_t chip_id;
+
+    prepare_gyro_init_attempt();
 
     (void) gyro_read_single_reg(BMI088_GYRO_CHIP_ID);
     delay_ms(1);
-    if (gyro_read_single_reg(BMI088_GYRO_CHIP_ID) != BMI088_GYRO_CHIP_ID_VALUE) {
+    chip_id = gyro_read_chip_id_debug();
+    BMI088_Debug.GyroChipIdBeforeReset = chip_id;
+    if (chip_id != BMI088_GYRO_CHIP_ID_VALUE) {
         delay_ms(1);
-        if (gyro_read_single_reg(BMI088_GYRO_CHIP_ID) != BMI088_GYRO_CHIP_ID_VALUE) {
+        chip_id = gyro_read_chip_id_debug();
+        BMI088_Debug.GyroChipIdBeforeReset = chip_id;
+        if (chip_id != BMI088_GYRO_CHIP_ID_VALUE) {
+            BMI088_Debug.GyroInitError = BMI088_NO_SENSOR;
             return BMI088_NO_SENSOR;
         }
     }
@@ -227,19 +341,32 @@ static uint8_t bmi088_gyro_init(void)
 
     (void) gyro_read_single_reg(BMI088_GYRO_CHIP_ID);
     delay_ms(1);
-    if (gyro_read_single_reg(BMI088_GYRO_CHIP_ID) != BMI088_GYRO_CHIP_ID_VALUE) {
+    chip_id = gyro_read_chip_id_debug();
+    BMI088_Debug.GyroChipIdAfterReset = chip_id;
+    if (chip_id != BMI088_GYRO_CHIP_ID_VALUE) {
+        BMI088_Debug.GyroInitError = BMI088_NO_SENSOR;
         return BMI088_NO_SENSOR;
     }
 
     for (uint32_t i = 0; i < (sizeof(gyro_init_table) / sizeof(gyro_init_table[0])); i++) {
+        uint8_t readback;
+
         gyro_write_single_reg(gyro_init_table[i][0], gyro_init_table[i][1]);
         delay_ms(1);
+        readback = gyro_read_single_reg(gyro_init_table[i][0]);
 
-        if (gyro_read_single_reg(gyro_init_table[i][0]) != gyro_init_table[i][1]) {
-            error |= gyro_init_table[i][2];
+        if (readback != gyro_init_table[i][1]) {
+            BMI088_Debug.GyroConfigFailureMask |= (uint8_t)(1U << i);
+            if (error == BMI088_NO_ERROR) {
+                error = gyro_init_table[i][2];
+                BMI088_Debug.GyroFirstFailReg = gyro_init_table[i][0];
+                BMI088_Debug.GyroFirstFailExpected = gyro_init_table[i][1];
+                BMI088_Debug.GyroFirstFailRead = readback;
+            }
         }
     }
 
+    BMI088_Debug.GyroInitError = error;
     return error;
 }
 
@@ -408,7 +535,11 @@ uint8_t BMI088_StartupCalibrate(void)
 
 uint8_t BMI088_Init(uint8_t calibrate)
 {
-    uint8_t error = BMI088_NO_SENSOR;
+    uint8_t accel_error = BMI088_NO_SENSOR;
+    uint8_t gyro_error = BMI088_NO_SENSOR;
+    uint8_t init_result = 0U;
+
+    clear_debug_state();
 
     BMI088Sensor.GyroSaturationCount = 0U;
     BMI088Sensor.AccelSaturationCount = 0U;
@@ -419,15 +550,25 @@ uint8_t BMI088_Init(uint8_t calibrate)
     delay_ms(2);
 
     for (uint32_t i = 0; i < 3U; i++) {
-        error = bmi088_accel_init();
-        error |= bmi088_gyro_init();
-        if (error == BMI088_NO_ERROR) {
+        accel_error = bmi088_accel_init();
+        gyro_error = bmi088_gyro_init();
+        if ((accel_error == BMI088_NO_ERROR) && (gyro_error == BMI088_NO_ERROR)) {
             break;
         }
         delay_ms(10);
     }
 
-    if ((error == BMI088_NO_ERROR) && (calibrate != 0U)) {
+    if (accel_error != BMI088_NO_ERROR) {
+        init_result |= BMI088_INIT_ACCEL_FAILED;
+    }
+    if (gyro_error != BMI088_NO_ERROR) {
+        init_result |= BMI088_INIT_GYRO_FAILED;
+    }
+
+    BMI088_Debug.AccelFinalChipId = BMI088_Debug.AccelLastObservedId;
+    BMI088_Debug.GyroFinalChipId = BMI088_Debug.GyroLastObservedId;
+
+    if ((init_result == 0U) && (calibrate != 0U)) {
         if (BMI088_StartupCalibrate() == 0U) {
             calibrate_gyro_offset(&BMI088Sensor);
         }
@@ -435,7 +576,7 @@ uint8_t BMI088_Init(uint8_t calibrate)
         use_saved_offsets(&BMI088Sensor);
     }
 
-    return error;
+    return init_result;
 }
 
 void BMI088_Read(BMI088_Data_t *BMI088Sensor)

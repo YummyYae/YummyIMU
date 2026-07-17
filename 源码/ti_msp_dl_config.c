@@ -567,9 +567,9 @@ SYSCONFIG_WEAK void SYSCFG_DL_SPI_Bmi270_init(void) {
     /*
      * Set the bit rate clock divider to generate the serial output clock
      *     outputBitRate = (spiInputClock) / ((1 + SCR) * 2)
-     *     13333333 = (80000000)/((1 + 2) * 2)
+     *     10000000 = (80000000)/((1 + 3) * 2)
      */
-    DL_SPI_setBitRateSerialClockDivider(SPI_Bmi270_INST, 2);
+    DL_SPI_setBitRateSerialClockDivider(SPI_Bmi270_INST, 3);
     /* Set RX and TX FIFO threshold levels */
     DL_SPI_setFIFOThreshold(SPI_Bmi270_INST, DL_SPI_RX_FIFO_LEVEL_1_2_FULL, DL_SPI_TX_FIFO_LEVEL_1_2_EMPTY);
 
@@ -598,9 +598,9 @@ SYSCONFIG_WEAK void SYSCFG_DL_SPI_BMI088_init(void) {
     /*
      * Set the bit rate clock divider to generate the serial output clock
      *     outputBitRate = (spiInputClock) / ((1 + SCR) * 2)
-     *     13333333 = (80000000)/((1 + 2) * 2)
+     *     10000000 = (80000000)/((1 + 3) * 2)
      */
-    DL_SPI_setBitRateSerialClockDivider(SPI_BMI088_INST, 2);
+    DL_SPI_setBitRateSerialClockDivider(SPI_BMI088_INST, 3);
     /* Set RX and TX FIFO threshold levels */
     DL_SPI_setFIFOThreshold(SPI_BMI088_INST, DL_SPI_RX_FIFO_LEVEL_1_2_FULL, DL_SPI_TX_FIFO_LEVEL_1_2_EMPTY);
 

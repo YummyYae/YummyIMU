@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>__MSPM0G3507__,ARM_MATH_CM0</Define>
               <Undefine></Undefine>
-              <IncludePath>..\source\third_party\CMSIS\Core\Include;..\source;..\;..\user;..\user\BSP;..\user\Algorithm;..\user\Task;..\dsplib;..\HardwareDriver;..\FunctionalModule;..\ApplicationLayer</IncludePath>
+              <IncludePath>..\source\third_party\CMSIS\Core\Include;..\source;..\;..\user;..\user\Common;..\user\BSP;..\user\Algorithm;..\user\Task;..\dsplib;..\HardwareDriver;..\FunctionalModule;..\ApplicationLayer</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -525,9 +525,29 @@
               <FilePath>..\user\Task\runtime_state.c</FilePath>
             </File>
             <File>
+              <FileName>runtime_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Common\runtime_config.c</FilePath>
+            </File>
+            <File>
               <FileName>task_serial.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\Task\task_serial.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial_transport.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Task\serial_transport.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial_command.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Task\serial_command.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Task\serial_status.c</FilePath>
             </File>
             <File>
               <FileName>task_imu.c</FileName>
@@ -535,9 +555,24 @@
               <FilePath>..\user\Task\task_imu.c</FilePath>
             </File>
             <File>
+              <FileName>imu_report.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Task\imu_report.c</FilePath>
+            </File>
+            <File>
+              <FileName>imu_diagnostics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Task\imu_diagnostics.c</FilePath>
+            </File>
+            <File>
               <FileName>task_temperature.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\Task\task_temperature.c</FilePath>
+            </File>
+            <File>
+              <FileName>temperature_drift.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Task\temperature_drift.c</FilePath>
             </File>
             <File>
               <FileName>task_led.c</FileName>
@@ -615,9 +650,39 @@
               <FilePath>..\user\Task\runtime_state.h</FilePath>
             </File>
             <File>
+              <FileName>runtime_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Common\runtime_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>firmware_info.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Task\firmware_info.h</FilePath>
+            </File>
+            <File>
               <FileName>task_serial.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\user\Task\task_serial.h</FilePath>
+            </File>
+            <File>
+              <FileName>serial_transport.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Task\serial_transport.h</FilePath>
+            </File>
+            <File>
+              <FileName>serial_transport_internal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Task\serial_transport_internal.h</FilePath>
+            </File>
+            <File>
+              <FileName>serial_command.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Task\serial_command.h</FilePath>
+            </File>
+            <File>
+              <FileName>serial_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Task\serial_status.h</FilePath>
             </File>
             <File>
               <FileName>task_imu.h</FileName>
@@ -625,9 +690,24 @@
               <FilePath>..\user\Task\task_imu.h</FilePath>
             </File>
             <File>
+              <FileName>imu_report.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Task\imu_report.h</FilePath>
+            </File>
+            <File>
+              <FileName>imu_diagnostics.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Task\imu_diagnostics.h</FilePath>
+            </File>
+            <File>
               <FileName>task_temperature.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\user\Task\task_temperature.h</FilePath>
+            </File>
+            <File>
+              <FileName>temperature_drift.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Task\temperature_drift.h</FilePath>
             </File>
             <File>
               <FileName>task_led.h</FileName>

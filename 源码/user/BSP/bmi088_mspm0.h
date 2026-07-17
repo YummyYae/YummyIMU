@@ -6,6 +6,13 @@
 #define BMI088_TEMP_FACTOR 0.125f
 #define BMI088_TEMP_OFFSET 23.0f
 
+#define BMI088_EXPECTED_ACCEL_CHIP_ID 0x1EU
+#define BMI088_EXPECTED_GYRO_CHIP_ID  0x0FU
+
+/* BMI088_Init() 返回值用于标明失败的是哪一个独立芯片。 */
+#define BMI088_INIT_ACCEL_FAILED 0x01U
+#define BMI088_INIT_GYRO_FAILED  0x02U
+
 #define BMI088_ACCEL_6G_SEN 0.00179443359375f
 #define BMI088_GYRO_2000_SEN 0.0010652644360316953f
 
@@ -34,6 +41,41 @@ typedef struct {
     uint8_t LastAccelSaturated;
 } BMI088_Data_t;
 
+/*
+ * BMI088 实际由加速度计和陀螺仪两颗独立芯片组成。
+ * 本结构保存初始化阶段的原始诊断信息，避免组合错误码掩盖具体故障通道。
+ */
+typedef struct {
+    uint8_t AccelInitError;
+    uint8_t GyroInitError;
+    uint8_t AccelChipIdBeforeReset;
+    uint8_t AccelChipIdAfterReset;
+    uint8_t GyroChipIdBeforeReset;
+    uint8_t GyroChipIdAfterReset;
+    uint8_t AccelFinalChipId;
+    uint8_t GyroFinalChipId;
+    uint8_t AccelFirstFailReg;
+    uint8_t AccelFirstFailExpected;
+    uint8_t AccelFirstFailRead;
+    uint8_t AccelConfigFailureMask;
+    uint8_t GyroFirstFailReg;
+    uint8_t GyroFirstFailExpected;
+    uint8_t GyroFirstFailRead;
+    uint8_t GyroConfigFailureMask;
+    uint8_t AccelIdValidReads;
+    uint8_t AccelIdNoResponseReads;
+    uint8_t AccelIdOtherReads;
+    uint8_t AccelIdTransitions;
+    uint8_t GyroIdValidReads;
+    uint8_t GyroIdNoResponseReads;
+    uint8_t GyroIdOtherReads;
+    uint8_t GyroIdTransitions;
+    uint8_t AccelLastObservedId;
+    uint8_t GyroLastObservedId;
+    uint8_t AccelIdReadCount;
+    uint8_t GyroIdReadCount;
+} BMI088_Debug_t;
+
 typedef enum {
     BMI088_NO_ERROR = 0x00,
     BMI088_ACC_PWR_CTRL_ERROR = 0x01,
@@ -52,6 +94,7 @@ typedef enum {
 } BMI088_Error_t;
 
 extern BMI088_Data_t BMI088Sensor;
+extern BMI088_Debug_t BMI088_Debug;
 
 uint8_t BMI088_Init(uint8_t calibrate);
 void BMI088_Read(BMI088_Data_t *BMI088Sensor);

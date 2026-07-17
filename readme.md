@@ -4,7 +4,7 @@
 
 ## 1. 产品简介
 
-YummyIMU 是一款面向高稳定姿态测量的双 IMU 融合模块，内置 BMI088 与 BMI270/BMI220 双传感器通道，支持恒温控制、自动零漂校准、偏航比例补偿、姿态融合与二维惯性导航。
+YummyIMU 是一款面向高稳定姿态测量的双 IMU 融合模块，内置 BMI088 与 BMI270/BMI260/BMI220 双传感器通道，支持恒温控制、自动零漂校准、偏航比例补偿、姿态融合与二维惯性导航。
 
 产品特性：
 
@@ -149,15 +149,19 @@ OK
 RECV:<收到的命令>
 ```
 
-配置类命令成功后会自动保存至 Flash 并重启；`STATUS`、`LIST` 不保存配置。`INS START` 是例外：它不会暂停实时输出、不会写入 Flash，也不会重启。
+配置类命令成功后会自动保存至 Flash 并重启；`STATUS`、`LIST`、`TDRIFT` 不保存配置。`REBOOT` 只执行重启，不修改 Flash。`INS START` 是例外：它不会暂停实时输出、不会写入 Flash，也不会重启。
 
 ## 6. 命令列表
 
 | 命令 | 参数 | 说明 |
 | --- | --- | --- |
 | `LIST` | 无 | 输出可用命令列表 |
-| `STATUS` | 可选：`CONFIG`、`IMU`、`BIAS`、`HEAT`、`DIAG`、`INS` | 查询状态 |
+| `REBOOT` | 无 | 立即重新启动模块，不修改 Flash 参数 |
+| `STATUS` | 可选：`CONFIG`、`IMU`、`BIAS`、`QUALITY`、`HEAT`、`DIAG`、`INS` | 查询状态 |
 | `CAL` | `WAIT_S RECORD_S` | 手动零漂校准；等待 0-600 秒，记录 1-600 秒 |
+| `TDRIFT START` | 可选：`RATE_C_PER_MIN REPORT_HZ` | 从当前温度开始连续升温并输出温漂数据 |
+| `TDRIFT STATUS` | 无 | 查询连续温漂测试状态 |
+| `TDRIFT STOP` | 无 | 停止测试并恢复原目标温度 |
 | `TEMP` | `20-85` | 设置目标温度，单位 °C |
 | `BAUD` | `115200`、`230400`、`460800`、`921600` | 设置波特率 |
 | `RATE` | 见 4.1 节 | 设置当前模式的输出频率 |
@@ -166,13 +170,74 @@ RECV:<收到的命令>
 | `YAWCAL` | `BMI088_ERR BMI270_ERR` | 设置两颗 IMU 的单圈偏航误差 |
 | `INS START` | 无 | 清零二维位置、速度并建立新起点 |
 
-`IMU DUAL` 要求两颗 IMU 均正常；`BMI088` 或 `BMI270` 允许只使用指定传感器；`AUTO` 自动选择当前可用传感器。命令中的 `BMI270` 同时适用于 BMI270 与 BMI220 通道。
+`IMU DUAL` 要求两颗 IMU 均正常；`BMI088` 或 `BMI270` 允许只使用指定传感器；`AUTO` 自动选择当前可用传感器。命令中的 `BMI270` 表示第二 IMU 通道，同时适用于 BMI270、BMI260 与 BMI220。
 
 `YAWCAL` 参数单位为度/圈，范围为 `-30` 至 `30`。单圈误差可按下式获得：
 
 ```text
 ERR = (传感器累计角度 - 实际累计角度) / 实际圈数
 ```
+
+### 6.1 连续温漂测试
+
+测试前应使用 `IMU DUAL`，确认两颗 IMU 均在线，并将模块静止放置。发送：
+
+```text
+TDRIFT START [RATE_C_PER_MIN] [REPORT_HZ]
+```
+
+- `RATE_C_PER_MIN` 为目标温度升高速率，范围 `0.1-60.0 °C/min`，默认 `1.0 °C/min`。
+- `REPORT_HZ` 可取 `1`、`2`、`4`、`5`、`8`、`10`，默认 `10 Hz`。
+- 测试从两颗 IMU 当前温度中的较高值开始，线性升温至 `70°C`。
+- 到达 `70°C` 后继续恒温，待两颗 IMU 均稳定在目标值附近后自动结束。
+- 测试期间暂停普通姿态数据，只输出 `TDRIFT` 数据；建议使用 `921600` 波特率。
+- 测试不会修改 Flash。完成、停止或异常退出后，模块恢复测试前的目标温度。
+
+例如：
+
+```text
+TDRIFT START 1.0 10
+```
+
+启动回复：
+
+```text
+OK
+RECV:TDRIFT START 1.0 10
+TDRIFT:START
+TDRIFT:CONFIG,START_C=<value>,END_C=70.000,RATE_C_PER_MIN=1.000,REPORT_HZ=10
+TDRIFT:COLUMNS,SEQ,ELAPSED_MS,TARGET_C,BMI088_TEMP_C,BMI270_TEMP_C,BMI088_GX_RADPS,BMI088_GY_RADPS,BMI088_GZ_RADPS,BMI270_GX_RADPS,BMI270_GY_RADPS,BMI270_GZ_RADPS,SAMPLES
+```
+
+连续数据行采用固定 CSV 列顺序：
+
+```text
+TDRIFT:DATA,<SEQ>,<ELAPSED_MS>,<TARGET_C>,<BMI088_TEMP_C>,<BMI270_TEMP_C>,<BMI088_GX_RADPS>,<BMI088_GY_RADPS>,<BMI088_GZ_RADPS>,<BMI270_GX_RADPS>,<BMI270_GY_RADPS>,<BMI270_GZ_RADPS>,<SAMPLES>
+```
+
+| 字段 | 含义 |
+| --- | --- |
+| `SEQ` | 从 0 开始递增的数据序号 |
+| `ELAPSED_MS` | 从测试启动开始计算的毫秒时间 |
+| `TARGET_C` | 当前线性升温目标，单位 °C |
+| `BMI088_TEMP_C`、`BMI270_TEMP_C` | 对应采集窗口内的实际平均温度，单位 °C |
+| `BMI088_G*_RADPS`、`BMI270_G*_RADPS` | 未扣除 Flash 零漂的各传感器原生三轴角速度均值，单位 rad/s |
+| `SAMPLES` | 本行均值包含的 1kHz 原始样本数量 |
+
+上位机只需处理以 `TDRIFT:DATA,` 开头的行，并分别使用两颗 IMU 的实际温度作为横轴。模块必须保持静止；测试期间的任何转动都会直接进入角速度数据。
+
+测试过程还可能输出：
+
+```text
+TDRIFT:HOLD,TARGET_C=70.000
+TDRIFT:DONE,ELAPSED_MS=<value>,TOTAL_SAMPLES=<value>
+TDRIFT:STOPPED,ELAPSED_MS=<value>,TOTAL_SAMPLES=<value>
+TDRIFT:ERROR,REASON=<reason>,ELAPSED_MS=<value>
+```
+
+`REASON` 可为 `DUAL_IMU_LOST`、`TEMPERATURE_INVALID` 或 `END_TEMPERATURE_TIMEOUT`，分别表示双 IMU 状态丢失、温度数据异常或 70°C 恒温等待超时。
+
+发送 `TDRIFT STATUS` 可查询阶段、当前目标和实际温度；发送 `TDRIFT STOP` 可随时停止。测试运行时，除 `TDRIFT`、`STATUS`、`LIST` 和 `REBOOT` 外的命令会回复 `ERROR:TDRIFT_BUSY`。
 
 ## 7. 惯导操作
 
@@ -234,6 +299,7 @@ INS_VY:<value>
 | `STATUS CONFIG` | 波特率、输出频率、模式、IMU 来源、目标温度、偏航补偿 |
 | `STATUS IMU` | 当前传感器、芯片型号、在线状态与温度 |
 | `STATUS BIAS` | Flash 中保存的两颗 IMU 三轴零漂 |
+| `STATUS QUALITY` | 两颗 IMU 的三轴角速度方差与质量评分 |
 | `STATUS HEAT` | 目标温度、两颗 IMU 温度与加热输出 |
 | `STATUS DIAG` | 量程饱和计数、IMU 更新计数与超时计数 |
 | `STATUS INS` | 惯导状态、时间、位置、速度与故障码 |
@@ -254,38 +320,80 @@ CAL_WAIT:DONE
 CAL:START
 CAL_REMAIN:30
 CAL:DONE
+BMI088_GYRO_SCORE:<0-90>
+BMI270_GYRO_SCORE:<0-90>
 ```
 
-进入 `CAL_REMAIN` 后请保持静止。`CAL` 命令中的等待时间和记录时间仅用于本次校准，不作为长期配置保存；校准结果会保存并在重启后生效。
+进入 `CAL_REMAIN` 后请保持静止。等待时间和记录时间均按实际秒计时，记录阶段以 1 kHz 采样，`CAL_REMAIN` 按实际经过时间每秒递减。`CAL` 命令中的两个时间参数仅用于本次校准，不作为长期配置保存；校准结果会保存并在重启后生效。
+
+每次自动或手动零漂校准都会同步计算三轴角速度方差和质量评分，并保存到 Flash。发送 `STATUS QUALITY` 可查询：
+
+```text
+BMI088_GYRO_VARIANCE_X:<value>
+BMI088_GYRO_VARIANCE_Y:<value>
+BMI088_GYRO_VARIANCE_Z:<value>
+BMI088_GYRO_SCORE:<0-90>
+BMI270_GYRO_VARIANCE_X:<value>
+BMI270_GYRO_VARIANCE_Y:<value>
+BMI270_GYRO_VARIANCE_Z:<value>
+BMI270_GYRO_SCORE:<0-90>
+```
+
+方差单位为 `(rad/s)^2`。两颗 IMU 的三个轴分别按 30 分评价，单颗最高 90 分，双 IMU 合计最高 180 分。零漂占 20%，方差占 80%；本批实测样本的逐轴平均水平对应约 20 分，数据优于平均水平时分数提高，劣于平均水平时分数快速下降。升级评分标准后，已有 Flash 校准记录会在首次启动时自动重算分数，不需要重新采集零漂。
+
+发送 `REBOOT` 后模块回复以下内容并立即重启：
+
+```text
+OK
+RECV:REBOOT
+REBOOTING
+```
 
 ## 10. 错误信息
 
 | 输出 | 含义 |
 | --- | --- |
-| `ERROR:BMI088_MISSING` | BMI088 未检测到 |
-| `ERROR:BMI270_MISSING` | BMI270/BMI220 未检测到 |
+| `ERROR:BMI088_MISSING` | BMI088 概要故障：加速度计和陀螺仪均未返回有效 ID |
+| `ERROR:BMI270_MISSING` | 第二 IMU 通道概要故障：未返回 BMI270/BMI260/BMI220 的有效 ID |
+| `ERROR:BMI088_INIT:<flags>` | BMI088 身份正确，但至少一个内部芯片初始化失败；bit0 为加速度计，bit1 为陀螺仪 |
+| `ERROR:<model>_INIT:<flags>` | 第二 IMU 身份正确，但配置文件、电源或量程寄存器初始化失败 |
+| `ERROR:BMI088_ID_MISMATCH:A=...,G=...` | BMI088 两个独立片选读到的 ID 与预期不符 |
+| `ERROR:BMI270_ID_MISMATCH:<id>` | 第二 IMU 片选读到非 BMI270/BMI260/BMI220 ID |
 | `ERROR:NO_ACTIVE_IMU` | 当前没有可用 IMU |
 | `ERROR:IMU_INIT_FAILED` | IMU 初始化失败 |
 | `ERROR:TEMP_WAIT_TIMEOUT` | 自动校准等待升温超时 |
 | `ERROR:CAL_FAILED` | 零漂校准失败 |
 | `ERROR:SAVE_FAILED` | 参数保存失败 |
+| `ERROR:TDRIFT_REQUIRES_DUAL_IMU` | 温漂测试要求两颗 IMU 均在线并处于 DUAL 模式 |
+| `ERROR:TDRIFT_TEMPERATURE_INVALID` | 温漂测试启动时温度数据无效 |
+| `ERROR:TDRIFT_START_TEMPERATURE` | 当前温度已达到或超过 70°C，无法开始升温测试 |
+| `ERROR:TDRIFT_PARAM` | 温漂测试速率或回传频率超出范围 |
+| `ERROR:TDRIFT_ALREADY_ACTIVE` | 温漂测试已经在运行 |
+| `ERROR:TDRIFT_NOT_ACTIVE` | 当前没有正在运行的温漂测试 |
+| `ERROR:TDRIFT_BUSY` | 温漂测试期间收到了不允许执行的其他命令 |
 | `ERROR:STATUS_ARG` | `STATUS` 子命令错误 |
 | `ERROR:INS_MODE_REQUIRED` | 当前模式不允许启动惯导 |
 | `ERROR:INS_DATA_INVALID` | 惯导输入或计算结果无效 |
 
-IMU 异常时，模块不输出实时数据，只会约每秒输出一次 `ERROR:` 行。
+IMU 异常时，模块不输出实时数据，只会约每秒输出一次概要错误和结构化诊断行。结构化行使用 `CAUSE=` 标明建议排查方向：
+
+| `CAUSE` | 判断依据与排查方向 |
+| --- | --- |
+| `NO_RESPONSE` | 连续读取仅得到 `0x00/0xFF`。优先检查供电、焊接、片选、SPI 时钟和 MISO；该结果表示“总线无响应”，不能单凭软件绝对断定虚焊 |
+| `WRONG_PART_OR_CS` | 稳定读到非预期 ID。检查器件型号、贴装位号以及片选映射；`DETECTED=` 会在 ID 已知时给出检测到的型号 |
+| `CS_SWAPPED` | BMI088 加速度计与陀螺仪的两个片选 ID 恰好对调，优先检查 CS 接线或原理图映射 |
+| `UNSTABLE_LINK` | 多次 ID 读取结果发生变化，或有效 ID 与无响应/其他 ID 交替出现。检查焊接接触、供电上升、SPI 信号完整性和频率 |
+| `INIT_CONFIG` | 芯片 ID 正确，但配置加载、电源控制或寄存器回读失败。根据 `STAGE`、`REG`、`EXP`、`READ` 等字段定位 |
+| `INIT_UNKNOWN` | 初始化返回了未能进一步归类的错误标志，需结合 `STATUS IMU` 和调试器检查 |
+
+`UNSTABLE_LINK` 行中的 `V/N/O/T` 分别表示有效 ID、无响应 ID、其他 ID 的读取次数及 ID 跳变次数。第二 IMU 的 `ID0/ID1/ID` 分别表示复位前、复位后和最终读取到的 ID。发送 `STATUS IMU` 可查询 BMI088 两路独立初始化错误码，以及第二 IMU 的复位前后 ID。
 
 ## 11. 上位机解析
 
 - ASCII 模式按行读取，遇到 `\r` 或 `\n` 后解析。
 - `USE` 按 3 个浮点数解析，`DEBUG` 按 9 个浮点数解析，`INS` 按 4 个浮点数解析。
 - `BINARY` 按固定 8 字节组包，并同时检查 `0xA5` 包头与校验和。
-- `OK`、`RECV:`、`FW:`、`KEY:VALUE`、`WARN:`、`ERROR:` 与 `INS:...` 不属于实时数据。
+- `OK`、`RECV:`、`FW:`、`KEY:VALUE`、`WARN:`、`ERROR:`、`REBOOTING` 与 `INS:...` 不属于实时数据。
+- 温漂曲线只解析 `TDRIFT:DATA,` 行；`TDRIFT:CONFIG`、`TDRIFT:COLUMNS`、`TDRIFT:HOLD`、`TDRIFT:DONE`、`TDRIFT:STOPPED` 和 `TDRIFT:ERROR` 是控制信息。
 - 在 `BINARY` 模式下发送命令时，命令回复仍为 ASCII；上位机应在命令窗口内暂停二进制帧解析。
 - 配置类命令成功后模块会重启，上位机应重新等待串口输出。
-
-## 12. 开源许可
-
-除项目中另有许可证或版权声明的第三方组件外，YummyIMU 项目由其版权持有人以 **GNU General Public License v2.0 only**（SPDX：`GPL-2.0-only`）授权。许可证全文见 [LICENSE](LICENSE)。
-
-项目包含的 TI DriverLib、CMSIS、STM32 HAL 等第三方组件不因本声明而重新授权；这些组件仍分别遵循其源文件或目录中附带的许可证与版权声明。

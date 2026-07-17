@@ -1,4 +1,5 @@
-#define FIRMWARE_VERSION "1.4.1"
+#define FIRMWARE_VERSION "1.5"
+#include "firmware_info.h"
 #include "board_mspm0.h"
 #include "task_temperature.h"
 #include "task_imu.h"
@@ -43,6 +44,9 @@ int main(void)
 
     /* IMU 初始化可能触发零漂整定，并在完成后进行初始姿态对齐。 */
     TaskIMU_Init(&gRuntimeState);
+    if (RuntimeState_SavePendingConfig(&gRuntimeState) == 0U) {
+        TaskSerial_Write("ERROR:SAVE_FAILED\n");
+    }
     RuntimeState_ClearImuRuntimeStats();
 
     TaskTemperature_Update100Hz(&gRuntimeState);
